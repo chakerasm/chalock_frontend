@@ -16,7 +16,7 @@ export function createTodayDashboardMock(): TodayDashboardFromAPI {
       elapsedSeconds: 0,
       id: 'focus-1',
       startedAt: new Date(now.getTime() - 25 * 60 * 1_000).toISOString(),
-      status: 'running',
+      status: 'active',
       taskTitle: 'Outline the project proposal',
     },
     activeGoals: [

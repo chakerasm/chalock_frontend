@@ -37,7 +37,7 @@ export const activeFocusSessionFromAPISchema = z.object({
   elapsedSeconds: z.number().int().nonnegative(),
   id: z.string().min(1),
   startedAt: z.string().datetime().optional(),
-  status: z.enum(['paused', 'running']),
+  status: z.enum(['active', 'paused']),
   taskTitle: z.string().min(1).optional(),
 })
 
@@ -73,7 +73,7 @@ export const updateHabitCheckInInputSchema = z.object({
 
 export const updateFocusSessionInputSchema = z.object({
   elapsedSeconds: z.number().int().nonnegative(),
-  status: z.enum(['paused', 'running']),
+  status: z.enum(['active', 'paused']),
 })
 
 export const startFocusSessionInputSchema = z.object({

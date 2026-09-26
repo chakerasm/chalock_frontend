@@ -1,4 +1,5 @@
 import { exampleFutureResources } from '@/features/example-future/i18n/resources'
+import { focusResources } from '@/features/focus/i18n/resources'
 import { tasksResources } from '@/features/tasks/i18n/resources'
 import { todayResources } from '@/features/today/i18n/resources'
 
@@ -218,6 +219,7 @@ export const resources = {
     translation: {
       ...en,
       ...exampleFutureResources.en.translation,
+      ...focusResources.en.translation,
       ...tasksResources.en.translation,
       ...todayResources.en.translation,
     },
@@ -226,6 +228,7 @@ export const resources = {
     translation: {
       ...fr,
       ...exampleFutureResources.fr.translation,
+      ...focusResources.fr.translation,
       ...tasksResources.fr.translation,
       ...todayResources.fr.translation,
     },

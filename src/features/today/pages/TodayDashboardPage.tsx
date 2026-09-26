@@ -86,7 +86,7 @@ export function TodayDashboardPage() {
   function handleUpdateFocus(
     session: ActiveFocusSession,
     elapsedSeconds: number,
-    status: 'paused' | 'running',
+    status: 'active' | 'paused',
   ) {
     updateFocus.mutate(
       { elapsedSeconds, sessionId: session.id, status },

@@ -11,7 +11,7 @@ import {
 function getActiveSessionElapsedSeconds() {
   const session = todayDashboardMock.activeFocusSession
 
-  if (session?.status !== 'running' || !session.startedAt) {
+  if (session?.status !== 'active' || !session.startedAt) {
     return session?.elapsedSeconds ?? 0
   }
 
@@ -78,7 +78,7 @@ export const todayHandlers = [
       elapsedSeconds: 0,
       id: `focus-${crypto.randomUUID()}`,
       startedAt: new Date().toISOString(),
-      status: 'running' as const,
+      status: 'active' as const,
       taskTitle: input.data.taskTitle,
     }
     todayDashboardMock.activeFocusSession = session
@@ -109,7 +109,7 @@ export const todayHandlers = [
     )
     session.status = input.data.status
     session.startedAt =
-      input.data.status === 'running' ? new Date().toISOString() : undefined
+      input.data.status === 'active' ? new Date().toISOString() : undefined
 
     return HttpResponse.json(session)
   }),

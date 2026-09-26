@@ -34,7 +34,7 @@ export type ActiveFocusSessionFromAPI = {
   elapsedSeconds: number
   id: string
   startedAt?: string
-  status: 'paused' | 'running'
+  status: 'active' | 'paused'
   taskTitle?: string
 }
 
@@ -85,7 +85,7 @@ export type UpdateHabitCheckInInput = {
 export type UpdateFocusSessionInput = {
   elapsedSeconds: number
   sessionId: string
-  status: 'paused' | 'running'
+  status: 'active' | 'paused'
 }
 
 export type StartFocusSessionInput = {

@@ -12,7 +12,7 @@ type ActiveFocusSessionDialogProps = {
   onUpdateSession: (
     session: ActiveFocusSession,
     elapsedSeconds: number,
-    status: 'paused' | 'running',
+    status: 'active' | 'paused',
   ) => void
   open: boolean
   session: ActiveFocusSession | null
@@ -28,7 +28,7 @@ export function ActiveFocusSessionDialog({
 }: ActiveFocusSessionDialogProps) {
   const { t } = useTranslation()
   if (!session) return null
-  const isRunning = session.status === 'running'
+  const isRunning = session.status === 'active'
   return (
     <FormDialog
       footer={
@@ -42,7 +42,7 @@ export function ActiveFocusSessionDialog({
               onUpdateSession(
                 session,
                 elapsedSeconds,
-                isRunning ? 'paused' : 'running',
+                isRunning ? 'paused' : 'active',
               )
             }
           >

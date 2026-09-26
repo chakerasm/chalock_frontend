@@ -3,6 +3,7 @@ import { Link as RouterLink } from '@tanstack/react-router'
 import {
   Boxes,
   CalendarCheck,
+  Clock3,
   FlaskConical,
   ListTodo,
   PanelsTopLeft,
@@ -42,6 +43,12 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             <RouterLink onClick={onNavigate} to={'/tasks'}>
               <ListTodo aria-hidden={true} size={18} />
               {t('tasks.title')}
+            </RouterLink>
+          </Button>
+          <Button asChild justifyContent={'flex-start'} variant={'ghost'}>
+            <RouterLink onClick={onNavigate} to={'/focus'}>
+              <Clock3 aria-hidden={true} size={18} />
+              {t('focus.title')}
             </RouterLink>
           </Button>
           <Button asChild justifyContent={'flex-start'} variant={'ghost'}>

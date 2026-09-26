@@ -12,7 +12,7 @@ Use `GET /api/dashboard/today` as an aggregated endpoint. The five source featur
 | --- | --- | --- |
 | Task | `id`, `title`, `status` | A task appears when it is unfinished, non-cancelled, and due on the local dashboard date or overdue. It can additionally have `dueTime`, `priority`, and `estimatedMinutes`. It is owned by the tasks feature. |
 | Habit check-in | `id`, `name`, `completed` | Returned only when a habit is scheduled today. Count habits additionally have `currentCount` and `targetCount`; a check-in belongs to one habit and local date. |
-| Focus session | `id`, `status`, `elapsedSeconds` | A user can have at most one active `running` or `paused` session. A running session has `startedAt`; a paused one does not. |
+| Focus session | `id`, `status`, `elapsedSeconds` | A user can have at most one `active` or `paused` session. An active session has `startedAt`; a paused one does not. See the Focus Sessions contract for the source entity. |
 | Goal | `id`, `name`, `currentValue`, `targetValue` | Goals are owned by the goals feature. The dashboard returns a capped, ranked selection, never every goal. `targetDate` is optional. |
 | Quick note | `id`, `content`, `createdAt` | Owned by the notes feature and captured from Today without navigation. |
 
@@ -50,7 +50,7 @@ The server resolves “today” in the user’s configured IANA time zone. `date
   },
   "activeFocusSession": {
     "id": "focus-1",
-    "status": "running",
+    "status": "active",
     "elapsedSeconds": 0,
     "startedAt": "2026-09-26T08:35:00.000Z",
     "taskTitle": "Outline the project proposal"
@@ -91,13 +91,13 @@ Request: `{ "date": "2026-09-26", "action": "increment" }`.
 
 ### `POST /api/focus-sessions`
 
-An empty object starts a running session at server time and returns it. A task action may optionally send `{ "taskTitle": "Review project brief" }` (1–120 trimmed characters) so the active session can show its context. Enforce one active session per user; return `409` with code `ACTIVE_FOCUS_SESSION` if one already exists.
+An empty object starts an active session at server time and returns it. A task action may optionally send `{ "taskTitle": "Review project brief" }` (1–120 trimmed characters) so the active session can show its context. Enforce one active session per user; return `409` with code `ACTIVE_FOCUS_SESSION` if one already exists.
 
 ### `PATCH /api/focus-sessions/:sessionId`
 
 Request: `{ "status": "paused", "elapsedSeconds": 1523 }`.
 
-`status` is `running` or `paused`; `elapsedSeconds` is a non-negative integer observation. The server is authoritative and must not let elapsed time decrease. Running sets `startedAt`; paused clears it. Errors: `404`, `409` invalid transition, `422` malformed request.
+`status` is `active` or `paused`; `elapsedSeconds` is a non-negative integer observation. The server is authoritative and must not let elapsed time decrease. Active sets `startedAt`; paused clears it. Errors: `404`, `409` invalid transition, `422` malformed request.
 
 ### `POST /api/notes`
 

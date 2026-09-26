@@ -7,6 +7,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
+import { Link as RouterLink } from '@tanstack/react-router'
 import { Clock3, Pause, Play, Timer } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -24,7 +25,7 @@ type FocusCardProps = {
   onUpdateSession: (
     session: ActiveFocusSession,
     elapsedSeconds: number,
-    status: 'paused' | 'running',
+    status: 'active' | 'paused',
   ) => void
 }
 
@@ -32,7 +33,7 @@ export function getFocusElapsedSeconds(
   session: ActiveFocusSession,
   now = Date.now(),
 ) {
-  if (session.status !== 'running' || !session.startedAt)
+  if (session.status !== 'active' || !session.startedAt)
     return session.elapsedSeconds
   return (
     session.elapsedSeconds +
@@ -62,13 +63,13 @@ export function FocusCard({
   const [now, setNow] = useState(Date.now())
 
   useEffect(() => {
-    if (activeSession?.status !== 'running') return undefined
+    if (activeSession?.status !== 'active') return undefined
     const intervalId = window.setInterval(() => setNow(Date.now()), 1_000)
     return () => window.clearInterval(intervalId)
   }, [activeSession])
 
   if (activeSession) {
-    const isRunning = activeSession.status === 'running'
+    const isRunning = activeSession.status === 'active'
     const elapsedSeconds = getFocusElapsedSeconds(activeSession, now)
     return (
       <Box
@@ -118,7 +119,7 @@ export function FocusCard({
               onUpdateSession(
                 activeSession,
                 elapsedSeconds,
-                isRunning ? 'paused' : 'running',
+                isRunning ? 'paused' : 'active',
               )
             }
             size="sm"
@@ -132,6 +133,9 @@ export function FocusCard({
           </IconButton>
           <Button onClick={onOpenSession} size="sm" variant="ghost">
             {t('today.openSession')}
+          </Button>
+          <Button asChild size="sm" variant="ghost">
+            <RouterLink to="/focus">{t('today.timerTools')}</RouterLink>
           </Button>
         </HStack>
       </Box>
@@ -154,15 +158,20 @@ export function FocusCard({
             {t('today.focusTitle')}
           </Text>
         </HStack>
-        <Button
-          colorPalette="brand"
-          loading={isUpdating}
-          onClick={onStart}
-          size="sm"
-        >
-          <Play aria-hidden="true" size={15} />
-          {t('today.startFocus')}
-        </Button>
+        <HStack gap="1">
+          <Button
+            colorPalette="brand"
+            loading={isUpdating}
+            onClick={onStart}
+            size="sm"
+          >
+            <Play aria-hidden="true" size={15} />
+            {t('today.startFocus')}
+          </Button>
+          <Button asChild size="sm" variant="ghost">
+            <RouterLink to="/focus">{t('today.timerTools')}</RouterLink>
+          </Button>
+        </HStack>
       </Flex>
       {hasFocusHistory ? (
         <HStack gap="7">

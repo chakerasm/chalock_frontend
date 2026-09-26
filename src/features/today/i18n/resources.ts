@@ -56,6 +56,7 @@ const en = {
     taskCreated: 'Task added to today',
     taskTitle: 'Task title',
     taskTitlePlaceholder: 'e.g. Prepare the project update',
+    timerTools: 'Timer tools',
     taskUpdateError: 'Could not update the task.',
     tasksEmptyDescription:
       'Enjoy the space, or add the next thing that matters.',
@@ -127,6 +128,7 @@ const fr: typeof en = {
     taskCreated: 'Tache ajoutee a aujourd hui',
     taskTitle: 'Titre de la tache',
     taskTitlePlaceholder: 'ex. Preparer le point projet',
+    timerTools: 'Outils de minuterie',
     taskUpdateError: 'Impossible de mettre a jour la tache.',
     tasksEmptyDescription:
       'Profitez de cet espace, ou ajoutez la prochaine chose importante.',
