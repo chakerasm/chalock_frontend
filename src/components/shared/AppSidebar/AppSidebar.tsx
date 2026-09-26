@@ -1,6 +1,7 @@
 import { Box, Button, HStack, Stack, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "@tanstack/react-router";
 import {
+  Activity,
   Boxes,
   CalendarCheck,
   CheckCheck,
@@ -58,6 +59,16 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             <RouterLink onClick={onNavigate} to={"/goals"}>
               <Goal aria-hidden={true} size={18} />
               {t("goals.title")}
+            </RouterLink>
+          </Button>
+          <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
+            <RouterLink
+              onClick={onNavigate}
+              search={{ range: "last-7-days" }}
+              to={"/statistics"}
+            >
+              <Activity aria-hidden={true} size={18} />
+              {t("statistics.title")}
             </RouterLink>
           </Button>
           <Button asChild justifyContent={"flex-start"} variant={"ghost"}>

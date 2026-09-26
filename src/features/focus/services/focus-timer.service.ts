@@ -17,6 +17,8 @@ import {
   getFocusRemainingSeconds,
 } from './focus-timer-calculations'
 
+const focusTimerSnapshotEvent = 'daymark:focus-timer-snapshot-updated'
+
 function createSessionId() {
   return `focus-${crypto.randomUUID()}`
 }
@@ -34,6 +36,16 @@ export function getFocusTimerSnapshot(): FocusTimerSnapshot {
 
 export function persistFocusTimerSnapshot(snapshot: FocusTimerSnapshot) {
   saveFocusTimerSnapshotToStorage(snapshot)
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(focusTimerSnapshotEvent))
+  }
+}
+
+export function subscribeToFocusTimerSnapshot(listener: () => void) {
+  if (typeof window === 'undefined') return () => undefined
+
+  window.addEventListener(focusTimerSnapshotEvent, listener)
+  return () => window.removeEventListener(focusTimerSnapshotEvent, listener)
 }
 
 export function startFocusTimer(
