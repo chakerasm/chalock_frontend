@@ -16,6 +16,8 @@ import { Route as FocusRouteImport } from './routes/focus'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as ExampleFutureIndexRouteImport } from './routes/example-future/index'
 import { Route as ExampleFutureItemIdRouteImport } from './routes/example-future/$itemId'
+import { Route as FocusIndexRouteImport } from './routes/focus/index'
+import { Route as FocusPomodoroRouteImport } from './routes/focus/pomodoro'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,33 +54,48 @@ const ExampleFutureItemIdRoute = ExampleFutureItemIdRouteImport.update({
   path: '/$itemId',
   getParentRoute: () => ExampleFutureRoute,
 } as any)
+const FocusIndexRoute = FocusIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => FocusRoute,
+} as any)
+const FocusPomodoroRoute = FocusPomodoroRouteImport.update({
+  id: '/pomodoro',
+  path: '/pomodoro',
+  getParentRoute: () => FocusRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/example-future': typeof ExampleFutureRouteWithChildren
   '/fields': typeof FieldsRoute
-  '/focus': typeof FocusRoute
+  '/focus': typeof FocusRouteWithChildren
   '/tasks': typeof TasksRoute
   '/example-future/$itemId': typeof ExampleFutureItemIdRoute
+  '/focus/pomodoro': typeof FocusPomodoroRoute
   '/example-future/': typeof ExampleFutureIndexRoute
+  '/focus/': typeof FocusIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/fields': typeof FieldsRoute
-  '/focus': typeof FocusRoute
   '/tasks': typeof TasksRoute
   '/example-future/$itemId': typeof ExampleFutureItemIdRoute
+  '/focus/pomodoro': typeof FocusPomodoroRoute
   '/example-future': typeof ExampleFutureIndexRoute
+  '/focus': typeof FocusIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/example-future': typeof ExampleFutureRouteWithChildren
   '/fields': typeof FieldsRoute
-  '/focus': typeof FocusRoute
+  '/focus': typeof FocusRouteWithChildren
   '/tasks': typeof TasksRoute
   '/example-future/$itemId': typeof ExampleFutureItemIdRoute
+  '/focus/pomodoro': typeof FocusPomodoroRoute
   '/example-future/': typeof ExampleFutureIndexRoute
+  '/focus/': typeof FocusIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -89,15 +106,18 @@ export interface FileRouteTypes {
     | '/focus'
     | '/tasks'
     | '/example-future/$itemId'
+    | '/focus/pomodoro'
     | '/example-future/'
+    | '/focus/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/fields'
-    | '/focus'
     | '/tasks'
     | '/example-future/$itemId'
+    | '/focus/pomodoro'
     | '/example-future'
+    | '/focus'
   id:
     | '__root__'
     | '/'
@@ -106,14 +126,16 @@ export interface FileRouteTypes {
     | '/focus'
     | '/tasks'
     | '/example-future/$itemId'
+    | '/focus/pomodoro'
     | '/example-future/'
+    | '/focus/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExampleFutureRoute: typeof ExampleFutureRouteWithChildren
   FieldsRoute: typeof FieldsRoute
-  FocusRoute: typeof FocusRoute
+  FocusRoute: typeof FocusRouteWithChildren
   TasksRoute: typeof TasksRoute
 }
 
@@ -168,6 +190,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExampleFutureItemIdRouteImport
       parentRoute: typeof ExampleFutureRoute
     }
+    '/focus/': {
+      id: '/focus/'
+      path: '/'
+      fullPath: '/focus/'
+      preLoaderRoute: typeof FocusIndexRouteImport
+      parentRoute: typeof FocusRoute
+    }
+    '/focus/pomodoro': {
+      id: '/focus/pomodoro'
+      path: '/pomodoro'
+      fullPath: '/focus/pomodoro'
+      preLoaderRoute: typeof FocusPomodoroRouteImport
+      parentRoute: typeof FocusRoute
+    }
   }
 }
 
@@ -185,11 +221,23 @@ const ExampleFutureRouteWithChildren = ExampleFutureRoute._addFileChildren(
   ExampleFutureRouteChildren,
 )
 
+interface FocusRouteChildren {
+  FocusPomodoroRoute: typeof FocusPomodoroRoute
+  FocusIndexRoute: typeof FocusIndexRoute
+}
+
+const FocusRouteChildren: FocusRouteChildren = {
+  FocusPomodoroRoute: FocusPomodoroRoute,
+  FocusIndexRoute: FocusIndexRoute,
+}
+
+const FocusRouteWithChildren = FocusRoute._addFileChildren(FocusRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExampleFutureRoute: ExampleFutureRouteWithChildren,
   FieldsRoute: FieldsRoute,
-  FocusRoute: FocusRoute,
+  FocusRoute: FocusRouteWithChildren,
   TasksRoute: TasksRoute,
 }
 export const routeTree = rootRouteImport

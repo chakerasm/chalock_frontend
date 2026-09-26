@@ -19,6 +19,7 @@ const en = {
     notificationPermissionHint:
       'Browser notifications are used only when permission has already been granted.',
     notifyWhenAllowed: 'Notify me when allowed',
+    openPomodoro: 'Pomodoro mode',
     optionalAssociation: 'Optional session details',
     optionalAssociationDescription:
       'Attach the next session to a task or goal when that context is useful.',
@@ -26,6 +27,7 @@ const en = {
     pause: 'Pause',
     paused: 'Paused',
     playCompletionSound: 'Play a completion sound',
+    pomodoroActive: 'A Pomodoro cycle is already in progress.',
     remaining: 'Remaining time',
     reset: 'Reset',
     restart: 'Restart',
@@ -47,6 +49,42 @@ const en = {
     timerFinished: 'Timer finished',
     timerTitle: 'Countdown timer',
     title: 'Focus',
+  },
+  pomodoro: {
+    activeTimerNotice:
+      'Finish or cancel the active timer before starting a Pomodoro cycle.',
+    exitMode: 'Focus tools',
+    goalLabel: 'Goal (optional)',
+    historyDescription: 'Recent focus phases, without the analytics noise.',
+    historyEmpty: 'Completed and stopped focus phases will appear here.',
+    historyState: {
+      cancelled: 'Cancelled',
+      completed: 'Completed',
+      skipped: 'Skipped',
+    },
+    historyTitle: 'Focus history',
+    intentionLabel: 'What do you want to focus on? (optional)',
+    intentionPlaceholder: 'e.g. Study chapter 4',
+    noGoal: 'No goal',
+    noTask: 'No task',
+    pause: 'Pause',
+    phases: {
+      focus: 'Focus',
+      long_break: 'Long break',
+      short_break: 'Short break',
+    },
+    readyDescription:
+      'Four focused sessions, with quiet breaks in between. Start with only an intention if you like.',
+    readyTitle: 'Ready when you are',
+    resume: 'Resume',
+    sessionCancelled: 'Pomodoro session cancelled',
+    sessionOf: 'Session {{current}} of {{total}}',
+    skipPhase: 'Skip phase',
+    start: 'Start focus',
+    stopSession: 'Stop & cancel',
+    taskLabel: 'Task (optional)',
+    title: 'Pomodoro',
+    unlinked: 'Unlinked focus',
   },
 }
 
@@ -71,6 +109,7 @@ const fr: typeof en = {
     notificationPermissionHint:
       'Les notifications sont utilisees seulement si vous avez deja accorde la permission.',
     notifyWhenAllowed: 'Notifier si autorise',
+    openPomodoro: 'Mode Pomodoro',
     optionalAssociation: 'Details facultatifs de la session',
     optionalAssociationDescription:
       'Associez la prochaine session a une tache ou un objectif lorsque ce contexte est utile.',
@@ -78,6 +117,7 @@ const fr: typeof en = {
     pause: 'Mettre en pause',
     paused: 'En pause',
     playCompletionSound: 'Jouer un son a la fin',
+    pomodoroActive: 'Un cycle Pomodoro est deja en cours.',
     remaining: 'Temps restant',
     reset: 'Reinitialiser',
     restart: 'Recommencer',
@@ -100,6 +140,43 @@ const fr: typeof en = {
     timerFinished: 'Minuteur termine',
     timerTitle: 'Compte a rebours',
     title: 'Concentration',
+  },
+  pomodoro: {
+    activeTimerNotice:
+      'Terminez ou annulez le minuteur actif avant de demarrer un cycle Pomodoro.',
+    exitMode: 'Outils de concentration',
+    goalLabel: 'Objectif (facultatif)',
+    historyDescription:
+      'Phases recentes de concentration, sans analyses superflues.',
+    historyEmpty: 'Les phases terminees et arretees apparaitront ici.',
+    historyState: {
+      cancelled: 'Annulee',
+      completed: 'Terminee',
+      skipped: 'Ignoree',
+    },
+    historyTitle: 'Historique de concentration',
+    intentionLabel: 'Sur quoi voulez-vous vous concentrer ? (facultatif)',
+    intentionPlaceholder: 'ex. Etudier le chapitre 4',
+    noGoal: 'Aucun objectif',
+    noTask: 'Aucune tache',
+    pause: 'Mettre en pause',
+    phases: {
+      focus: 'Concentration',
+      long_break: 'Pause longue',
+      short_break: 'Pause courte',
+    },
+    readyDescription:
+      'Quatre sessions de concentration avec des pauses calmes entre elles. Commencez seulement avec une intention si vous le souhaitez.',
+    readyTitle: 'Pret quand vous l etes',
+    resume: 'Reprendre',
+    sessionCancelled: 'Session Pomodoro annulee',
+    sessionOf: 'Session {{current}} sur {{total}}',
+    skipPhase: 'Passer la phase',
+    start: 'Demarrer la concentration',
+    stopSession: 'Arreter et annuler',
+    taskLabel: 'Tache (facultatif)',
+    title: 'Pomodoro',
+    unlinked: 'Concentration sans lien',
   },
 }
 

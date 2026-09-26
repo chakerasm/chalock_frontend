@@ -118,6 +118,7 @@ export function saveFocusTimerSession(
   const savedSession: FocusSession = session
 
   return {
+    ...snapshot,
     activeTimer: null,
     savedSessions: [savedSession, ...snapshot.savedSessions].slice(0, 50),
   }

@@ -1,6 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { FocusPage } from '@/features/focus/pages/FocusPage'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/focus')({
-  component: FocusPage,
+  component: FocusLayout,
 })
+
+function FocusLayout() {
+  return <Outlet />
+}

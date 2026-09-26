@@ -4,7 +4,9 @@ import type { FocusTimerSnapshotFromAPI } from '@/features/focus/types/focus.typ
 const focusTimerStorageKey = 'daymark.focus-timer.v1'
 
 const emptyFocusTimerSnapshot: FocusTimerSnapshotFromAPI = {
+  activePomodoro: null,
   activeTimer: null,
+  pomodoroHistory: [],
   savedSessions: [],
 }
 

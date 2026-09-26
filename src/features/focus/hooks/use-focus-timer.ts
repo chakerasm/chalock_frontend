@@ -71,10 +71,10 @@ export function useFocusTimer() {
   }, [commit, isCountdownComplete])
 
   function start(input: StartFocusTimerInput) {
-    commit((current) => ({
-      ...current,
-      activeTimer: startFocusTimer(input),
-    }))
+    commit((current) => {
+      if (current.activePomodoro) return current
+      return { ...current, activeTimer: startFocusTimer(input) }
+    })
   }
 
   function pause() {
@@ -122,6 +122,7 @@ export function useFocusTimer() {
   }
 
   return {
+    activePomodoro: snapshot.activePomodoro,
     activeTimer,
     cancel,
     elapsedSeconds,

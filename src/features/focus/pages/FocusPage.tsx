@@ -1,4 +1,14 @@
-import { Box, Container, HStack, Stack, Switch, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Container,
+  HStack,
+  Stack,
+  Switch,
+  Text,
+} from '@chakra-ui/react'
+import { Link as RouterLink } from '@tanstack/react-router'
+import { TimerReset } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PageHeader } from '@/components/shared/PageHeader/PageHeader'
@@ -70,6 +80,14 @@ export function FocusPage() {
     <Container maxW="6xl" py={{ base: '6', md: '10' }}>
       <Stack gap={{ base: '5', md: '7' }}>
         <PageHeader
+          actions={
+            <Button asChild colorPalette="brand" variant="outline">
+              <RouterLink to="/focus/pomodoro">
+                <TimerReset aria-hidden="true" size={17} />
+                {t('focus.openPomodoro')}
+              </RouterLink>
+            </Button>
+          }
           description={t('focus.description')}
           eyebrow={t('focus.eyebrow')}
           title={t('focus.title')}
@@ -86,6 +104,17 @@ export function FocusPage() {
             remainingSeconds={timer.remainingSeconds}
             timer={timer.activeTimer}
           />
+        ) : timer.activePomodoro ? (
+          <Box bg="bg.subtle" borderWidth="1px" p="5" rounded="l2">
+            <Stack align="start" gap="3">
+              <Text fontWeight="semibold">{t('focus.pomodoroActive')}</Text>
+              <Button asChild colorPalette="brand" size="sm">
+                <RouterLink to="/focus/pomodoro">
+                  {t('focus.openPomodoro')}
+                </RouterLink>
+              </Button>
+            </Stack>
+          </Box>
         ) : (
           <FocusTimerSetup onStart={handleStart} />
         )}
