@@ -6,85 +6,94 @@ import {
   Portal,
   Stack,
   Text,
-} from '@chakra-ui/react'
-import { useNavigate } from '@tanstack/react-router'
+} from "@chakra-ui/react";
+import { useNavigate } from "@tanstack/react-router";
 import {
   CalendarCheck,
   CheckCheck,
   Clock3,
   FileText,
   FlaskConical,
+  Goal,
   ListTodo,
   Search,
-} from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type CommandItem = {
-  id: string
-  label: string
-  to: '/' | '/example-future' | '/fields' | '/focus' | '/habits' | '/tasks'
-}
+  id: string;
+  label: string;
+  to:
+    | "/"
+    | "/example-future"
+    | "/fields"
+    | "/focus"
+    | "/goals"
+    | "/habits"
+    | "/tasks";
+};
 
 export function CommandMenu() {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [isOpen, setIsOpen] = useState(false)
-  const [query, setQuery] = useState('')
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const commands: CommandItem[] = [
-    { id: 'today', label: t('app.home'), to: '/' },
+    { id: "today", label: t("app.home"), to: "/" },
     {
-      id: 'example-future',
-      label: t('exampleFuture.navigationLabel'),
-      to: '/example-future',
+      id: "example-future",
+      label: t("exampleFuture.navigationLabel"),
+      to: "/example-future",
     },
-    { id: 'fields', label: t('appShell.fieldShowcase'), to: '/fields' },
-    { id: 'tasks', label: t('tasks.title'), to: '/tasks' },
-    { id: 'habits', label: t('habits.title'), to: '/habits' },
-    { id: 'focus', label: t('focus.title'), to: '/focus' },
-  ]
+    { id: "fields", label: t("appShell.fieldShowcase"), to: "/fields" },
+    { id: "tasks", label: t("tasks.title"), to: "/tasks" },
+    { id: "habits", label: t("habits.title"), to: "/habits" },
+    { id: "goals", label: t("goals.title"), to: "/goals" },
+    { id: "focus", label: t("focus.title"), to: "/focus" },
+  ];
   const matchingCommands = commands.filter((item) =>
     item.label.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
-  )
+  );
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (
         (event.ctrlKey || event.metaKey) &&
-        event.key.toLocaleLowerCase() === 'k'
+        event.key.toLocaleLowerCase() === "k"
       ) {
-        event.preventDefault()
-        setIsOpen(true)
+        event.preventDefault();
+        setIsOpen(true);
       }
     }
 
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [])
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
-      setQuery('')
-      window.setTimeout(() => inputRef.current?.focus(), 0)
+      setQuery("");
+      window.setTimeout(() => inputRef.current?.focus(), 0);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
-  function goTo(to: CommandItem['to']) {
-    setIsOpen(false)
-    void navigate({ to })
+  function goTo(to: CommandItem["to"]) {
+    setIsOpen(false);
+    void navigate({ to });
   }
 
   return (
     <>
       <Button
-        aria-label={t('appShell.openSearch')}
+        aria-label={t("appShell.openSearch")}
         onClick={() => setIsOpen(true)}
-        size={'sm'}
-        variant={'outline'}
+        size={"sm"}
+        variant={"outline"}
       >
         <Search aria-hidden={true} size={16} />
-        {t('appShell.search')}
+        {t("appShell.search")}
       </Button>
       <Dialog.Root
         onOpenChange={(details) => setIsOpen(details.open)}
@@ -92,39 +101,41 @@ export function CommandMenu() {
       >
         <Portal>
           <Dialog.Backdrop />
-          <Dialog.Positioner p={'4'}>
+          <Dialog.Positioner p={"4"}>
             <Dialog.Content>
               <Dialog.Header>
-                <Dialog.Title>{t('appShell.search')}</Dialog.Title>
+                <Dialog.Title>{t("appShell.search")}</Dialog.Title>
                 <Dialog.CloseTrigger asChild>
-                  <CloseButton aria-label={t('common.close')} size={'sm'} />
+                  <CloseButton aria-label={t("common.close")} size={"sm"} />
                 </Dialog.CloseTrigger>
               </Dialog.Header>
               <Dialog.Body>
-                <Stack gap={'4'}>
+                <Stack gap={"4"}>
                   <Input
-                    aria-label={t('appShell.search')}
+                    aria-label={t("appShell.search")}
                     onChange={(event) => setQuery(event.target.value)}
-                    placeholder={t('appShell.searchPlaceholder')}
+                    placeholder={t("appShell.searchPlaceholder")}
                     ref={inputRef}
                     value={query}
                   />
                   {matchingCommands.map((item) => (
                     <Button
-                      justifyContent={'flex-start'}
+                      justifyContent={"flex-start"}
                       key={item.id}
                       onClick={() => goTo(item.to)}
-                      variant={'ghost'}
+                      variant={"ghost"}
                     >
-                      {item.id === 'today' ? (
+                      {item.id === "today" ? (
                         <CalendarCheck aria-hidden={true} size={18} />
-                      ) : item.id === 'tasks' ? (
+                      ) : item.id === "tasks" ? (
                         <ListTodo aria-hidden={true} size={18} />
-                      ) : item.id === 'focus' ? (
+                      ) : item.id === "focus" ? (
                         <Clock3 aria-hidden={true} size={18} />
-                      ) : item.id === 'habits' ? (
+                      ) : item.id === "habits" ? (
                         <CheckCheck aria-hidden={true} size={18} />
-                      ) : item.id === 'fields' ? (
+                      ) : item.id === "goals" ? (
+                        <Goal aria-hidden={true} size={18} />
+                      ) : item.id === "fields" ? (
                         <FileText aria-hidden={true} size={18} />
                       ) : (
                         <FlaskConical aria-hidden={true} size={18} />
@@ -133,8 +144,8 @@ export function CommandMenu() {
                     </Button>
                   ))}
                   {matchingCommands.length === 0 ? (
-                    <Text color={'fg.muted'} fontSize={'sm'}>
-                      {t('appShell.noSearchResults')}
+                    <Text color={"fg.muted"} fontSize={"sm"}>
+                      {t("appShell.noSearchResults")}
                     </Text>
                   ) : null}
                 </Stack>
@@ -144,5 +155,5 @@ export function CommandMenu() {
         </Portal>
       </Dialog.Root>
     </>
-  )
+  );
 }

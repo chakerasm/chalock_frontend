@@ -8,43 +8,43 @@ import {
   Progress,
   Stack,
   Text,
-} from '@chakra-ui/react'
-import { Check, Minus, Plus } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
-import type { TodayHabit } from '@/features/today/types/today.types'
+} from "@chakra-ui/react";
+import { Check, Minus, Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { EmptyState } from "@/components/shared/EmptyState/EmptyState";
+import type { TodayHabit } from "@/features/today/types/today.types";
 
 type TodayHabitsCardProps = {
-  habits: TodayHabit[]
-  isUpdating: boolean
+  habits: TodayHabit[];
+  isUpdating: boolean;
   onUpdateHabit: (
     habit: TodayHabit,
-    action: 'complete' | 'decrement' | 'increment',
-  ) => void
-}
+    action: "complete" | "decrement" | "increment",
+  ) => void;
+};
 
 export function TodayHabitsCard({
   habits,
   isUpdating,
   onUpdateHabit,
 }: TodayHabitsCardProps) {
-  const { t } = useTranslation()
-  const incompleteHabits = habits.filter((habit) => !habit.completed)
+  const { t } = useTranslation();
+  const incompleteHabits = habits.filter((habit) => !habit.completed);
 
   return (
     <Box
       bg="bg.panel"
       borderWidth="1px"
-      p={{ base: '4', md: '5' }}
+      p={{ base: "4", md: "5" }}
       rounded="l2"
     >
       <Flex align="center" justify="space-between" mb="4">
         <Box>
           <Text fontSize="lg" fontWeight="semibold">
-            {t('today.habitsTitle')}
+            {t("today.habitsTitle")}
           </Text>
           <Text color="fg.muted" fontSize="sm">
-            {t('today.habitsSummary', {
+            {t("today.habitsSummary", {
               completed: habits.length - incompleteHabits.length,
               total: habits.length,
             })}
@@ -54,13 +54,13 @@ export function TodayHabitsCard({
       </Flex>
       {habits.length === 0 || incompleteHabits.length === 0 ? (
         <EmptyState
-          description={t('today.habitsEmptyDescription')}
-          title={t('today.habitsEmptyTitle')}
+          description={t("today.habitsEmptyDescription")}
+          title={t("today.habitsEmptyTitle")}
         />
       ) : (
         <Stack gap="3">
           {habits.map((habit) => {
-            const hasTarget = Boolean(habit.targetCount)
+            const hasTarget = Boolean(habit.targetCount);
             return (
               <Stack
                 gap="2"
@@ -72,7 +72,7 @@ export function TodayHabitsCard({
                     checked={habit.completed}
                     disabled={habit.completed || isUpdating}
                     flex="1"
-                    onCheckedChange={() => onUpdateHabit(habit, 'complete')}
+                    onCheckedChange={() => onUpdateHabit(habit, "complete")}
                   >
                     <Checkbox.HiddenInput />
                     <Checkbox.Control />
@@ -81,19 +81,19 @@ export function TodayHabitsCard({
                   {hasTarget ? (
                     <HStack gap="1">
                       <Text color="fg.muted" fontSize="sm">
-                        {t('today.habitProgress', {
+                        {t("today.habitProgress", {
                           current: habit.currentCount ?? 0,
                           target: habit.targetCount,
                         })}
                       </Text>
                       <IconButton
-                        aria-label={t('today.decreaseHabitProgress', {
+                        aria-label={t("today.decreaseHabitProgress", {
                           habit: habit.name,
                         })}
                         disabled={
                           isUpdating || (habit.currentDayCount ?? 0) === 0
                         }
-                        onClick={() => onUpdateHabit(habit, 'decrement')}
+                        onClick={() => onUpdateHabit(habit, "decrement")}
                         size="xs"
                         variant="ghost"
                       >
@@ -101,11 +101,11 @@ export function TodayHabitsCard({
                       </IconButton>
                       {!habit.completed ? (
                         <IconButton
-                          aria-label={t('today.addHabitProgress', {
+                          aria-label={t("today.addHabitProgress", {
                             habit: habit.name,
                           })}
                           disabled={isUpdating}
-                          onClick={() => onUpdateHabit(habit, 'increment')}
+                          onClick={() => onUpdateHabit(habit, "increment")}
                           size="xs"
                           variant="ghost"
                         >
@@ -130,7 +130,7 @@ export function TodayHabitsCard({
                   </Progress.Root>
                 ) : null}
               </Stack>
-            )
+            );
           })}
         </Stack>
       )}
@@ -139,15 +139,15 @@ export function TodayHabitsCard({
           mt="4"
           onClick={() => {
             incompleteHabits.forEach((habit) => {
-              onUpdateHabit(habit, 'complete')
-            })
+              onUpdateHabit(habit, "complete");
+            });
           }}
           size="sm"
           variant="ghost"
         >
-          {t('today.completeRemainingHabits')}
+          {t("today.completeRemainingHabits")}
         </Button>
       ) : null}
     </Box>
-  )
+  );
 }

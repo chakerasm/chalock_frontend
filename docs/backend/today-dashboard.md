@@ -8,13 +8,13 @@ Use `GET /api/dashboard/today` as an aggregated endpoint. The five source featur
 
 ## Entities and relationships
 
-| Entity | Required fields | Rules and relationships |
-| --- | --- | --- |
-| Task | `id`, `title`, `status` | A task appears when it is unfinished, non-cancelled, and due on the local dashboard date or overdue. It can additionally have `dueTime`, `priority`, and `estimatedMinutes`. It is owned by the tasks feature. |
-| Habit projection | `id`, `name`, `completed` | Returned for active habits relevant today. Per-day counts include `currentDayCount` and `targetCount`; weekly targets include current-week `currentCount`, `targetCount`, and an indicator that completion is weekly. The definition and date-keyed history belong to the Habits feature; see [habits.md](habits.md). |
-| Focus session | `id`, `status`, `elapsedSeconds` | A user can have at most one `active` or `paused` session. An active session has `startedAt`; a paused one does not. See the Focus Sessions contract for the source entity. |
-| Goal | `id`, `name`, `currentValue`, `targetValue` | Goals are owned by the goals feature. The dashboard returns a capped, ranked selection, never every goal. `targetDate` is optional. |
-| Quick note | `id`, `content`, `createdAt` | Owned by the notes feature and captured from Today without navigation. |
+| Entity           | Required fields                             | Rules and relationships                                                                                                                                                                                                                                                                                               |
+| ---------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Task             | `id`, `title`, `status`                     | A task appears when it is unfinished, non-cancelled, and due on the local dashboard date or overdue. It can additionally have `dueTime`, `priority`, and `estimatedMinutes`. It is owned by the tasks feature.                                                                                                        |
+| Habit projection | `id`, `name`, `completed`                   | Returned for active habits relevant today. Per-day counts include `currentDayCount` and `targetCount`; weekly targets include current-week `currentCount`, `targetCount`, and an indicator that completion is weekly. The definition and date-keyed history belong to the Habits feature; see [habits.md](habits.md). |
+| Focus session    | `id`, `status`, `elapsedSeconds`            | A user can have at most one `active` or `paused` session. An active session has `startedAt`; a paused one does not. See the Focus Sessions contract for the source entity.                                                                                                                                            |
+| Goal             | `id`, `name`, `currentValue`, `targetValue` | Goals are owned by the goals feature. The dashboard returns a capped, ranked selection, never every goal. `targetDate` is optional.                                                                                                                                                                                   |
+| Quick note       | `id`, `content`, `createdAt`                | Owned by the notes feature and captured from Today without navigation.                                                                                                                                                                                                                                                |
 
 ## Aggregated read
 

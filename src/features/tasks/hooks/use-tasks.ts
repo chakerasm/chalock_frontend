@@ -1,47 +1,48 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createTask,
   deleteTask,
   getTasks,
   updateTask,
-} from '@/features/tasks/services/tasks.service'
-import type { TaskListFilters } from '@/features/tasks/types/tasks.types'
+} from "@/features/tasks/services/tasks.service";
+import type { TaskListFilters } from "@/features/tasks/types/tasks.types";
 
 export const taskQueryKeys = {
-  all: ['tasks'] as const,
+  all: ["tasks"] as const,
   list: (filters: TaskListFilters) => [...taskQueryKeys.all, filters] as const,
-}
+};
 
 export function useTasks(filters: TaskListFilters = {}) {
   return useQuery({
     queryFn: () => getTasks(filters),
     queryKey: taskQueryKeys.list(filters),
-  })
+  });
 }
 
 function useTaskMutation<TVariables>(
   mutationFn: (variables: TVariables) => Promise<unknown>,
 ) {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn,
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: taskQueryKeys.all }),
-        queryClient.invalidateQueries({ queryKey: ['today-dashboard'] }),
-      ])
+        queryClient.invalidateQueries({ queryKey: ["goals"] }),
+        queryClient.invalidateQueries({ queryKey: ["today-dashboard"] }),
+      ]);
     },
-  })
+  });
 }
 
 export function useCreateTask() {
-  return useTaskMutation(createTask)
+  return useTaskMutation(createTask);
 }
 
 export function useUpdateTask() {
-  return useTaskMutation(updateTask)
+  return useTaskMutation(updateTask);
 }
 
 export function useDeleteTask() {
-  return useTaskMutation(deleteTask)
+  return useTaskMutation(deleteTask);
 }

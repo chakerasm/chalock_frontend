@@ -1,39 +1,40 @@
-import { Box, Flex, Progress, Stack, Text } from '@chakra-ui/react'
-import { Goal } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
-import type { ActiveGoal } from '@/features/today/types/today.types'
+import { Box, Button, Flex, Progress, Stack, Text } from "@chakra-ui/react";
+import { Link as RouterLink } from "@tanstack/react-router";
+import { Goal } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { EmptyState } from "@/components/shared/EmptyState/EmptyState";
+import type { ActiveGoal } from "@/features/today/types/today.types";
 
-type ActiveGoalsCardProps = { goals: ActiveGoal[] }
+type ActiveGoalsCardProps = { goals: ActiveGoal[] };
 
 function formatTargetDate(date: string, locale: string) {
   return new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'short',
-  }).format(new Date(`${date}T12:00:00`))
+    day: "numeric",
+    month: "short",
+  }).format(new Date(`${date}T12:00:00`));
 }
 
 export function ActiveGoalsCard({ goals }: ActiveGoalsCardProps) {
-  const { i18n, t } = useTranslation()
-  const selectedGoals = goals.slice(0, 3)
+  const { i18n, t } = useTranslation();
+  const selectedGoals = goals.slice(0, 3);
 
   return (
     <Box
       bg="bg.panel"
       borderWidth="1px"
-      p={{ base: '4', md: '5' }}
+      p={{ base: "4", md: "5" }}
       rounded="l2"
     >
       <Flex align="center" gap="2" mb="4">
         <Goal aria-hidden="true" size={20} />
         <Text fontSize="lg" fontWeight="semibold">
-          {t('today.goalsTitle')}
+          {t("today.goalsTitle")}
         </Text>
       </Flex>
       {selectedGoals.length === 0 ? (
         <EmptyState
-          description={t('today.goalsEmptyDescription')}
-          title={t('today.goalsEmptyTitle')}
+          description={t("today.goalsEmptyDescription")}
+          title={t("today.goalsEmptyTitle")}
         />
       ) : (
         <Stack gap="4">
@@ -44,7 +45,7 @@ export function ActiveGoalsCard({ goals }: ActiveGoalsCardProps) {
                   {goal.name}
                 </Text>
                 <Text color="fg.muted" flexShrink="0" fontSize="sm">
-                  {t('today.goalProgress', {
+                  {t("today.goalProgress", {
                     current: goal.currentValue,
                     target: goal.targetValue,
                   })}
@@ -60,7 +61,7 @@ export function ActiveGoalsCard({ goals }: ActiveGoalsCardProps) {
               </Progress.Root>
               {goal.targetDate ? (
                 <Text color="fg.muted" fontSize="xs">
-                  {t('today.targetDate', {
+                  {t("today.targetDate", {
                     date: formatTargetDate(goal.targetDate, i18n.language),
                   })}
                 </Text>
@@ -69,6 +70,9 @@ export function ActiveGoalsCard({ goals }: ActiveGoalsCardProps) {
           ))}
         </Stack>
       )}
+      <Button asChild mt="4" size="sm" variant="ghost">
+        <RouterLink to="/goals">{t("today.viewAllGoals")}</RouterLink>
+      </Button>
     </Box>
-  )
+  );
 }

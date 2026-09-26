@@ -146,13 +146,13 @@ The backend is authoritative for streak calculation because it has complete hist
 
 Errors use `{ "code": "...", "message": "..." }`.
 
-| Status | Code | Condition |
-| --- | --- | --- |
-| `400` | `INVALID_LOCAL_DATE` | Invalid or impossible date, unsupported timezone, or invalid date/timezone combination. |
-| `401` | `UNAUTHENTICATED` | No valid session. |
-| `404` | `HABIT_NOT_FOUND` | Missing or inaccessible habit. |
-| `409` | `HABIT_ARCHIVED` | Attempt to write a new log to an archived habit. |
-| `422` | `INVALID_HABIT` | Invalid name, schedule, target, unit, or update. |
-| `422` | `INVALID_HABIT_LOG` | Invalid date, timezone, or progress value. |
+| Status | Code                 | Condition                                                                               |
+| ------ | -------------------- | --------------------------------------------------------------------------------------- |
+| `400`  | `INVALID_LOCAL_DATE` | Invalid or impossible date, unsupported timezone, or invalid date/timezone combination. |
+| `401`  | `UNAUTHENTICATED`    | No valid session.                                                                       |
+| `404`  | `HABIT_NOT_FOUND`    | Missing or inaccessible habit.                                                          |
+| `409`  | `HABIT_ARCHIVED`     | Attempt to write a new log to an archived habit.                                        |
+| `422`  | `INVALID_HABIT`      | Invalid name, schedule, target, unit, or update.                                        |
+| `422`  | `INVALID_HABIT_LOG`  | Invalid date, timezone, or progress value.                                              |
 
 Use `5xx` for unexpected persistence failures. Validate ownership on every definition and log request; do not reveal whether an inaccessible ID belongs to another user.
