@@ -1,4 +1,5 @@
 import { setupWorker } from 'msw/browser'
 import { exampleFutureHandlers } from '@/features/example-future/api/example-future.handlers'
+import { todayHandlers } from '@/features/today/api/today.handlers'
 
-export const worker = setupWorker(...exampleFutureHandlers)
+export const worker = setupWorker(...exampleFutureHandlers, ...todayHandlers)

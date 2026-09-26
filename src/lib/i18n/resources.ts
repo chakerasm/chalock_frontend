@@ -1,4 +1,5 @@
 import { exampleFutureResources } from '@/features/example-future/i18n/resources'
+import { todayResources } from '@/features/today/i18n/resources'
 
 export const fallbackLanguage = 'en'
 
@@ -38,8 +39,8 @@ const en = {
     workspace: 'Workspace',
   },
   app: {
-    name: 'Starter',
-    home: 'Home',
+    name: 'Daymark',
+    home: 'Today',
     language: 'Language',
     colorMode: {
       switchToDark: 'Switch to dark theme',
@@ -137,8 +138,8 @@ const fr: typeof en = {
     workspace: 'Espace de travail',
   },
   app: {
-    name: 'Starter',
-    home: 'Accueil',
+    name: 'Daymark',
+    home: 'Aujourd hui',
     language: 'Langue',
     colorMode: {
       switchToDark: 'Passer au theme sombre',
@@ -213,9 +214,17 @@ const fr: typeof en = {
 
 export const resources = {
   en: {
-    translation: { ...en, ...exampleFutureResources.en.translation },
+    translation: {
+      ...en,
+      ...exampleFutureResources.en.translation,
+      ...todayResources.en.translation,
+    },
   },
   fr: {
-    translation: { ...fr, ...exampleFutureResources.fr.translation },
+    translation: {
+      ...fr,
+      ...exampleFutureResources.fr.translation,
+      ...todayResources.fr.translation,
+    },
   },
 } as const

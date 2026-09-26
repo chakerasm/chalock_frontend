@@ -11,10 +11,10 @@ test('switches language and color mode from the application header', async ({
   await page.getByLabel('Language').selectOption('fr')
   await expect(
     page.getByRole('heading', {
-      name: 'Un point de depart cible pour les applications de production.',
+      name: /^(Bonjour|Bon apres-midi|Bonsoir), Alex$/,
     }),
   ).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Accueil' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Aujourd hui' })).toBeVisible()
 })
 
 test('opens the application version information dialog', async ({ page }) => {

@@ -2,23 +2,20 @@ import {
   Button,
   CloseButton,
   Dialog,
-  HStack,
-  IconButton,
   Input,
   Portal,
   Stack,
   Text,
 } from '@chakra-ui/react'
 import { useNavigate } from '@tanstack/react-router'
-import { Command, FileText, FlaskConical, Home, Search } from 'lucide-react'
+import { CalendarCheck, FileText, FlaskConical, Search } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 type CommandItem = {
-  icon: typeof Home
   id: string
-  to: '/' | '/example-future' | '/fields'
   label: string
+  to: '/' | '/example-future' | '/fields'
 }
 
 export function CommandMenu() {
@@ -28,23 +25,16 @@ export function CommandMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const [query, setQuery] = useState('')
   const commands: CommandItem[] = [
-    { icon: Home, id: 'home', label: t('app.home'), to: '/' },
+    { id: 'today', label: t('app.home'), to: '/' },
     {
-      icon: FlaskConical,
       id: 'example-future',
       label: t('exampleFuture.navigationLabel'),
       to: '/example-future',
     },
-    {
-      icon: FileText,
-      id: 'fields',
-      label: t('appShell.fieldShowcase'),
-      to: '/fields',
-    },
+    { id: 'fields', label: t('appShell.fieldShowcase'), to: '/fields' },
   ]
-  const normalizedQuery = query.trim().toLocaleLowerCase()
   const matchingCommands = commands.filter((item) =>
-    item.label.toLocaleLowerCase().includes(normalizedQuery),
+    item.label.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
   )
 
   useEffect(() => {
@@ -78,43 +68,29 @@ export function CommandMenu() {
     <>
       <Button
         aria-label={t('appShell.openSearch')}
-        display={{ base: 'none', sm: 'inline-flex' }}
         onClick={() => setIsOpen(true)}
-        size="sm"
-        variant="outline"
+        size={'sm'}
+        variant={'outline'}
       >
-        <Search aria-hidden="true" size={16} />
+        <Search aria-hidden={true} size={16} />
         {t('appShell.search')}
-        <HStack color="fg.muted" fontSize="xs" gap="0">
-          <Command aria-hidden="true" size={12} />
-          <Text>K</Text>
-        </HStack>
       </Button>
-      <IconButton
-        aria-label={t('appShell.openSearch')}
-        display={{ base: 'inline-flex', sm: 'none' }}
-        onClick={() => setIsOpen(true)}
-        size="sm"
-        variant="ghost"
-      >
-        <Search aria-hidden="true" size={18} />
-      </IconButton>
       <Dialog.Root
         onOpenChange={(details) => setIsOpen(details.open)}
         open={isOpen}
       >
         <Portal>
           <Dialog.Backdrop />
-          <Dialog.Positioner p={{ base: '4', md: '8' }}>
-            <Dialog.Content maxW="xl">
+          <Dialog.Positioner p={'4'}>
+            <Dialog.Content>
               <Dialog.Header>
                 <Dialog.Title>{t('appShell.search')}</Dialog.Title>
                 <Dialog.CloseTrigger asChild>
-                  <CloseButton aria-label={t('common.close')} size="sm" />
+                  <CloseButton aria-label={t('common.close')} size={'sm'} />
                 </Dialog.CloseTrigger>
               </Dialog.Header>
               <Dialog.Body>
-                <Stack gap="4">
+                <Stack gap={'4'}>
                   <Input
                     aria-label={t('appShell.search')}
                     onChange={(event) => setQuery(event.target.value)}
@@ -122,28 +98,28 @@ export function CommandMenu() {
                     ref={inputRef}
                     value={query}
                   />
-                  <Stack gap="1">
-                    {matchingCommands.map((item) => {
-                      const Icon = item.icon
-
-                      return (
-                        <Button
-                          justifyContent="flex-start"
-                          key={item.id}
-                          onClick={() => goTo(item.to)}
-                          variant="ghost"
-                        >
-                          <Icon aria-hidden="true" size={18} />
-                          {item.label}
-                        </Button>
-                      )
-                    })}
-                    {matchingCommands.length === 0 ? (
-                      <Text color="fg.muted" fontSize="sm" py="3">
-                        {t('appShell.noSearchResults')}
-                      </Text>
-                    ) : null}
-                  </Stack>
+                  {matchingCommands.map((item) => (
+                    <Button
+                      justifyContent={'flex-start'}
+                      key={item.id}
+                      onClick={() => goTo(item.to)}
+                      variant={'ghost'}
+                    >
+                      {item.id === 'today' ? (
+                        <CalendarCheck aria-hidden={true} size={18} />
+                      ) : item.id === 'fields' ? (
+                        <FileText aria-hidden={true} size={18} />
+                      ) : (
+                        <FlaskConical aria-hidden={true} size={18} />
+                      )}
+                      {item.label}
+                    </Button>
+                  ))}
+                  {matchingCommands.length === 0 ? (
+                    <Text color={'fg.muted'} fontSize={'sm'}>
+                      {t('appShell.noSearchResults')}
+                    </Text>
+                  ) : null}
                 </Stack>
               </Dialog.Body>
             </Dialog.Content>
