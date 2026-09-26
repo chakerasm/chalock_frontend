@@ -1,11 +1,13 @@
 export type TodayTaskPriority = 'high' | 'low' | 'medium'
 
+export type TodayTaskStatus = 'todo' | 'in_progress' | 'completed' | 'cancelled'
+
 export type TodayTaskFromAPI = {
-  completed: boolean
   dueTime?: string
   estimatedMinutes?: number
   id: string
   priority?: TodayTaskPriority
+  status: TodayTaskStatus
   title: string
 }
 
@@ -84,6 +86,10 @@ export type UpdateFocusSessionInput = {
   elapsedSeconds: number
   sessionId: string
   status: 'paused' | 'running'
+}
+
+export type StartFocusSessionInput = {
+  taskTitle?: string
 }
 
 export type CreateQuickNoteInput = {

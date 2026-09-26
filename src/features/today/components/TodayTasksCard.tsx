@@ -52,7 +52,8 @@ export function TodayTasksCard({
           </Text>
           <Text color="fg.muted" fontSize="sm">
             {t('today.tasksSummary', {
-              remaining: tasks.filter((task) => !task.completed).length,
+              remaining: tasks.filter((task) => task.status !== 'completed')
+                .length,
             })}
           </Text>
         </Box>
@@ -75,7 +76,7 @@ export function TodayTasksCard({
               py="2"
             >
               <Checkbox.Root
-                checked={task.completed}
+                checked={task.status === 'completed'}
                 disabled={isUpdating}
                 flex="1"
                 minW="0"
@@ -86,7 +87,9 @@ export function TodayTasksCard({
                 <Checkbox.HiddenInput />
                 <Checkbox.Control />
                 <Checkbox.Label
-                  textDecoration={task.completed ? 'line-through' : undefined}
+                  textDecoration={
+                    task.status === 'completed' ? 'line-through' : undefined
+                  }
                   truncate
                 >
                   {task.title}

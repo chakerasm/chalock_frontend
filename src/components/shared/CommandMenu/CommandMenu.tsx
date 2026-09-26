@@ -8,14 +8,20 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { useNavigate } from '@tanstack/react-router'
-import { CalendarCheck, FileText, FlaskConical, Search } from 'lucide-react'
+import {
+  CalendarCheck,
+  FileText,
+  FlaskConical,
+  ListTodo,
+  Search,
+} from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 type CommandItem = {
   id: string
   label: string
-  to: '/' | '/example-future' | '/fields'
+  to: '/' | '/example-future' | '/fields' | '/tasks'
 }
 
 export function CommandMenu() {
@@ -32,6 +38,7 @@ export function CommandMenu() {
       to: '/example-future',
     },
     { id: 'fields', label: t('appShell.fieldShowcase'), to: '/fields' },
+    { id: 'tasks', label: t('tasks.title'), to: '/tasks' },
   ]
   const matchingCommands = commands.filter((item) =>
     item.label.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
@@ -107,6 +114,8 @@ export function CommandMenu() {
                     >
                       {item.id === 'today' ? (
                         <CalendarCheck aria-hidden={true} size={18} />
+                      ) : item.id === 'tasks' ? (
+                        <ListTodo aria-hidden={true} size={18} />
                       ) : item.id === 'fields' ? (
                         <FileText aria-hidden={true} size={18} />
                       ) : (

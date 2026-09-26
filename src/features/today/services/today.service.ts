@@ -16,6 +16,7 @@ import {
 import type {
   CreateQuickNoteInput,
   CreateTodayTaskInput,
+  StartFocusSessionInput,
   UpdateFocusSessionInput,
   UpdateHabitCheckInInput,
   UpdateTodayTaskInput,
@@ -37,8 +38,8 @@ export async function updateHabitCheckIn(input: UpdateHabitCheckInInput) {
   await updateHabitCheckInFromAPI(input)
 }
 
-export async function startFocusSession() {
-  return mapActiveFocusSessionFromAPI(await startFocusSessionFromAPI())
+export async function startFocusSession(input: StartFocusSessionInput = {}) {
+  return mapActiveFocusSessionFromAPI(await startFocusSessionFromAPI(input))
 }
 
 export async function updateFocusSession(input: UpdateFocusSessionInput) {

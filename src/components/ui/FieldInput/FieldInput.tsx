@@ -8,7 +8,7 @@ type FieldInputProps<TFieldValues extends FieldValues> = {
   label: string
   description?: string
   placeholder?: string
-  type?: 'email' | 'search' | 'tel' | 'text' | 'url'
+  type?: 'date' | 'email' | 'search' | 'tel' | 'text' | 'time' | 'url'
   disabled?: boolean
   required?: boolean
 }

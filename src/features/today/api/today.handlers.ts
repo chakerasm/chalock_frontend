@@ -1,11 +1,11 @@
 import { HttpResponse, http } from 'msw'
+import { tasksMock } from '@/features/tasks/api/tasks.mock'
 import { todayDashboardMock } from '@/features/today/api/today.mock'
 import {
   createQuickNoteInputSchema,
-  createTodayTaskInputSchema,
+  startFocusSessionInputSchema,
   updateFocusSessionInputSchema,
   updateHabitCheckInInputSchema,
-  updateTodayTaskInputSchema,
 } from '@/features/today/schemas/today.schemas'
 
 function getActiveSessionElapsedSeconds() {
@@ -25,46 +25,9 @@ function getActiveSessionElapsedSeconds() {
 }
 
 export const todayHandlers = [
-  http.get('/api/dashboard/today', () => HttpResponse.json(todayDashboardMock)),
-  http.post('/api/tasks', async ({ request }) => {
-    const input = createTodayTaskInputSchema.safeParse(await request.json())
-
-    if (!input.success) {
-      return HttpResponse.json(
-        { message: 'Invalid task input' },
-        { status: 422 },
-      )
-    }
-
-    const task = {
-      completed: false,
-      id: `task-${crypto.randomUUID()}`,
-      title: input.data.title,
-    }
-    todayDashboardMock.tasks.unshift(task)
-
-    return HttpResponse.json(task, { status: 201 })
-  }),
-  http.patch('/api/tasks/:taskId', async ({ params, request }) => {
-    const input = updateTodayTaskInputSchema.safeParse(await request.json())
-    const task = todayDashboardMock.tasks.find(
-      (item) => item.id === params.taskId,
-    )
-
-    if (!task) {
-      return HttpResponse.json({ message: 'Task not found' }, { status: 404 })
-    }
-
-    if (!input.success) {
-      return HttpResponse.json(
-        { message: 'Invalid task update' },
-        { status: 422 },
-      )
-    }
-
-    task.completed = input.data.completed
-    return HttpResponse.json(task)
-  }),
+  http.get('/api/dashboard/today', () =>
+    HttpResponse.json({ ...todayDashboardMock, tasks: tasksMock }),
+  ),
   http.post('/api/habits/:habitId/check-ins', async ({ params, request }) => {
     const input = updateHabitCheckInInputSchema.safeParse(await request.json())
     const habit = todayDashboardMock.scheduledHabits.find(
@@ -95,7 +58,15 @@ export const todayHandlers = [
 
     return HttpResponse.json(habit)
   }),
-  http.post('/api/focus-sessions', () => {
+  http.post('/api/focus-sessions', async ({ request }) => {
+    const input = startFocusSessionInputSchema.safeParse(await request.json())
+
+    if (!input.success) {
+      return HttpResponse.json(
+        { message: 'Invalid focus session input' },
+        { status: 422 },
+      )
+    }
     if (todayDashboardMock.activeFocusSession) {
       return HttpResponse.json(
         { message: 'A focus session is already active' },
@@ -108,6 +79,7 @@ export const todayHandlers = [
       id: `focus-${crypto.randomUUID()}`,
       startedAt: new Date().toISOString(),
       status: 'running' as const,
+      taskTitle: input.data.taskTitle,
     }
     todayDashboardMock.activeFocusSession = session
 

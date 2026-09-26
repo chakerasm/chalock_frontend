@@ -1,6 +1,12 @@
 import { Box, Button, HStack, Stack, Text } from '@chakra-ui/react'
 import { Link as RouterLink } from '@tanstack/react-router'
-import { Boxes, CalendarCheck, FlaskConical, PanelsTopLeft } from 'lucide-react'
+import {
+  Boxes,
+  CalendarCheck,
+  FlaskConical,
+  ListTodo,
+  PanelsTopLeft,
+} from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 type AppSidebarProps = {
@@ -30,6 +36,12 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             <RouterLink onClick={onNavigate} to={'/'}>
               <CalendarCheck aria-hidden={true} size={18} />
               {t('app.home')}
+            </RouterLink>
+          </Button>
+          <Button asChild justifyContent={'flex-start'} variant={'ghost'}>
+            <RouterLink onClick={onNavigate} to={'/tasks'}>
+              <ListTodo aria-hidden={true} size={18} />
+              {t('tasks.title')}
             </RouterLink>
           </Button>
           <Button asChild justifyContent={'flex-start'} variant={'ghost'}>

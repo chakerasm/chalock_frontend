@@ -75,9 +75,12 @@ export function TodayDashboardPage() {
   }
 
   function handleStartFocus() {
-    startFocus.mutate(undefined, {
-      onError: () => toast.error({ title: t('today.focusStartError') }),
-    })
+    startFocus.mutate(
+      {},
+      {
+        onError: () => toast.error({ title: t('today.focusStartError') }),
+      },
+    )
   }
 
   function handleUpdateFocus(
@@ -101,7 +104,7 @@ export function TodayDashboardPage() {
   }
 
   const remainingTasks = dashboard.tasks.filter(
-    (task) => !task.completed,
+    (task) => task.status !== 'completed',
   ).length
   const remainingHabits = dashboard.scheduledHabits.filter(
     (habit) => !habit.completed,

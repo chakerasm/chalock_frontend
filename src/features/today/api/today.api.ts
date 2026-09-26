@@ -3,6 +3,7 @@ import {
   createQuickNoteInputSchema,
   createTodayTaskInputSchema,
   quickNoteFromAPISchema,
+  startFocusSessionInputSchema,
   todayDashboardFromAPISchema,
   todayTaskFromAPISchema,
   updateFocusSessionInputSchema,
@@ -14,6 +15,7 @@ import type {
   CreateQuickNoteInput,
   CreateTodayTaskInput,
   QuickNoteFromAPI,
+  StartFocusSessionInput,
   TodayDashboardFromAPI,
   TodayTaskFromAPI,
   UpdateFocusSessionInput,
@@ -71,7 +73,9 @@ export async function updateTodayTaskFromAPI({
   completed,
   taskId,
 }: UpdateTodayTaskInput): Promise<TodayTaskFromAPI> {
-  const request = updateTodayTaskInputSchema.parse({ completed })
+  const request = updateTodayTaskInputSchema.parse({
+    status: completed ? 'completed' : 'todo',
+  })
 
   return parseResponse(
     await fetch(`/api/tasks/${encodeURIComponent(taskId)}`, {
@@ -106,9 +110,17 @@ export async function updateHabitCheckInFromAPI({
   }
 }
 
-export async function startFocusSessionFromAPI(): Promise<ActiveFocusSessionFromAPI> {
+export async function startFocusSessionFromAPI(
+  input: StartFocusSessionInput = {},
+): Promise<ActiveFocusSessionFromAPI> {
+  const request = startFocusSessionInputSchema.parse(input)
+
   return parseResponse(
-    await fetch('/api/focus-sessions', { method: 'POST' }),
+    await fetch('/api/focus-sessions', {
+      body: JSON.stringify(request),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+    }),
     activeFocusSessionFromAPISchema,
     'Unable to start a focus session.',
   )

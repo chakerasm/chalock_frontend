@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ExampleFutureRouteImport } from './routes/example-future'
 import { Route as FieldsRouteImport } from './routes/fields'
+import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as ExampleFutureIndexRouteImport } from './routes/example-future/index'
 import { Route as ExampleFutureItemIdRouteImport } from './routes/example-future/$itemId'
 
@@ -30,6 +31,11 @@ const FieldsRoute = FieldsRouteImport.update({
   path: '/fields',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TasksRoute = TasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExampleFutureIndexRoute = ExampleFutureIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -45,12 +51,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/example-future': typeof ExampleFutureRouteWithChildren
   '/fields': typeof FieldsRoute
+  '/tasks': typeof TasksRoute
   '/example-future/$itemId': typeof ExampleFutureItemIdRoute
   '/example-future/': typeof ExampleFutureIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/fields': typeof FieldsRoute
+  '/tasks': typeof TasksRoute
   '/example-future/$itemId': typeof ExampleFutureItemIdRoute
   '/example-future': typeof ExampleFutureIndexRoute
 }
@@ -59,6 +67,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/example-future': typeof ExampleFutureRouteWithChildren
   '/fields': typeof FieldsRoute
+  '/tasks': typeof TasksRoute
   '/example-future/$itemId': typeof ExampleFutureItemIdRoute
   '/example-future/': typeof ExampleFutureIndexRoute
 }
@@ -68,15 +77,17 @@ export interface FileRouteTypes {
     | '/'
     | '/example-future'
     | '/fields'
+    | '/tasks'
     | '/example-future/$itemId'
     | '/example-future/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/fields' | '/example-future/$itemId' | '/example-future'
+  to: '/' | '/fields' | '/tasks' | '/example-future/$itemId' | '/example-future'
   id:
     | '__root__'
     | '/'
     | '/example-future'
     | '/fields'
+    | '/tasks'
     | '/example-future/$itemId'
     | '/example-future/'
   fileRoutesById: FileRoutesById
@@ -85,6 +96,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExampleFutureRoute: typeof ExampleFutureRouteWithChildren
   FieldsRoute: typeof FieldsRoute
+  TasksRoute: typeof TasksRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -108,6 +120,13 @@ declare module '@tanstack/react-router' {
       path: '/fields'
       fullPath: '/fields'
       preLoaderRoute: typeof FieldsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tasks': {
+      id: '/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof TasksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/example-future/': {
@@ -145,6 +164,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExampleFutureRoute: ExampleFutureRouteWithChildren,
   FieldsRoute: FieldsRoute,
+  TasksRoute: TasksRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

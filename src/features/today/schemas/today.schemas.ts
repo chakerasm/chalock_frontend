@@ -1,9 +1,14 @@
 import { z } from 'zod'
 
 const todayTaskPrioritySchema = z.enum(['high', 'medium', 'low'])
+const todayTaskStatusSchema = z.enum([
+  'todo',
+  'in_progress',
+  'completed',
+  'cancelled',
+])
 
 export const todayTaskFromAPISchema = z.object({
-  completed: z.boolean(),
   dueTime: z
     .string()
     .regex(/^\d{2}:\d{2}$/)
@@ -11,6 +16,7 @@ export const todayTaskFromAPISchema = z.object({
   estimatedMinutes: z.number().int().positive().optional(),
   id: z.string().min(1),
   priority: todayTaskPrioritySchema.optional(),
+  status: todayTaskStatusSchema,
   title: z.string().min(1),
 })
 
@@ -57,7 +63,7 @@ export const createTodayTaskInputSchema = z.object({
 })
 
 export const updateTodayTaskInputSchema = z.object({
-  completed: z.boolean(),
+  status: todayTaskStatusSchema,
 })
 
 export const updateHabitCheckInInputSchema = z.object({
@@ -68,6 +74,10 @@ export const updateHabitCheckInInputSchema = z.object({
 export const updateFocusSessionInputSchema = z.object({
   elapsedSeconds: z.number().int().nonnegative(),
   status: z.enum(['paused', 'running']),
+})
+
+export const startFocusSessionInputSchema = z.object({
+  taskTitle: z.string().trim().min(1).max(120).optional(),
 })
 
 export const quickNoteFromAPISchema = z.object({

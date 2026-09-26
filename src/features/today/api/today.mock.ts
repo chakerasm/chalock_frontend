@@ -71,44 +71,7 @@ export function createTodayDashboardMock(): TodayDashboardFromAPI {
         name: 'Read for 20 minutes',
       },
     ],
-    tasks: [
-      {
-        completed: false,
-        dueTime: '09:30',
-        estimatedMinutes: 45,
-        id: 'task-1',
-        priority: 'high',
-        title: 'Review project brief',
-      },
-      {
-        completed: false,
-        dueTime: '11:00',
-        estimatedMinutes: 30,
-        id: 'task-2',
-        priority: 'medium',
-        title: 'Send the client update',
-      },
-      {
-        completed: false,
-        estimatedMinutes: 60,
-        id: 'task-3',
-        priority: 'high',
-        title: 'Outline the project proposal',
-      },
-      {
-        completed: true,
-        id: 'task-4',
-        title: 'Book dentist appointment',
-      },
-      {
-        completed: false,
-        dueTime: '16:00',
-        estimatedMinutes: 20,
-        id: 'task-5',
-        priority: 'low',
-        title: 'Plan tomorrow',
-      },
-    ],
+    tasks: [],
   }
 }
 

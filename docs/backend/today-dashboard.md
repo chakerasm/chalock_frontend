@@ -10,7 +10,7 @@ Use `GET /api/dashboard/today` as an aggregated endpoint. The five source featur
 
 | Entity | Required fields | Rules and relationships |
 | --- | --- | --- |
-| Task | `id`, `title`, `completed` | A task can appear when relevant to the local dashboard date. It can additionally have `dueTime`, `priority`, and `estimatedMinutes`. It is owned by the tasks feature. |
+| Task | `id`, `title`, `status` | A task appears when it is unfinished, non-cancelled, and due on the local dashboard date or overdue. It can additionally have `dueTime`, `priority`, and `estimatedMinutes`. It is owned by the tasks feature. |
 | Habit check-in | `id`, `name`, `completed` | Returned only when a habit is scheduled today. Count habits additionally have `currentCount` and `targetCount`; a check-in belongs to one habit and local date. |
 | Focus session | `id`, `status`, `elapsedSeconds` | A user can have at most one active `running` or `paused` session. A running session has `startedAt`; a paused one does not. |
 | Goal | `id`, `name`, `currentValue`, `targetValue` | Goals are owned by the goals feature. The dashboard returns a capped, ranked selection, never every goal. `targetDate` is optional. |
@@ -29,7 +29,7 @@ The server resolves “today” in the user’s configured IANA time zone. `date
     {
       "id": "task-1",
       "title": "Review project brief",
-      "completed": false,
+      "status": "todo",
       "dueTime": "09:30",
       "priority": "high",
       "estimatedMinutes": 45
@@ -75,13 +75,13 @@ All arrays may be empty; `activeFocusSession` is `null` when there is no active 
 
 Request: `{ "title": "Prepare the project update" }`.
 
-`title` is trimmed, required, and 1–120 characters. Create a task relevant to the user’s current local day with `completed: false`, then return the task. Errors: `401`, `403`, `422`, `5xx`.
+`title` is trimmed, required, and 1–120 characters. Create a `todo` task and return it. A task is relevant to Today only when it has a due date of today or is overdue; see the Tasks contract for the complete creation semantics. Errors: `401`, `403`, `422`, `5xx`.
 
 ### `PATCH /api/tasks/:taskId`
 
-Request: `{ "completed": true }`.
+Request: `{ "status": "completed" }`.
 
-`completed` is required and boolean. Only the task owner may update it; return the updated task. Errors: `404` for absent or inaccessible task, `422` invalid payload, `409` if a business rule rejects the transition.
+`status` is a task status enum. Only the task owner may update it; completing a task records `completedAt`, while moving to another status clears it. Return the updated task. Errors: `404` for absent or inaccessible task, `422` invalid payload, `409` if a business rule rejects the transition.
 
 ### `POST /api/habits/:habitId/check-ins`
 
@@ -91,7 +91,7 @@ Request: `{ "date": "2026-09-26", "action": "increment" }`.
 
 ### `POST /api/focus-sessions`
 
-An empty body starts a running session at server time and returns it. Enforce one active session per user; return `409` with code `ACTIVE_FOCUS_SESSION` if one already exists.
+An empty object starts a running session at server time and returns it. A task action may optionally send `{ "taskTitle": "Review project brief" }` (1–120 trimmed characters) so the active session can show its context. Enforce one active session per user; return `409` with code `ACTIVE_FOCUS_SESSION` if one already exists.
 
 ### `PATCH /api/focus-sessions/:sessionId`
 
