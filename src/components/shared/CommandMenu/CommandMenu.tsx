@@ -12,8 +12,6 @@ import {
   CalendarCheck,
   CheckCheck,
   Clock3,
-  FileText,
-  FlaskConical,
   Goal,
   ListTodo,
   NotebookPen,
@@ -27,8 +25,6 @@ type CommandItem = {
   label: string;
   to:
     | "/"
-    | "/example-future"
-    | "/fields"
     | "/focus"
     | "/goals"
     | "/habits"
@@ -44,12 +40,6 @@ export function CommandMenu() {
   const [query, setQuery] = useState("");
   const commands: CommandItem[] = [
     { id: "today", label: t("app.home"), to: "/" },
-    {
-      id: "example-future",
-      label: t("exampleFuture.navigationLabel"),
-      to: "/example-future",
-    },
-    { id: "fields", label: t("appShell.fieldShowcase"), to: "/fields" },
     { id: "tasks", label: t("tasks.title"), to: "/tasks" },
     { id: "habits", label: t("habits.title"), to: "/habits" },
     { id: "goals", label: t("goals.title"), to: "/goals" },
@@ -140,11 +130,7 @@ export function CommandMenu() {
                         <Goal aria-hidden={true} size={18} />
                       ) : item.id === "notes" ? (
                         <NotebookPen aria-hidden={true} size={18} />
-                      ) : item.id === "fields" ? (
-                        <FileText aria-hidden={true} size={18} />
-                      ) : (
-                        <FlaskConical aria-hidden={true} size={18} />
-                      )}
+                      ) : null}
                       {item.label}
                     </Button>
                   ))}

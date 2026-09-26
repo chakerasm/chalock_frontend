@@ -16,9 +16,6 @@ A reusable Vite and React 19 foundation for client-side product applications. It
 - `pnpm storybook` - develop reusable components in isolation.
 - `pnpm build-storybook` - build the static component catalogue.
 
-## Example feature and mocks
-
-`/example-future` is the reference for a feature-owned TanStack Query flow. In development, MSW serves its browser mock from `public/mockServiceWorker.js`; production builds do not start the worker. Replace the feature API client with the real transport when a backend is available while retaining its types, schema, mapper, service, and hook boundaries.
 ## Project conventions
 
 - Add product code under `src/features/<feature>`; each feature owns its API, types, schemas, mappers, services, hooks, and components.

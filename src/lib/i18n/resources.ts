@@ -1,4 +1,3 @@
-import { exampleFutureResources } from "@/features/example-future/i18n/resources";
 import { focusResources } from "@/features/focus/i18n/resources";
 import { goalsResources } from "@/features/goals/i18n/resources";
 import { habitsResources } from "@/features/habits/i18n/resources";
@@ -29,7 +28,6 @@ const en = {
     versionTitle: "Application version",
   },
   appShell: {
-    fieldShowcase: "Form fields",
     logout: "Log out",
     noSearchResults: "No matching pages found.",
     openNavigation: "Open navigation",
@@ -87,11 +85,6 @@ const en = {
     increase: "Increase {{label}}",
     show: "Show {{label}}",
   },
-  fields: {
-    description:
-      "Browser coverage for the reusable React Hook Form and Chakra field components.",
-    title: "Form field test harness",
-  },
   form: {
     cancel: "Cancel",
     save: "Save",
@@ -128,7 +121,6 @@ const fr: typeof en = {
     versionTitle: "Version de l application",
   },
   appShell: {
-    fieldShowcase: "Champs de formulaire",
     logout: "Se deconnecter",
     noSearchResults: "Aucune page correspondante.",
     openNavigation: "Ouvrir la navigation",
@@ -187,11 +179,6 @@ const fr: typeof en = {
     increase: "Augmenter {{label}}",
     show: "Afficher {{label}}",
   },
-  fields: {
-    description:
-      "Couverture navigateur pour les composants de champ reutilisables React Hook Form et Chakra.",
-    title: "Environnement de test des champs",
-  },
   form: {
     cancel: "Annuler",
     save: "Enregistrer",
@@ -222,7 +209,6 @@ export const resources = {
   en: {
     translation: {
       ...en,
-      ...exampleFutureResources.en.translation,
       ...focusResources.en.translation,
       ...goalsResources.en.translation,
       ...habitsResources.en.translation,
@@ -235,7 +221,6 @@ export const resources = {
   fr: {
     translation: {
       ...fr,
-      ...exampleFutureResources.fr.translation,
       ...focusResources.fr.translation,
       ...goalsResources.fr.translation,
       ...habitsResources.fr.translation,

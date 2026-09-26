@@ -6,11 +6,9 @@ import {
   CalendarCheck,
   CheckCheck,
   Clock3,
-  FlaskConical,
   Goal,
   ListTodo,
   NotebookPen,
-  PanelsTopLeft,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -81,18 +79,6 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             <RouterLink onClick={onNavigate} to={"/focus"}>
               <Clock3 aria-hidden={true} size={18} />
               {t("focus.title")}
-            </RouterLink>
-          </Button>
-          <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={"/example-future"}>
-              <FlaskConical aria-hidden={true} size={18} />
-              {t("exampleFuture.navigationLabel")}
-            </RouterLink>
-          </Button>
-          <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={"/fields"}>
-              <PanelsTopLeft aria-hidden={true} size={18} />
-              {t("appShell.fieldShowcase")}
             </RouterLink>
           </Button>
         </Stack>
