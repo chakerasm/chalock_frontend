@@ -9,7 +9,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { Check, Plus } from 'lucide-react'
+import { Check, Minus, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
 import type { TodayHabit } from '@/features/today/types/today.types'
@@ -17,7 +17,10 @@ import type { TodayHabit } from '@/features/today/types/today.types'
 type TodayHabitsCardProps = {
   habits: TodayHabit[]
   isUpdating: boolean
-  onUpdateHabit: (habitId: string, action: 'complete' | 'increment') => void
+  onUpdateHabit: (
+    habit: TodayHabit,
+    action: 'complete' | 'decrement' | 'increment',
+  ) => void
 }
 
 export function TodayHabitsCard({
@@ -69,7 +72,7 @@ export function TodayHabitsCard({
                     checked={habit.completed}
                     disabled={habit.completed || isUpdating}
                     flex="1"
-                    onCheckedChange={() => onUpdateHabit(habit.id, 'complete')}
+                    onCheckedChange={() => onUpdateHabit(habit, 'complete')}
                   >
                     <Checkbox.HiddenInput />
                     <Checkbox.Control />
@@ -83,13 +86,26 @@ export function TodayHabitsCard({
                           target: habit.targetCount,
                         })}
                       </Text>
+                      <IconButton
+                        aria-label={t('today.decreaseHabitProgress', {
+                          habit: habit.name,
+                        })}
+                        disabled={
+                          isUpdating || (habit.currentDayCount ?? 0) === 0
+                        }
+                        onClick={() => onUpdateHabit(habit, 'decrement')}
+                        size="xs"
+                        variant="ghost"
+                      >
+                        <Minus aria-hidden="true" size={15} />
+                      </IconButton>
                       {!habit.completed ? (
                         <IconButton
                           aria-label={t('today.addHabitProgress', {
                             habit: habit.name,
                           })}
                           disabled={isUpdating}
-                          onClick={() => onUpdateHabit(habit.id, 'increment')}
+                          onClick={() => onUpdateHabit(habit, 'increment')}
                           size="xs"
                           variant="ghost"
                         >
@@ -123,7 +139,7 @@ export function TodayHabitsCard({
           mt="4"
           onClick={() => {
             incompleteHabits.forEach((habit) => {
-              onUpdateHabit(habit.id, 'complete')
+              onUpdateHabit(habit, 'complete')
             })
           }}
           size="sm"

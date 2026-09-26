@@ -6,6 +6,7 @@ const en = {
     addTask: 'Add task',
     addTaskDescription: 'Capture what needs your attention today.',
     completeRemainingHabits: 'Complete remaining habits',
+    decreaseHabitProgress: 'Decrease progress for {{habit}}',
     duration: '{{minutes}} min',
     focusEmpty: 'No focus sessions yet. Start small and protect a few minutes.',
     focusInProgress: 'Focus in progress',
@@ -75,6 +76,7 @@ const fr: typeof en = {
     addTask: 'Ajouter une tache',
     addTaskDescription: 'Notez ce qui demande votre attention aujourd hui.',
     completeRemainingHabits: 'Terminer les habitudes restantes',
+    decreaseHabitProgress: 'Diminuer la progression de {{habit}}',
     duration: '{{minutes}} min',
     focusEmpty:
       'Aucune session pour le moment. Commencez petit et protegeez quelques minutes.',

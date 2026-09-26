@@ -7,7 +7,6 @@ import {
   todayDashboardFromAPISchema,
   todayTaskFromAPISchema,
   updateFocusSessionInputSchema,
-  updateHabitCheckInInputSchema,
   updateTodayTaskInputSchema,
 } from '@/features/today/schemas/today.schemas'
 import type {
@@ -90,24 +89,38 @@ export async function updateTodayTaskFromAPI({
 
 export async function updateHabitCheckInFromAPI({
   action,
+  currentDayCount = 0,
+  currentCount = currentDayCount,
   habitId,
-}: UpdateHabitCheckInInput): Promise<void> {
-  const request = updateHabitCheckInInputSchema.parse({
-    action,
-    date: getLocalDate(),
-  })
+  isWeeklyTarget = false,
+  targetCount,
+}: UpdateHabitCheckInInput) {
+  const date = getLocalDate()
+  const progress =
+    action === 'complete'
+      ? isWeeklyTarget
+        ? currentDayCount + Math.max(0, (targetCount ?? 1) - currentCount)
+        : (targetCount ?? 1)
+      : action === 'increment'
+        ? currentDayCount + 1
+        : Math.max(0, currentDayCount - 1)
+  const request = {
+    progress,
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  }
   const response = await fetch(
-    `/api/habits/${encodeURIComponent(habitId)}/check-ins`,
+    `/api/habits/${encodeURIComponent(habitId)}/logs/${date}`,
     {
       body: JSON.stringify(request),
       headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
+      method: 'PUT',
     },
   )
 
   if (!response.ok) {
     throw new Error('Unable to update the habit.')
   }
+  return response.json()
 }
 
 export async function startFocusSessionFromAPI(

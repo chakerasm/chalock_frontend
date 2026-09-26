@@ -11,7 +11,7 @@ Use `GET /api/dashboard/today` as an aggregated endpoint. The five source featur
 | Entity | Required fields | Rules and relationships |
 | --- | --- | --- |
 | Task | `id`, `title`, `status` | A task appears when it is unfinished, non-cancelled, and due on the local dashboard date or overdue. It can additionally have `dueTime`, `priority`, and `estimatedMinutes`. It is owned by the tasks feature. |
-| Habit check-in | `id`, `name`, `completed` | Returned only when a habit is scheduled today. Count habits additionally have `currentCount` and `targetCount`; a check-in belongs to one habit and local date. |
+| Habit projection | `id`, `name`, `completed` | Returned for active habits relevant today. Per-day counts include `currentDayCount` and `targetCount`; weekly targets include current-week `currentCount`, `targetCount`, and an indicator that completion is weekly. The definition and date-keyed history belong to the Habits feature; see [habits.md](habits.md). |
 | Focus session | `id`, `status`, `elapsedSeconds` | A user can have at most one `active` or `paused` session. An active session has `startedAt`; a paused one does not. See the Focus Sessions contract for the source entity. |
 | Goal | `id`, `name`, `currentValue`, `targetValue` | Goals are owned by the goals feature. The dashboard returns a capped, ranked selection, never every goal. `targetDate` is optional. |
 | Quick note | `id`, `content`, `createdAt` | Owned by the notes feature and captured from Today without navigation. |
@@ -41,6 +41,7 @@ The server resolves “today” in the user’s configured IANA time zone. `date
       "name": "Water",
       "completed": false,
       "currentCount": 5,
+      "currentDayCount": 5,
       "targetCount": 8
     }
   ],
@@ -83,11 +84,11 @@ Request: `{ "status": "completed" }`.
 
 `status` is a task status enum. Only the task owner may update it; completing a task records `completedAt`, while moving to another status clears it. Return the updated task. Errors: `404` for absent or inaccessible task, `422` invalid payload, `409` if a business rule rejects the transition.
 
-### `POST /api/habits/:habitId/check-ins`
+### `PUT /api/habits/:habitId/logs/:date`
 
-Request: `{ "date": "2026-09-26", "action": "increment" }`.
+Request: `{ "progress": 6, "timeZone": "America/New_York" }`.
 
-`date` is an ISO local date; `action` is `complete` or `increment`. The habit must be scheduled that day. `increment` adds exactly one without exceeding `targetCount`; `complete` marks a binary habit or completes the count target. Use an idempotency key for retried writes. Errors: `404`, `409` invalid state/schedule, `422` malformed request.
+The path date is the user's local calendar date in `YYYY-MM-DD` form. The request sends an absolute progress value, not an increment, and is idempotent on `(userId, habitId, date)`. The server derives completion and weekly-target state from Habit plus HabitLog history. The full contract, timezone behavior, archive semantics, and streak rules are specified in [habits.md](habits.md). Errors: `404`, `409` archived habit, `422` malformed request.
 
 ### `POST /api/focus-sessions`
 
@@ -107,6 +108,6 @@ Request: `{ "content": "Ask Maya about the research notes." }`.
 
 ## Persistence and integration rules
 
-- Store instants in UTC, but evaluate task membership, habit schedules, and the dashboard’s date in the user’s IANA time zone.
-- Dashboard is a capped, authorization-filtered projection, not the source of truth. Task completion feeds task/calendar views; check-ins feed habits and streaks; completed focus sessions feed focus analytics; goal progress stays owned by goals.
+- Store instants in UTC, but evaluate task membership, habit schedules, and the dashboard’s date in the user’s IANA time zone. Habit log dates remain stable local-calendar keys when that timezone changes.
+- Dashboard is a capped, authorization-filtered projection, not the source of truth. Task completion feeds task/calendar views; HabitLog writes feed habit history and server-calculated streaks; completed focus sessions feed focus analytics; goal progress stays owned by goals.
 - Refresh or invalidate `GET /api/dashboard/today` after any successful source-feature write. Return stable IDs and ISO-8601 strings; do not expose unrelated private notes or persistence metadata in the aggregation.

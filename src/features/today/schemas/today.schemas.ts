@@ -23,7 +23,9 @@ export const todayTaskFromAPISchema = z.object({
 export const todayHabitFromAPISchema = z.object({
   completed: z.boolean(),
   currentCount: z.number().int().nonnegative().optional(),
+  currentDayCount: z.number().int().nonnegative().optional(),
   id: z.string().min(1),
+  isWeeklyTarget: z.boolean().optional(),
   name: z.string().min(1),
   targetCount: z.number().int().positive().optional(),
 })
@@ -64,11 +66,6 @@ export const createTodayTaskInputSchema = z.object({
 
 export const updateTodayTaskInputSchema = z.object({
   status: todayTaskStatusSchema,
-})
-
-export const updateHabitCheckInInputSchema = z.object({
-  action: z.enum(['complete', 'increment']),
-  date: z.string().date(),
 })
 
 export const updateFocusSessionInputSchema = z.object({

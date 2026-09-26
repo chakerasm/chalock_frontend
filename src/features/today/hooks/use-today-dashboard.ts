@@ -23,15 +23,22 @@ export function useTodayDashboard() {
 
 function useDashboardMutation<TVariables>(
   mutationFn: (variables: TVariables) => Promise<unknown>,
+  invalidateHabits = false,
 ) {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn,
-    onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: todayDashboardQueryKeys.dashboard(),
-      }),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: todayDashboardQueryKeys.dashboard(),
+        }),
+        ...(invalidateHabits
+          ? [queryClient.invalidateQueries({ queryKey: ['habits'] })]
+          : []),
+      ])
+    },
   })
 }
 
@@ -44,7 +51,7 @@ export function useUpdateTodayTask() {
 }
 
 export function useUpdateHabitCheckIn() {
-  return useDashboardMutation(updateHabitCheckIn)
+  return useDashboardMutation(updateHabitCheckIn, true)
 }
 
 export function useStartFocusSession() {

@@ -16,7 +16,9 @@ export type TodayTask = TodayTaskFromAPI
 export type TodayHabitFromAPI = {
   completed: boolean
   currentCount?: number
+  currentDayCount?: number
   id: string
+  isWeeklyTarget?: boolean
   name: string
   targetCount?: number
 }
@@ -78,8 +80,12 @@ export type UpdateTodayTaskInput = {
 }
 
 export type UpdateHabitCheckInInput = {
-  action: 'complete' | 'increment'
+  action: 'complete' | 'decrement' | 'increment'
+  currentDayCount?: number
   habitId: string
+  currentCount?: number
+  isWeeklyTarget?: boolean
+  targetCount?: number
 }
 
 export type UpdateFocusSessionInput = {

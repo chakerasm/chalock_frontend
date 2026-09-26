@@ -199,9 +199,16 @@ export function TodayDashboardPage() {
             <TodayHabitsCard
               habits={dashboard.scheduledHabits}
               isUpdating={updateHabit.isPending}
-              onUpdateHabit={(habitId, action) =>
+              onUpdateHabit={(habit, action) =>
                 updateHabit.mutate(
-                  { action, habitId },
+                  {
+                    action,
+                    currentDayCount: habit.currentDayCount,
+                    currentCount: habit.currentCount,
+                    habitId: habit.id,
+                    isWeeklyTarget: habit.isWeeklyTarget,
+                    targetCount: habit.targetCount,
+                  },
                   {
                     onError: () =>
                       toast.error({ title: t('today.habitUpdateError') }),

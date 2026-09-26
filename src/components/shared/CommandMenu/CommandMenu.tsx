@@ -10,6 +10,7 @@ import {
 import { useNavigate } from '@tanstack/react-router'
 import {
   CalendarCheck,
+  CheckCheck,
   Clock3,
   FileText,
   FlaskConical,
@@ -22,7 +23,7 @@ import { useTranslation } from 'react-i18next'
 type CommandItem = {
   id: string
   label: string
-  to: '/' | '/example-future' | '/fields' | '/focus' | '/tasks'
+  to: '/' | '/example-future' | '/fields' | '/focus' | '/habits' | '/tasks'
 }
 
 export function CommandMenu() {
@@ -40,6 +41,7 @@ export function CommandMenu() {
     },
     { id: 'fields', label: t('appShell.fieldShowcase'), to: '/fields' },
     { id: 'tasks', label: t('tasks.title'), to: '/tasks' },
+    { id: 'habits', label: t('habits.title'), to: '/habits' },
     { id: 'focus', label: t('focus.title'), to: '/focus' },
   ]
   const matchingCommands = commands.filter((item) =>
@@ -120,6 +122,8 @@ export function CommandMenu() {
                         <ListTodo aria-hidden={true} size={18} />
                       ) : item.id === 'focus' ? (
                         <Clock3 aria-hidden={true} size={18} />
+                      ) : item.id === 'habits' ? (
+                        <CheckCheck aria-hidden={true} size={18} />
                       ) : item.id === 'fields' ? (
                         <FileText aria-hidden={true} size={18} />
                       ) : (

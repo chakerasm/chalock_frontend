@@ -3,6 +3,7 @@ import { Link as RouterLink } from '@tanstack/react-router'
 import {
   Boxes,
   CalendarCheck,
+  CheckCheck,
   Clock3,
   FlaskConical,
   ListTodo,
@@ -43,6 +44,12 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             <RouterLink onClick={onNavigate} to={'/tasks'}>
               <ListTodo aria-hidden={true} size={18} />
               {t('tasks.title')}
+            </RouterLink>
+          </Button>
+          <Button asChild justifyContent={'flex-start'} variant={'ghost'}>
+            <RouterLink onClick={onNavigate} to={'/habits'}>
+              <CheckCheck aria-hidden={true} size={18} />
+              {t('habits.title')}
             </RouterLink>
           </Button>
           <Button asChild justifyContent={'flex-start'} variant={'ghost'}>
