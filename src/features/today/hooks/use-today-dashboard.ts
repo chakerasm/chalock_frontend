@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  createQuickNote,
   createTodayTask,
   getTodayDashboard,
   startFocusSession,
@@ -60,8 +59,4 @@ export function useStartFocusSession() {
 
 export function useUpdateFocusSession() {
   return useDashboardMutation(updateFocusSession);
-}
-
-export function useCreateQuickNote() {
-  return useDashboardMutation(createQuickNote);
 }

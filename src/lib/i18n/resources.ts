@@ -2,6 +2,7 @@ import { exampleFutureResources } from "@/features/example-future/i18n/resources
 import { focusResources } from "@/features/focus/i18n/resources";
 import { goalsResources } from "@/features/goals/i18n/resources";
 import { habitsResources } from "@/features/habits/i18n/resources";
+import { notesResources } from "@/features/notes/i18n/resources";
 import { tasksResources } from "@/features/tasks/i18n/resources";
 import { todayResources } from "@/features/today/i18n/resources";
 
@@ -224,6 +225,7 @@ export const resources = {
       ...focusResources.en.translation,
       ...goalsResources.en.translation,
       ...habitsResources.en.translation,
+      ...notesResources.en.translation,
       ...tasksResources.en.translation,
       ...todayResources.en.translation,
     },
@@ -235,6 +237,7 @@ export const resources = {
       ...focusResources.fr.translation,
       ...goalsResources.fr.translation,
       ...habitsResources.fr.translation,
+      ...notesResources.fr.translation,
       ...tasksResources.fr.translation,
       ...todayResources.fr.translation,
     },

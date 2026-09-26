@@ -100,11 +100,9 @@ Request: `{ "status": "paused", "elapsedSeconds": 1523 }`.
 
 `status` is `active` or `paused`; `elapsedSeconds` is a non-negative integer observation. The server is authoritative and must not let elapsed time decrease. Active sets `startedAt`; paused clears it. Errors: `404`, `409` invalid transition, `422` malformed request.
 
-### `POST /api/notes`
+### Quick note capture
 
-Request: `{ "content": "Ask Maya about the research notes." }`.
-
-`content` is trimmed, required, and 1–1,000 characters. Return `{ id, content, createdAt }`; `createdAt` is a UTC ISO timestamp. Errors: `401`, `403`, `422`, `5xx`.
+Today submits quick captures to the Notes feature's `POST /api/notes` endpoint. The same note is returned in `GET /api/notes` and can be edited or deleted from Notes. See [notes.md](notes.md) for the Note entity, 20,000-character content limit, autosave semantics, and full endpoint contract.
 
 ## Persistence and integration rules
 

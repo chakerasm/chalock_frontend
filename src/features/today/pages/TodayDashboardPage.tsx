@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { ErrorState } from "@/components/shared/ErrorState/ErrorState";
 import { PageHeader } from "@/components/shared/PageHeader/PageHeader";
 import { toast } from "@/components/ui/Toaster/Toaster";
+import { useCreateNote } from "@/features/notes/hooks/use-notes";
 import { ActiveFocusSessionDialog } from "@/features/today/components/ActiveFocusSessionDialog";
 import { ActiveGoalsCard } from "@/features/today/components/ActiveGoalsCard";
 import { AddTaskDialog } from "@/features/today/components/AddTaskDialog";
@@ -23,7 +24,6 @@ import { QuickNoteCard } from "@/features/today/components/QuickNoteCard";
 import { TodayHabitsCard } from "@/features/today/components/TodayHabitsCard";
 import { TodayTasksCard } from "@/features/today/components/TodayTasksCard";
 import {
-  useCreateQuickNote,
   useCreateTodayTask,
   useStartFocusSession,
   useTodayDashboard,
@@ -58,7 +58,7 @@ export function TodayDashboardPage() {
   const updateHabit = useUpdateHabitCheckIn();
   const startFocus = useStartFocusSession();
   const updateFocus = useUpdateFocusSession();
-  const createNote = useCreateQuickNote();
+  const createNote = useCreateNote();
   const quickNoteRef = useRef<HTMLTextAreaElement>(null);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [isFocusDialogOpen, setIsFocusDialogOpen] = useState(false);

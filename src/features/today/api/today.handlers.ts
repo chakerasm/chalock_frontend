@@ -7,7 +7,6 @@ import { getTodayHabitProjection } from "@/features/habits/api/habits.mock";
 import { tasksMock } from "@/features/tasks/api/tasks.mock";
 import { todayDashboardMock } from "@/features/today/api/today.mock";
 import {
-  createQuickNoteInputSchema,
   startFocusSessionInputSchema,
   updateFocusSessionInputSchema,
 } from "@/features/today/schemas/today.schemas";
@@ -104,24 +103,5 @@ export const todayHandlers = [
       input.data.status === "active" ? new Date().toISOString() : undefined;
 
     return HttpResponse.json(session);
-  }),
-  http.post("/api/notes", async ({ request }) => {
-    const input = createQuickNoteInputSchema.safeParse(await request.json());
-
-    if (!input.success) {
-      return HttpResponse.json(
-        { message: "Invalid note input" },
-        { status: 422 },
-      );
-    }
-
-    return HttpResponse.json(
-      {
-        content: input.data.content,
-        createdAt: new Date().toISOString(),
-        id: crypto.randomUUID(),
-      },
-      { status: 201 },
-    );
   }),
 ];

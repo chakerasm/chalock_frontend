@@ -8,6 +8,7 @@ import {
   FlaskConical,
   Goal,
   ListTodo,
+  NotebookPen,
   PanelsTopLeft,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -57,6 +58,12 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             <RouterLink onClick={onNavigate} to={"/goals"}>
               <Goal aria-hidden={true} size={18} />
               {t("goals.title")}
+            </RouterLink>
+          </Button>
+          <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
+            <RouterLink onClick={onNavigate} to={"/notes"}>
+              <NotebookPen aria-hidden={true} size={18} />
+              {t("notes.title")}
             </RouterLink>
           </Button>
           <Button asChild justifyContent={"flex-start"} variant={"ghost"}>

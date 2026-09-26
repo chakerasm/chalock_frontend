@@ -5,70 +5,60 @@ import type {
   ActiveGoalFromAPI,
   FocusSummary,
   FocusSummaryFromAPI,
-  QuickNote,
-  QuickNoteFromAPI,
   TodayDashboard,
   TodayDashboardFromAPI,
   TodayHabit,
   TodayHabitFromAPI,
   TodayTask,
   TodayTaskFromAPI,
-} from '@/features/today/types/today.types'
+} from "@/features/today/types/today.types";
 
 export function mapTodayTaskFromAPI(task: TodayTaskFromAPI): TodayTask {
-  return { ...task }
+  return { ...task };
 }
 
 export function mapTodayTaskToAPI(task: TodayTask): TodayTaskFromAPI {
-  return { ...task }
+  return { ...task };
 }
 
 export function mapTodayHabitFromAPI(habit: TodayHabitFromAPI): TodayHabit {
-  return { ...habit }
+  return { ...habit };
 }
 
 export function mapTodayHabitToAPI(habit: TodayHabit): TodayHabitFromAPI {
-  return { ...habit }
+  return { ...habit };
 }
 
 export function mapFocusSummaryFromAPI(
   summary: FocusSummaryFromAPI,
 ): FocusSummary {
-  return { ...summary }
+  return { ...summary };
 }
 
 export function mapFocusSummaryToAPI(
   summary: FocusSummary,
 ): FocusSummaryFromAPI {
-  return { ...summary }
+  return { ...summary };
 }
 
 export function mapActiveFocusSessionFromAPI(
   session: ActiveFocusSessionFromAPI,
 ): ActiveFocusSession {
-  return { ...session }
+  return { ...session };
 }
 
 export function mapActiveFocusSessionToAPI(
   session: ActiveFocusSession,
 ): ActiveFocusSessionFromAPI {
-  return { ...session }
+  return { ...session };
 }
 
 export function mapActiveGoalFromAPI(goal: ActiveGoalFromAPI): ActiveGoal {
-  return { ...goal }
+  return { ...goal };
 }
 
 export function mapActiveGoalToAPI(goal: ActiveGoal): ActiveGoalFromAPI {
-  return { ...goal }
-}
-
-export function mapQuickNoteFromAPI(note: QuickNoteFromAPI): QuickNote {
-  return { ...note }
-}
-
-export function mapQuickNoteToAPI(note: QuickNote): QuickNoteFromAPI {
-  return { ...note }
+  return { ...goal };
 }
 
 export function mapTodayDashboardFromAPI(
@@ -83,7 +73,7 @@ export function mapTodayDashboardFromAPI(
     focusSummary: mapFocusSummaryFromAPI(dashboard.focusSummary),
     scheduledHabits: dashboard.scheduledHabits.map(mapTodayHabitFromAPI),
     tasks: dashboard.tasks.map(mapTodayTaskFromAPI),
-  }
+  };
 }
 
 export function mapTodayDashboardToAPI(
@@ -98,5 +88,5 @@ export function mapTodayDashboardToAPI(
     focusSummary: mapFocusSummaryToAPI(dashboard.focusSummary),
     scheduledHabits: dashboard.scheduledHabits.map(mapTodayHabitToAPI),
     tasks: dashboard.tasks.map(mapTodayTaskToAPI),
-  }
+  };
 }

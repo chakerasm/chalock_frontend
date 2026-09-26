@@ -16,6 +16,7 @@ import {
   FlaskConical,
   Goal,
   ListTodo,
+  NotebookPen,
   Search,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -31,6 +32,7 @@ type CommandItem = {
     | "/focus"
     | "/goals"
     | "/habits"
+    | "/notes"
     | "/tasks";
 };
 
@@ -51,6 +53,7 @@ export function CommandMenu() {
     { id: "tasks", label: t("tasks.title"), to: "/tasks" },
     { id: "habits", label: t("habits.title"), to: "/habits" },
     { id: "goals", label: t("goals.title"), to: "/goals" },
+    { id: "notes", label: t("notes.title"), to: "/notes" },
     { id: "focus", label: t("focus.title"), to: "/focus" },
   ];
   const matchingCommands = commands.filter((item) =>
@@ -135,6 +138,8 @@ export function CommandMenu() {
                         <CheckCheck aria-hidden={true} size={18} />
                       ) : item.id === "goals" ? (
                         <Goal aria-hidden={true} size={18} />
+                      ) : item.id === "notes" ? (
+                        <NotebookPen aria-hidden={true} size={18} />
                       ) : item.id === "fields" ? (
                         <FileText aria-hidden={true} size={18} />
                       ) : (

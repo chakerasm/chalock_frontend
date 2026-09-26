@@ -76,13 +76,3 @@ export const updateFocusSessionInputSchema = z.object({
 export const startFocusSessionInputSchema = z.object({
   taskTitle: z.string().trim().min(1).max(120).optional(),
 });
-
-export const quickNoteFromAPISchema = z.object({
-  content: z.string().min(1).max(1_000),
-  createdAt: z.string().datetime(),
-  id: z.string().min(1),
-});
-
-export const createQuickNoteInputSchema = z.object({
-  content: z.string().trim().min(1).max(1_000),
-});

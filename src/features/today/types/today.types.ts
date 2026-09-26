@@ -101,15 +101,3 @@ export type UpdateFocusSessionInput = {
 export type StartFocusSessionInput = {
   taskTitle?: string;
 };
-
-export type CreateQuickNoteInput = {
-  content: string;
-};
-
-export type QuickNoteFromAPI = {
-  content: string;
-  createdAt: string;
-  id: string;
-};
-
-export type QuickNote = QuickNoteFromAPI;

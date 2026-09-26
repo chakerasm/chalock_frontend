@@ -1,8 +1,6 @@
 import {
   activeFocusSessionFromAPISchema,
-  createQuickNoteInputSchema,
   createTodayTaskInputSchema,
-  quickNoteFromAPISchema,
   startFocusSessionInputSchema,
   todayDashboardFromAPISchema,
   todayTaskFromAPISchema,
@@ -11,9 +9,7 @@ import {
 } from "@/features/today/schemas/today.schemas";
 import type {
   ActiveFocusSessionFromAPI,
-  CreateQuickNoteInput,
   CreateTodayTaskInput,
-  QuickNoteFromAPI,
   StartFocusSessionInput,
   TodayDashboardFromAPI,
   TodayTaskFromAPI,
@@ -157,21 +153,5 @@ export async function updateFocusSessionFromAPI({
     }),
     activeFocusSessionFromAPISchema,
     "Unable to update the focus session.",
-  );
-}
-
-export async function createQuickNoteFromAPI(
-  input: CreateQuickNoteInput,
-): Promise<QuickNoteFromAPI> {
-  const request = createQuickNoteInputSchema.parse(input);
-
-  return parseResponse(
-    await fetch("/api/notes", {
-      body: JSON.stringify(request),
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-    }),
-    quickNoteFromAPISchema,
-    "Unable to save the note.",
   );
 }

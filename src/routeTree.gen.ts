@@ -15,6 +15,7 @@ import { Route as FieldsRouteImport } from './routes/fields'
 import { Route as FocusRouteImport } from './routes/focus'
 import { Route as GoalsRouteImport } from './routes/goals'
 import { Route as HabitsRouteImport } from './routes/habits'
+import { Route as NotesRouteImport } from './routes/notes'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as ExampleFutureIndexRouteImport } from './routes/example-future/index'
 import { Route as ExampleFutureItemIdRouteImport } from './routes/example-future/$itemId'
@@ -51,6 +52,11 @@ const HabitsRoute = HabitsRouteImport.update({
   path: '/habits',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NotesRoute = NotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TasksRoute = TasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/focus': typeof FocusRouteWithChildren
   '/goals': typeof GoalsRoute
   '/habits': typeof HabitsRoute
+  '/notes': typeof NotesRoute
   '/tasks': typeof TasksRoute
   '/example-future/$itemId': typeof ExampleFutureItemIdRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/fields': typeof FieldsRoute
   '/goals': typeof GoalsRoute
   '/habits': typeof HabitsRoute
+  '/notes': typeof NotesRoute
   '/tasks': typeof TasksRoute
   '/example-future/$itemId': typeof ExampleFutureItemIdRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/focus': typeof FocusRouteWithChildren
   '/goals': typeof GoalsRoute
   '/habits': typeof HabitsRoute
+  '/notes': typeof NotesRoute
   '/tasks': typeof TasksRoute
   '/example-future/$itemId': typeof ExampleFutureItemIdRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/focus'
     | '/goals'
     | '/habits'
+    | '/notes'
     | '/tasks'
     | '/example-future/$itemId'
     | '/focus/pomodoro'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/fields'
     | '/goals'
     | '/habits'
+    | '/notes'
     | '/tasks'
     | '/example-future/$itemId'
     | '/focus/pomodoro'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/focus'
     | '/goals'
     | '/habits'
+    | '/notes'
     | '/tasks'
     | '/example-future/$itemId'
     | '/focus/pomodoro'
@@ -162,6 +174,7 @@ export interface RootRouteChildren {
   FocusRoute: typeof FocusRouteWithChildren
   GoalsRoute: typeof GoalsRoute
   HabitsRoute: typeof HabitsRoute
+  NotesRoute: typeof NotesRoute
   TasksRoute: typeof TasksRoute
 }
 
@@ -207,6 +220,13 @@ declare module '@tanstack/react-router' {
       path: '/habits'
       fullPath: '/habits'
       preLoaderRoute: typeof HabitsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notes': {
+      id: '/notes'
+      path: '/notes'
+      fullPath: '/notes'
+      preLoaderRoute: typeof NotesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tasks': {
@@ -280,6 +300,7 @@ const rootRouteChildren: RootRouteChildren = {
   FocusRoute: FocusRouteWithChildren,
   GoalsRoute: GoalsRoute,
   HabitsRoute: HabitsRoute,
+  NotesRoute: NotesRoute,
   TasksRoute: TasksRoute,
 }
 export const routeTree = rootRouteImport
