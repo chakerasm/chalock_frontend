@@ -159,7 +159,7 @@ export function GoalFormDialog({
                     </Text>
                   )}
                   {hasError ? (
-                    <Text color="fg.error" fontSize="sm" role="alert">
+                    <Text color="danger.fg" fontSize="sm" role="alert">
                       {t("goals.formError")}
                     </Text>
                   ) : null}

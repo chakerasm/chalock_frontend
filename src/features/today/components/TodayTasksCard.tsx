@@ -23,10 +23,13 @@ type TodayTasksCardProps = {
   tasks: TodayTask[]
 }
 
-const priorityColors: Record<TodayTaskPriority, 'blue' | 'orange' | 'red'> = {
-  high: 'red',
-  low: 'blue',
-  medium: 'orange',
+const priorityStyles: Record<
+  TodayTaskPriority,
+  { bg: string; color: string }
+> = {
+  high: { bg: 'danger.subtle', color: 'danger.fg' },
+  low: { bg: 'bg.subtle', color: 'fg.muted' },
+  medium: { bg: 'warning.subtle', color: 'warning.fg' },
 }
 
 export function TodayTasksCard({
@@ -40,10 +43,12 @@ export function TodayTasksCard({
 
   return (
     <Box
-      bg="bg.panel"
+      bg="bg.elevated"
+      borderColor="border.subtle"
       borderWidth="1px"
       p={{ base: '4', md: '5' }}
-      rounded="l2"
+      rounded="l3"
+      shadow="sm"
     >
       <Flex align="center" justify="space-between" mb="4">
         <Box>
@@ -106,7 +111,11 @@ export function TodayTasksCard({
                   </HStack>
                 ) : null}
                 {task.priority ? (
-                  <Badge colorPalette={priorityColors[task.priority]} size="sm">
+                  <Badge
+                    bg={priorityStyles[task.priority].bg}
+                    color={priorityStyles[task.priority].color}
+                    size="sm"
+                  >
                     {t(`today.priority.${task.priority}`)}
                   </Badge>
                 ) : null}

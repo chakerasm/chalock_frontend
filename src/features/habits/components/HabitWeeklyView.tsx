@@ -168,7 +168,7 @@ export function HabitWeeklyView({
                     ) : completed ? (
                       <Check
                         aria-hidden="true"
-                        color="var(--chakra-colors-green-600)"
+                        color="success.fg"
                         size={17}
                       />
                     ) : log?.progress ? (

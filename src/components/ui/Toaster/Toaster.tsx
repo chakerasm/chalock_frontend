@@ -35,26 +35,58 @@ export const toast = {
   warning: (options: ToastOptions) => createToast('warning', options),
 }
 
+function getToastStyles(type: string | undefined) {
+  switch (type) {
+    case 'error':
+      return { bg: 'danger.subtle', borderColor: 'danger.fg', color: 'danger.fg' }
+    case 'success':
+      return {
+        bg: 'success.subtle',
+        borderColor: 'success.fg',
+        color: 'success.fg',
+      }
+    case 'warning':
+      return {
+        bg: 'warning.subtle',
+        borderColor: 'warning.fg',
+        color: 'warning.fg',
+      }
+    default:
+      return { bg: 'bg.elevated', borderColor: 'border.subtle', color: 'fg' }
+  }
+}
+
 export function Toaster() {
   const { t } = useTranslation()
 
   return (
     <Portal>
       <ChakraToaster toaster={appToaster}>
-        {(toast) => (
-          <Toast.Root width={{ base: 'calc(100vw - 2rem)', sm: 'sm' }}>
-            <Toast.Indicator />
-            <Stack flex="1" gap="1" maxW="100%">
-              <Toast.Title>{toast.title}</Toast.Title>
-              {toast.description ? (
-                <Toast.Description>{toast.description}</Toast.Description>
-              ) : null}
-            </Stack>
-            <Toast.CloseTrigger asChild>
-              <CloseButton aria-label={t('common.close')} size="sm" />
-            </Toast.CloseTrigger>
-          </Toast.Root>
-        )}
+        {(toast) => {
+          const styles = getToastStyles(toast.type)
+
+          return (
+            <Toast.Root
+              bg={styles.bg}
+              borderColor={styles.borderColor}
+              borderWidth="1px"
+              color={styles.color}
+              shadow="lg"
+              width={{ base: 'calc(100vw - 2rem)', sm: 'sm' }}
+            >
+              <Toast.Indicator />
+              <Stack flex="1" gap="1" maxW="100%">
+                <Toast.Title>{toast.title}</Toast.Title>
+                {toast.description ? (
+                  <Toast.Description>{toast.description}</Toast.Description>
+                ) : null}
+              </Stack>
+              <Toast.CloseTrigger asChild>
+                <CloseButton aria-label={t('common.close')} size="sm" />
+              </Toast.CloseTrigger>
+            </Toast.Root>
+          )
+        }}
       </ChakraToaster>
     </Portal>
   )

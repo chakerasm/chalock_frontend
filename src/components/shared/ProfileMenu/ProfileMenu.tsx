@@ -43,7 +43,7 @@ export function ProfileMenu({ onLogout }: ProfileMenuProps) {
               {t('appShell.settings')}
             </Menu.Item>
             <Menu.Item
-              color="fg.error"
+              color="danger.fg"
               onClick={onLogout ?? notifyUnavailable}
               value="logout"
             >

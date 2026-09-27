@@ -204,7 +204,7 @@ export function HabitFormDialog({
                     </Field.Root>
                   </Stack>
                   {formError ? (
-                    <Text color="fg.error" fontSize="sm" role="alert">
+                    <Text color="danger.fg" fontSize="sm" role="alert">
                       {t("habits.formError")}
                     </Text>
                   ) : null}

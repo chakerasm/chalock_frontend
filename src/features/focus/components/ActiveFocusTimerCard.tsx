@@ -49,11 +49,12 @@ export function ActiveFocusTimerCard({
 
   return (
     <Box
-      bg={isCompleted ? 'brand.subtle' : 'bg.panel'}
-      borderColor={isCompleted ? 'brand.border' : undefined}
+      bg={isCompleted ? 'success.subtle' : 'bg.elevated'}
+      borderColor={isCompleted ? 'success.fg' : 'border.subtle'}
       borderWidth="1px"
       p={{ base: '5', md: '7' }}
-      rounded="l2"
+      rounded="l3"
+      shadow="sm"
     >
       <Stack gap="6">
         <Flex align="start" gap="4" justify="space-between">
@@ -64,7 +65,10 @@ export function ActiveFocusTimerCard({
                   ? t('focus.timerTitle')
                   : t('focus.stopwatchTitle')}
               </Text>
-              <Badge colorPalette={isCompleted ? 'green' : 'brand'}>
+              <Badge
+                bg={isCompleted ? 'success.solid' : 'brand.solid'}
+                color={isCompleted ? 'fg.inverted' : 'brand.contrast'}
+              >
                 {isCompleted
                   ? t('focus.completed')
                   : isActive
@@ -73,7 +77,7 @@ export function ActiveFocusTimerCard({
               </Badge>
             </HStack>
             {isCompleted ? (
-              <Text color="brand.fg" role="status">
+              <Text color="success.fg" role="status">
                 <Check aria-hidden="true" size={16} />{' '}
                 {t('focus.timerFinished')}
               </Text>

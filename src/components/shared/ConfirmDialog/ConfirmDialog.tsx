@@ -68,7 +68,9 @@ export function ConfirmDialog({
                 {t('form.cancel')}
               </Button>
               <Button
-                colorPalette={isDestructive ? 'red' : 'brand'}
+                bg={isDestructive ? 'danger.solid' : undefined}
+                color={isDestructive ? 'fg.inverted' : undefined}
+                colorPalette={isDestructive ? undefined : 'brand'}
                 loading={isSubmitting}
                 onClick={() => void handleConfirm()}
                 type="button"

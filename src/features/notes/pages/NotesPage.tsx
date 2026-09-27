@@ -165,7 +165,7 @@ function NoteEditor({
         />
         {saveState === "error" ? (
           <HStack justify="space-between">
-            <Text color="fg.error" fontSize="sm" role="alert">
+            <Text color="danger.fg" fontSize="sm" role="alert">
               {t("notes.saveError")}
             </Text>
             <Button onClick={retrySave} size="xs" variant="outline">

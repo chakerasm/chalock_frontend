@@ -80,7 +80,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
               onNavigate={onNavigate}
             />
           ))}
-          <Box bg="border" h="px" mx="2" my="2" />
+          <Box bg="border.subtle" h="px" mx="2" my="2" />
           <Button
             asChild
             colorPalette={isActive(APP_ROUTES.statistics) ? 'brand' : undefined}
@@ -111,7 +111,13 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
           ))}
         </Stack>
       </Stack>
-      <Box bg="bg.subtle" borderWidth="1px" p="3" rounded="l1">
+      <Box
+        bg="bg.subtle"
+        borderColor="border.subtle"
+        borderWidth="1px"
+        p="3"
+        rounded="l2"
+      >
         <Text color="fg.muted" fontSize="xs" lineHeight="tall">
           {t('appShell.sidebarFooter')}
         </Text>

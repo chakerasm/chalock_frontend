@@ -28,20 +28,17 @@ type TaskListItemProps = {
   task: Task
 }
 
-const priorityColorPalettes: Record<TaskPriority, 'blue' | 'orange' | 'red'> = {
-  high: 'red',
-  low: 'blue',
-  medium: 'orange',
+const priorityStyles: Record<TaskPriority, { bg: string; color: string }> = {
+  high: { bg: 'danger.subtle', color: 'danger.fg' },
+  low: { bg: 'bg.subtle', color: 'fg.muted' },
+  medium: { bg: 'warning.subtle', color: 'warning.fg' },
 }
 
-const statusColorPalettes: Record<
-  TaskStatus,
-  'blue' | 'gray' | 'green' | 'orange'
-> = {
-  cancelled: 'gray',
-  completed: 'green',
-  in_progress: 'blue',
-  todo: 'orange',
+const statusStyles: Record<TaskStatus, { bg: string; color: string }> = {
+  cancelled: { bg: 'bg.muted', color: 'fg.subtle' },
+  completed: { bg: 'success.subtle', color: 'success.fg' },
+  in_progress: { bg: 'brand.subtle', color: 'brand.fg' },
+  todo: { bg: 'bg.subtle', color: 'fg.muted' },
 }
 
 function formatDueDate(dueDate: string, locale: string) {
@@ -91,7 +88,7 @@ export function TaskListItem({
             </Text>
             <HStack color="fg.muted" fontSize="xs" gap="2" wrap="wrap">
               {task.dueDate ? (
-                <Text color={isOverdue ? 'red.fg' : undefined}>
+                <Text color={isOverdue ? 'danger.fg' : undefined}>
                   {isOverdue
                     ? t('tasks.overdueDate', {
                         date: formatDueDate(task.dueDate, i18n.language),
@@ -106,14 +103,16 @@ export function TaskListItem({
                 </Text>
               ) : null}
               <Badge
-                colorPalette={priorityColorPalettes[task.priority]}
+                bg={priorityStyles[task.priority].bg}
+                color={priorityStyles[task.priority].color}
                 size="sm"
               >
                 {t(`tasks.priority.${task.priority}`)}
               </Badge>
               {task.status !== 'todo' ? (
                 <Badge
-                  colorPalette={statusColorPalettes[task.status]}
+                  bg={statusStyles[task.status].bg}
+                  color={statusStyles[task.status].color}
                   size="sm"
                 >
                   {t(`tasks.status.${task.status}`)}

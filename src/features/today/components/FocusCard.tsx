@@ -78,7 +78,8 @@ export function FocusCard({
         borderColor="brand.border"
         borderWidth="1px"
         p={{ base: '4', md: '5' }}
-        rounded="l2"
+        rounded="l3"
+        shadow="sm"
       >
         <Flex align="center" justify="space-between" mb="5">
           <HStack gap="2">
@@ -147,10 +148,12 @@ export function FocusCard({
     focusSummary.completedMinutes > 0 || focusSummary.completedSessions > 0
   return (
     <Box
-      bg="bg.panel"
+      bg="bg.elevated"
+      borderColor="border.subtle"
       borderWidth="1px"
       p={{ base: '4', md: '5' }}
-      rounded="l2"
+      rounded="l3"
+      shadow="sm"
     >
       <Flex align="center" justify="space-between" mb="4">
         <HStack gap="2">

@@ -18,14 +18,15 @@ export function AppShell({ children, onLogout }: AppShellProps) {
     <Flex bg="bg.canvas" color="fg" minH="100dvh">
       <Box
         alignSelf="flex-start"
-        bg="bg.panel"
+        bg="bg.surface"
+        borderColor="border.subtle"
         borderRightWidth="1px"
         display={{ base: 'none', lg: 'block' }}
         flex="0 0 18rem"
         h="100dvh"
         overflowY="auto"
         position="sticky"
-        shadow="xs"
+        shadow="sm"
         top="0"
         zIndex="docked"
       >
@@ -44,10 +45,16 @@ export function AppShell({ children, onLogout }: AppShellProps) {
         placement="start"
       >
         <Portal>
-          <Drawer.Backdrop backdropFilter="blur(4px)" />
+          <Drawer.Backdrop backdropFilter="blur(4px)" bg="bg.overlay" />
           <Drawer.Positioner>
-            <Drawer.Content bg="bg.panel" borderRightWidth="1px" maxW="sm">
-              <Drawer.Header borderBottomWidth="1px">
+            <Drawer.Content
+              bg="bg.surface"
+              borderColor="border.subtle"
+              borderRightWidth="1px"
+              maxW="sm"
+              shadow="lg"
+            >
+              <Drawer.Header borderBottomWidth="1px" borderColor="border.subtle">
                 <Drawer.Title>{t('appShell.primaryNavigation')}</Drawer.Title>
                 <Drawer.CloseTrigger asChild>
                   <CloseButton aria-label={t('common.close')} size="sm" />

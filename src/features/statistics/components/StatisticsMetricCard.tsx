@@ -16,11 +16,12 @@ export function StatisticsMetricCard({
 }: StatisticsMetricCardProps) {
   return (
     <Box
-      bg="bg.panel"
+      bg="bg.elevated"
+      borderColor="border.subtle"
       borderWidth="1px"
       p={{ base: '4', md: '5' }}
-      rounded="l2"
-      shadow="xs"
+      rounded="l3"
+      shadow="sm"
     >
       <HStack align="start" justify="space-between">
         <Stack gap="1">
