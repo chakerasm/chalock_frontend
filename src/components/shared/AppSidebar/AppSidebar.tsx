@@ -1,5 +1,5 @@
-import { Box, Button, HStack, Stack, Text } from "@chakra-ui/react";
-import { Link as RouterLink } from "@tanstack/react-router";
+import { Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
+import { Link as RouterLink, useMatchRoute } from '@tanstack/react-router'
 import {
   Activity,
   Boxes,
@@ -9,86 +9,146 @@ import {
   Goal,
   ListTodo,
   NotebookPen,
-} from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { APP_ROUTES } from "@/lib/routes";
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { APP_ROUTES, type AppRoute } from '@/lib/routes'
 
 type AppSidebarProps = {
-  onNavigate?: () => void;
-};
+  onNavigate?: () => void
+}
+
+type NavigationItem = {
+  icon: LucideIcon
+  label: string
+  to: AppRoute
+}
+
+const navigationItems: NavigationItem[] = [
+  { icon: CalendarCheck, label: 'app.home', to: APP_ROUTES.home },
+  { icon: ListTodo, label: 'tasks.title', to: APP_ROUTES.tasks },
+  { icon: CheckCheck, label: 'habits.title', to: APP_ROUTES.habits },
+  { icon: Goal, label: 'goals.title', to: APP_ROUTES.goals },
+  { icon: NotebookPen, label: 'notes.title', to: APP_ROUTES.notes },
+  { icon: Clock3, label: 'focus.title', to: APP_ROUTES.focus },
+]
 
 export function AppSidebar({ onNavigate }: AppSidebarProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
+  const matchRoute = useMatchRoute()
+  const isActive = (to: AppRoute) =>
+    Boolean(
+      matchRoute({
+        fuzzy: to === APP_ROUTES.focus,
+        to,
+      }),
+    )
 
   return (
     <Stack
-      as={"nav"}
-      aria-label={t("appShell.primaryNavigation")}
-      bg={"bg.panel"}
-      gap={"6"}
-      height={"full"}
-      justify={"space-between"}
-      p={"4"}
+      as="nav"
+      aria-label={t('appShell.primaryNavigation')}
+      gap="6"
+      h="full"
+      justify="space-between"
+      p="4"
     >
-      <Stack gap={"6"}>
-        <HStack gap={"2"} px={"2"}>
-          <Boxes aria-hidden={true} size={22} />
-          <Text fontWeight={"bold"}>{t("app.name")}</Text>
+      <Stack gap="7">
+        <HStack gap="3" px="2">
+          <Flex
+            align="center"
+            bg="brand.solid"
+            color="brand.contrast"
+            h="10"
+            justify="center"
+            rounded="l1"
+            shadow="sm"
+            w="10"
+          >
+            <Boxes aria-hidden="true" size={20} />
+          </Flex>
+          <Text fontSize="lg" fontWeight="bold" letterSpacing="tight">
+            {t('app.name')}
+          </Text>
         </HStack>
-        <Stack gap={"1"}>
-          <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={APP_ROUTES.home}>
-              <CalendarCheck aria-hidden={true} size={18} />
-              {t("app.home")}
-            </RouterLink>
-          </Button>
-          <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={APP_ROUTES.tasks}>
-              <ListTodo aria-hidden={true} size={18} />
-              {t("tasks.title")}
-            </RouterLink>
-          </Button>
-          <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={APP_ROUTES.habits}>
-              <CheckCheck aria-hidden={true} size={18} />
-              {t("habits.title")}
-            </RouterLink>
-          </Button>
-          <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={APP_ROUTES.goals}>
-              <Goal aria-hidden={true} size={18} />
-              {t("goals.title")}
-            </RouterLink>
-          </Button>
-          <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
+        <Stack gap="1">
+          {navigationItems.slice(0, 4).map((item) => (
+            <NavigationLink
+              isActive={isActive(item.to)}
+              item={item}
+              key={item.to}
+              onNavigate={onNavigate}
+            />
+          ))}
+          <Box bg="border" h="px" mx="2" my="2" />
+          <Button
+            asChild
+            colorPalette={isActive(APP_ROUTES.statistics) ? 'brand' : undefined}
+            fontWeight={isActive(APP_ROUTES.statistics) ? 'semibold' : 'medium'}
+            justifyContent="flex-start"
+            px="3"
+            rounded="l1"
+            variant={isActive(APP_ROUTES.statistics) ? 'subtle' : 'ghost'}
+            w="full"
+          >
             <RouterLink
+              activeOptions={{ includeSearch: false }}
               onClick={onNavigate}
-              search={{ range: "last-7-days" }}
+              search={{ range: 'last-7-days' }}
               to={APP_ROUTES.statistics}
             >
-              <Activity aria-hidden={true} size={18} />
-              {t("statistics.title")}
+              <Activity aria-hidden="true" size={18} />
+              {t('statistics.title')}
             </RouterLink>
           </Button>
-          <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={APP_ROUTES.notes}>
-              <NotebookPen aria-hidden={true} size={18} />
-              {t("notes.title")}
-            </RouterLink>
-          </Button>
-          <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={APP_ROUTES.focus}>
-              <Clock3 aria-hidden={true} size={18} />
-              {t("focus.title")}
-            </RouterLink>
-          </Button>
+          {navigationItems.slice(4).map((item) => (
+            <NavigationLink
+              isActive={isActive(item.to)}
+              item={item}
+              key={item.to}
+              onNavigate={onNavigate}
+            />
+          ))}
         </Stack>
       </Stack>
-      <Box borderTopWidth={"1px"} pt={"4"}>
-        <Text color={"fg.muted"} fontSize={"xs"} px={"2"}>
-          {t("appShell.sidebarFooter")}
+      <Box bg="bg.subtle" borderWidth="1px" p="3" rounded="l1">
+        <Text color="fg.muted" fontSize="xs" lineHeight="tall">
+          {t('appShell.sidebarFooter')}
         </Text>
       </Box>
     </Stack>
-  );
+  )
+}
+
+type NavigationLinkProps = {
+  isActive: boolean
+  item: NavigationItem
+  onNavigate?: () => void
+}
+
+function NavigationLink({ isActive, item, onNavigate }: NavigationLinkProps) {
+  const { t } = useTranslation()
+  const Icon = item.icon
+
+  return (
+    <Button
+      asChild
+      colorPalette={isActive ? 'brand' : undefined}
+      fontWeight={isActive ? 'semibold' : 'medium'}
+      justifyContent="flex-start"
+      px="3"
+      rounded="l1"
+      variant={isActive ? 'subtle' : 'ghost'}
+      w="full"
+    >
+      <RouterLink
+        activeOptions={{ includeSearch: false }}
+        onClick={onNavigate}
+        to={item.to}
+      >
+        <Icon aria-hidden="true" size={18} />
+        {t(item.label)}
+      </RouterLink>
+    </Button>
+  )
 }

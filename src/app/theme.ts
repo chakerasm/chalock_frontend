@@ -6,6 +6,9 @@ export const appThemeConfig = defineConfig({
       background: 'bg.canvas',
       color: 'fg',
     },
+    body: {
+      minWidth: '20rem',
+    },
   },
   theme: {
     tokens: {
@@ -25,7 +28,7 @@ export const appThemeConfig = defineConfig({
         },
       },
       radii: {
-        app: { value: '0.75rem' },
+        app: { value: '1rem' },
       },
     },
     semanticTokens: {
@@ -36,6 +39,9 @@ export const appThemeConfig = defineConfig({
           },
           panel: {
             value: { _dark: '{colors.gray.900}', _light: '{colors.white}' },
+          },
+          elevated: {
+            value: { _dark: '{colors.gray.800}', _light: '{colors.white}' },
           },
           subtle: {
             value: { _dark: '{colors.gray.900}', _light: '{colors.gray.100}' },
@@ -107,7 +113,7 @@ export const appThemeConfig = defineConfig({
       },
       radii: {
         l1: { value: '{radii.app}' },
-        l2: { value: '{radii.lg}' },
+        l2: { value: '{radii.xl}' },
       },
       shadows: {
         xs: {
@@ -118,8 +124,14 @@ export const appThemeConfig = defineConfig({
         },
         sm: {
           value: {
-            _dark: '0 4px 12px 0 rgba(0, 0, 0, 0.28)',
-            _light: '0 4px 12px 0 rgba(15, 23, 42, 0.08)',
+            _dark: '0 6px 16px 0 rgba(0, 0, 0, 0.3)',
+            _light: '0 6px 18px 0 rgba(15, 23, 42, 0.1)',
+          },
+        },
+        md: {
+          value: {
+            _dark: '0 18px 40px 0 rgba(0, 0, 0, 0.36)',
+            _light: '0 18px 40px 0 rgba(15, 23, 42, 0.13)',
           },
         },
       },

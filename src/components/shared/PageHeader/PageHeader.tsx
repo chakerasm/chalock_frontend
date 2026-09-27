@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Stack, Text } from '@chakra-ui/react'
+import { Flex, Heading, Stack, Text } from '@chakra-ui/react'
 import type { ReactNode } from 'react'
 
 type PageHeaderProps = {
@@ -16,30 +16,41 @@ export function PageHeader({
 }: PageHeaderProps) {
   return (
     <Flex
-      align={{ base: 'flex-start', md: 'center' }}
+      align={{ base: 'flex-start', md: 'flex-end' }}
       direction={{ base: 'column', md: 'row' }}
-      gap="4"
+      gap={{ base: '5', md: '6' }}
       justify="space-between"
     >
-      <Stack gap="2">
+      <Stack gap="3" maxW="2xl">
         {eyebrow ? (
-          <Text color="fg.muted" fontSize="sm" fontWeight="semibold">
+          <Text
+            color="brand.fg"
+            fontSize="xs"
+            fontWeight="bold"
+            letterSpacing="wider"
+            textTransform="uppercase"
+          >
             {eyebrow}
           </Text>
         ) : null}
-        <Box>
-          <Heading as="h1" size={{ base: '2xl', md: '3xl' }}>
+        <Stack gap="2">
+          <Heading
+            as="h1"
+            letterSpacing="tight"
+            lineHeight="none"
+            size={{ base: '3xl', md: '4xl' }}
+          >
             {title}
           </Heading>
           {description ? (
-            <Text color="fg.muted" lineHeight="tall" mt="2">
+            <Text color="fg.muted" lineHeight="tall" maxW="xl">
               {description}
             </Text>
           ) : null}
-        </Box>
+        </Stack>
       </Stack>
       {actions ? (
-        <Flex gap="2" wrap="wrap">
+        <Flex flexShrink="0" gap="2" wrap="wrap">
           {actions}
         </Flex>
       ) : null}

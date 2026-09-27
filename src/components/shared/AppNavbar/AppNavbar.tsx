@@ -1,5 +1,5 @@
 import { Box, Flex, HStack, IconButton, Text } from '@chakra-ui/react'
-import { Menu } from 'lucide-react'
+import { Boxes, Menu } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { AppInfoMenu } from '@/components/shared/AppInfoMenu/AppInfoMenu'
 import { CommandMenu } from '@/components/shared/CommandMenu/CommandMenu'
@@ -18,7 +18,8 @@ export function AppNavbar({ onOpenNavigation, onLogout }: AppNavbarProps) {
   return (
     <Box
       as="header"
-      bg="bg.panel"
+      backdropFilter="blur(16px)"
+      bg="bg.canvas"
       borderBottomWidth="1px"
       position="sticky"
       top="0"
@@ -28,8 +29,8 @@ export function AppNavbar({ onOpenNavigation, onLogout }: AppNavbarProps) {
         align="center"
         gap="3"
         justify="space-between"
-        minH="16"
-        px={{ base: '4', md: '6' }}
+        minH={{ base: '16', md: '18' }}
+        px={{ base: '4', md: '6', xl: '8' }}
       >
         <HStack gap="3" minW="0">
           <IconButton
@@ -37,15 +38,23 @@ export function AppNavbar({ onOpenNavigation, onLogout }: AppNavbarProps) {
             display={{ base: 'inline-flex', lg: 'none' }}
             onClick={onOpenNavigation}
             size="sm"
-            variant="ghost"
+            variant="outline"
           >
-            <Menu aria-hidden="true" size={20} />
+            <Menu aria-hidden="true" size={19} />
           </IconButton>
-          <Text
-            display={{ base: 'none', sm: 'block' }}
-            fontWeight="semibold"
-            truncate
+          <Flex
+            align="center"
+            bg="brand.subtle"
+            color="brand.fg"
+            display={{ base: 'none', sm: 'flex', lg: 'none' }}
+            h="9"
+            justify="center"
+            rounded="l1"
+            w="9"
           >
+            <Boxes aria-hidden="true" size={18} />
+          </Flex>
+          <Text fontWeight="semibold" letterSpacing="tight" truncate>
             {t('appShell.workspace')}
           </Text>
         </HStack>

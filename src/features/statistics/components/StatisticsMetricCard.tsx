@@ -1,4 +1,4 @@
-import { Box, HStack, Stack, Text } from '@chakra-ui/react'
+import { Box, Flex, HStack, Stack, Text } from '@chakra-ui/react'
 import type { ReactNode } from 'react'
 
 type StatisticsMetricCardProps = {
@@ -20,16 +20,18 @@ export function StatisticsMetricCard({
       borderWidth="1px"
       p={{ base: '4', md: '5' }}
       rounded="l2"
+      shadow="xs"
     >
       <HStack align="start" justify="space-between">
         <Stack gap="1">
-          <Text color="fg.muted" fontSize="sm">
+          <Text color="fg.muted" fontSize="sm" fontWeight="medium">
             {label}
           </Text>
           <Text
-            fontSize={{ base: 'xl', md: '2xl' }}
+            fontSize={{ base: '2xl', md: '3xl' }}
             fontVariantNumeric="tabular-nums"
             fontWeight="semibold"
+            letterSpacing="tight"
           >
             {value}
           </Text>
@@ -39,9 +41,17 @@ export function StatisticsMetricCard({
             </Text>
           ) : null}
         </Stack>
-        <Box color="brand.fg" pt="1">
+        <Flex
+          align="center"
+          bg="brand.subtle"
+          color="brand.fg"
+          h="10"
+          justify="center"
+          rounded="l1"
+          w="10"
+        >
           {icon}
-        </Box>
+        </Flex>
       </HStack>
     </Box>
   )

@@ -23,5 +23,9 @@ function RootComponent() {
 function RootError() {
   const router = useRouter()
 
-  return <ErrorState onRetry={() => void router.invalidate()} />
+  return (
+    <AppProviders>
+      <ErrorState onRetry={() => void router.invalidate()} />
+    </AppProviders>
+  )
 }

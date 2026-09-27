@@ -11,6 +11,6 @@ test('renders the Today dashboard and completes a task', async ({ page }) => {
   const taskCheckbox = page.getByRole('checkbox', {
     name: 'Review project brief',
   })
-  await taskCheckbox.click()
+  await page.getByText('Review project brief', { exact: true }).click()
   await expect(taskCheckbox).toBeChecked()
 })
