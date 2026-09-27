@@ -13,6 +13,7 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { CheckCheck, Clock3, ListTodo } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { APP_ROUTES } from '@/lib/routes'
 import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
 import { LoadingState } from '@/components/shared/LoadingState/LoadingState'
 import { PageHeader } from '@/components/shared/PageHeader/PageHeader'
@@ -30,8 +31,8 @@ const presets: StatisticsPreset[] = [
 
 export function StatisticsPage() {
   const { i18n, t } = useTranslation()
-  const { range } = useSearch({ from: '/statistics' })
-  const navigate = useNavigate({ from: '/statistics' })
+  const { range } = useSearch({ from: APP_ROUTES.statistics })
+  const navigate = useNavigate({ from: APP_ROUTES.statistics })
   const statistics = useStatistics(range)
   const formatDate = (date: string) => formatStatisticDate(date, i18n.language)
   const formatShortDate = (date: string) =>
@@ -100,7 +101,7 @@ export function StatisticsPage() {
                   onClick={() =>
                     void navigate({
                       search: (previous) => ({ ...previous, range: preset }),
-                      to: '/statistics',
+                      to: APP_ROUTES.statistics,
                     })
                   }
                   size="sm"

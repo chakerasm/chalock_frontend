@@ -2,6 +2,7 @@ import { Box, Button, Container, HStack, Stack, Text } from "@chakra-ui/react";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LoadingState } from "@/components/shared/LoadingState/LoadingState";
 import { ErrorState } from "@/components/shared/ErrorState/ErrorState";
 import { PageHeader } from "@/components/shared/PageHeader/PageHeader";
 import { toast } from "@/components/ui/Toaster/Toaster";
@@ -64,7 +65,7 @@ export function HabitsPage() {
   const archiveMutation = useArchiveHabit();
   const writeLogMutation = useWriteHabitLog();
 
-  if (habitsQuery.isPending || logsQuery.isPending) return null;
+  if (habitsQuery.isPending || logsQuery.isPending) return <LoadingState />;
   if (habitsQuery.isError || logsQuery.isError) {
     return (
       <Container maxW="6xl" py={{ base: "8", md: "12" }}>

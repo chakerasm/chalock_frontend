@@ -33,9 +33,9 @@ const en = {
     openNavigation: "Open navigation",
     openSearch: "Open global search",
     primaryNavigation: "Primary navigation",
-    profileEmail: "alex@example.com",
+    profileEmail: "chaker@example.com",
     profileMenu: "Profile menu",
-    profileName: "Alex Morgan",
+    profileName: "Chaker Asman",
     search: "Search",
     searchPlaceholder: "Start typing to search pages...",
     settings: "Settings",
@@ -43,7 +43,7 @@ const en = {
     workspace: "Workspace",
   },
   app: {
-    name: "Daymark",
+    name: "Chalock",
     home: "Today",
     language: "Language",
     colorMode: {
@@ -126,9 +126,9 @@ const fr: typeof en = {
     openNavigation: "Ouvrir la navigation",
     openSearch: "Ouvrir la recherche globale",
     primaryNavigation: "Navigation principale",
-    profileEmail: "alex@example.com",
+    profileEmail: "chaker@example.com",
     profileMenu: "Menu du profil",
-    profileName: "Alex Morgan",
+    profileName: "Chaker Asman",
     search: "Rechercher",
     searchPlaceholder: "Commencez a taper pour rechercher des pages...",
     settings: "Parametres",
@@ -136,7 +136,7 @@ const fr: typeof en = {
     workspace: "Espace de travail",
   },
   app: {
-    name: "Daymark",
+    name: "Chalock",
     home: "Aujourd hui",
     language: "Langue",
     colorMode: {

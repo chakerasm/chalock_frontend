@@ -3,6 +3,7 @@ import type { NotFoundRouteProps } from '@tanstack/react-router'
 import { Link as RouterLink } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { APP_ROUTES } from '@/lib/routes'
 
 type NotFoundPageProps = NotFoundRouteProps & {
   returnAction?: ReactNode
@@ -25,7 +26,7 @@ export function NotFoundPage({ returnAction }: NotFoundPageProps) {
         </Stack>
         {returnAction ?? (
           <Button asChild>
-            <RouterLink to="/">{t('notFound.returnHome')}</RouterLink>
+            <RouterLink to={APP_ROUTES.home}>{t('notFound.returnHome')}</RouterLink>
           </Button>
         )}
       </Stack>

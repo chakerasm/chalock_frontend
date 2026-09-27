@@ -19,17 +19,12 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { APP_ROUTES, type AppRoute } from "@/lib/routes";
 
 type CommandItem = {
   id: string;
   label: string;
-  to:
-    | "/"
-    | "/focus"
-    | "/goals"
-    | "/habits"
-    | "/notes"
-    | "/tasks";
+  to: AppRoute;
 };
 
 export function CommandMenu() {
@@ -39,12 +34,12 @@ export function CommandMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const commands: CommandItem[] = [
-    { id: "today", label: t("app.home"), to: "/" },
-    { id: "tasks", label: t("tasks.title"), to: "/tasks" },
-    { id: "habits", label: t("habits.title"), to: "/habits" },
-    { id: "goals", label: t("goals.title"), to: "/goals" },
-    { id: "notes", label: t("notes.title"), to: "/notes" },
-    { id: "focus", label: t("focus.title"), to: "/focus" },
+    { id: "today", label: t("app.home"), to: APP_ROUTES.home },
+    { id: "tasks", label: t("tasks.title"), to: APP_ROUTES.tasks },
+    { id: "habits", label: t("habits.title"), to: APP_ROUTES.habits },
+    { id: "goals", label: t("goals.title"), to: APP_ROUTES.goals },
+    { id: "notes", label: t("notes.title"), to: APP_ROUTES.notes },
+    { id: "focus", label: t("focus.title"), to: APP_ROUTES.focus },
   ];
   const matchingCommands = commands.filter((item) =>
     item.label.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),

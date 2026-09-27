@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { APP_ROUTES } from "../src/lib/routes";
 
 test("quickly creates and completes a task", async ({ page }) => {
-  await page.goto("/tasks");
+  await page.goto(APP_ROUTES.tasks);
 
   await expect(page.getByRole("heading", { name: "Tasks" })).toBeVisible();
   await page
@@ -19,7 +20,7 @@ test("quickly creates and completes a task", async ({ page }) => {
 });
 
 test("shows upcoming tasks grouped by date", async ({ page }) => {
-  await page.goto("/tasks");
+  await page.goto(APP_ROUTES.tasks);
   await page.getByRole("button", { name: "Upcoming" }).click();
 
   await expect(page.getByText("Prepare design review notes")).toBeVisible();

@@ -2,6 +2,7 @@ import { Box, Button, Flex, Progress, Stack, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "@tanstack/react-router";
 import { Goal } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { APP_ROUTES } from "@/lib/routes";
 import { EmptyState } from "@/components/shared/EmptyState/EmptyState";
 import type { ActiveGoal } from "@/features/today/types/today.types";
 
@@ -71,7 +72,7 @@ export function ActiveGoalsCard({ goals }: ActiveGoalsCardProps) {
         </Stack>
       )}
       <Button asChild mt="4" size="sm" variant="ghost">
-        <RouterLink to="/goals">{t("today.viewAllGoals")}</RouterLink>
+        <RouterLink to={APP_ROUTES.goals}>{t("today.viewAllGoals")}</RouterLink>
       </Button>
     </Box>
   );

@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test'
+import { APP_ROUTES } from '../src/lib/routes'
 
 test('keeps an active stopwatch after a page refresh', async ({ page }) => {
-  await page.goto('/focus')
+  await page.goto(APP_ROUTES.focus)
 
   await expect(page.getByRole('heading', { name: 'Focus' })).toBeVisible()
   await page.getByRole('button', { name: 'Start stopwatch' }).click()
@@ -17,7 +18,7 @@ test('keeps an active stopwatch after a page refresh', async ({ page }) => {
 })
 
 test('starts and controls a preset countdown timer', async ({ page }) => {
-  await page.goto('/focus')
+  await page.goto(APP_ROUTES.focus)
 
   await page.getByRole('button', { name: 'Start timer' }).click()
   await expect(page.getByText('Original: 25:00')).toBeVisible()

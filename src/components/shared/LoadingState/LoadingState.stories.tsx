@@ -15,3 +15,9 @@ export const Default: Story = {
     label: 'Loading account data...',
   },
 }
+
+
+export const FullScreen: Story = {
+  args: { fullScreen: true },
+  parameters: { layout: 'fullscreen' },
+}

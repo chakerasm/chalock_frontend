@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { APP_ROUTES } from "../src/lib/routes";
 
 test("captures a note, pins it, and finds it through search", async ({
   page,
 }) => {
-  await page.goto("/notes");
+  await page.goto(APP_ROUTES.notes);
   await page
     .getByRole("textbox", { name: "Quick note capture" })
     .fill("Call the clinic before noon");
@@ -26,7 +27,7 @@ test("captures a note, pins it, and finds it through search", async ({
 });
 
 test("autosaves edits and confirms deletion", async ({ page }) => {
-  await page.goto("/notes");
+  await page.goto(APP_ROUTES.notes);
   await page.getByText("Dinner idea", { exact: true }).click();
   await page
     .getByRole("textbox", { name: "Note content" })
@@ -46,7 +47,7 @@ test("autosaves edits and confirms deletion", async ({ page }) => {
 test("Today quick capture saves into the Notes collection", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto(APP_ROUTES.home);
   await page
     .getByRole("textbox", { name: "Quick note" })
     .fill("Remember to send the revised outline");

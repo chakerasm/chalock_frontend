@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { APP_ROUTES } from "../src/lib/routes";
 
 test("logs count progress and shows a compact week with unscheduled days", async ({
   page,
 }) => {
-  await page.goto("/habits");
+  await page.goto(APP_ROUTES.habits);
 
   await expect(page.getByRole("heading", { name: "Habits" })).toBeVisible();
   await expect(page.getByText("5 / 8 glasses")).toBeVisible();
@@ -22,7 +23,7 @@ test("logs count progress and shows a compact week with unscheduled days", async
 test("creates a weekday habit and archives it without removing its week row", async ({
   page,
 }) => {
-  await page.goto("/habits");
+  await page.goto(APP_ROUTES.habits);
   await page.getByRole("button", { name: "New habit" }).click();
 
   const dialog = page.getByRole("dialog");

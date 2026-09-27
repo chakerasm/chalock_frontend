@@ -1,19 +1,19 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useForm } from 'react-hook-form'
-import { FieldDatePickerInterval } from './FieldDatePickerInterval'
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useForm } from "react-hook-form";
+import { FieldDatePickerInterval } from "./FieldDatePickerInterval";
 
 const meta = {
-  title: 'Fields/FieldDatePickerInterval',
-  tags: ['autodocs'],
-} satisfies Meta
+  title: "Fields/FieldDatePickerInterval",
+  tags: ["autodocs"],
+} satisfies Meta;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 function FieldDatePickerIntervalExample() {
   const { control } = useForm({
-    defaultValues: { endDate: '', startDate: '' },
-  })
+    defaultValues: { endDate: "", startDate: "" },
+  });
 
   return (
     <FieldDatePickerInterval
@@ -23,9 +23,9 @@ function FieldDatePickerIntervalExample() {
       endName="endDate"
       startName="startDate"
     />
-  )
+  );
 }
 
 export const Default: Story = {
   render: () => <FieldDatePickerIntervalExample />,
-}
+};

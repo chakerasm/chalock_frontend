@@ -12,7 +12,9 @@ import { Link as RouterLink, useSearch } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { APP_ROUTES } from "@/lib/routes";
 import { EmptyState } from "@/components/shared/EmptyState/EmptyState";
+import { LoadingState } from "@/components/shared/LoadingState/LoadingState";
 import { ErrorState } from "@/components/shared/ErrorState/ErrorState";
 import { PageHeader } from "@/components/shared/PageHeader/PageHeader";
 import { toast } from "@/components/ui/Toaster/Toaster";
@@ -43,7 +45,7 @@ function formatTargetDate(date: string, locale: string) {
 }
 
 export function GoalsPage() {
-  const { goalId } = useSearch({ from: "/goals" });
+  const { goalId } = useSearch({ from: APP_ROUTES.goals });
   if (goalId) return <GoalDetailPage goalId={goalId} key={goalId} />;
   return <GoalsListPage />;
 }
@@ -56,7 +58,7 @@ function GoalsListPage() {
   const tasksQuery = useTasks();
   const createMutation = useCreateGoal();
 
-  if (goalsQuery.isPending) return null;
+  if (goalsQuery.isPending) return <LoadingState />;
   if (goalsQuery.isError) {
     return (
       <Container maxW="6xl" py={{ base: "8", md: "12" }}>
@@ -134,7 +136,7 @@ function GoalsListPage() {
                   key={goal.id}
                   search={{ goalId: goal.id }}
                   style={{ color: "inherit", textDecoration: "none" }}
-                  to="/goals"
+                  to={APP_ROUTES.goals}
                 >
                   <Stack
                     borderBottomWidth="1px"

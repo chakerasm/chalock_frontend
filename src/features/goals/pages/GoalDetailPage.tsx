@@ -17,6 +17,8 @@ import { Archive, ArrowLeft, Check, Pencil, Plus, Unlink } from "lucide-react";
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { APP_ROUTES } from "@/lib/routes";
+import { LoadingState } from "@/components/shared/LoadingState/LoadingState";
 import { ErrorState } from "@/components/shared/ErrorState/ErrorState";
 import { PageHeader } from "@/components/shared/PageHeader/PageHeader";
 import { toast } from "@/components/ui/Toaster/Toaster";
@@ -86,7 +88,7 @@ export function GoalDetailPage({ goalId }: GoalDetailPageProps) {
     }
   }, [goal?.progress, goal?.progressStrategy.mode]);
 
-  if (goalQuery.isPending) return null;
+  if (goalQuery.isPending) return <LoadingState />;
   if (goalQuery.isError) {
     return (
       <Container maxW="5xl" py={{ base: "8", md: "12" }}>
@@ -177,7 +179,7 @@ export function GoalDetailPage({ goalId }: GoalDetailPageProps) {
     <Container maxW="5xl" py={{ base: "6", md: "10" }}>
       <Stack gap={{ base: "5", md: "7" }}>
         <Button alignSelf="flex-start" asChild size="sm" variant="ghost">
-          <RouterLink to="/goals">
+          <RouterLink to={APP_ROUTES.goals}>
             <ArrowLeft aria-hidden="true" size={16} />
             {t("goals.backToGoals")}
           </RouterLink>

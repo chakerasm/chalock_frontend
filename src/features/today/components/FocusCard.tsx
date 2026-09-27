@@ -11,6 +11,7 @@ import { Link as RouterLink } from '@tanstack/react-router'
 import { Clock3, Pause, Play, Timer } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { APP_ROUTES } from '@/lib/routes'
 import type {
   ActiveFocusSession,
   FocusSummary,
@@ -135,7 +136,7 @@ export function FocusCard({
             {t('today.openSession')}
           </Button>
           <Button asChild size="sm" variant="ghost">
-            <RouterLink to="/focus">{t('today.timerTools')}</RouterLink>
+            <RouterLink to={APP_ROUTES.focus}>{t('today.timerTools')}</RouterLink>
           </Button>
         </HStack>
       </Box>
@@ -169,7 +170,7 @@ export function FocusCard({
             {t('today.startFocus')}
           </Button>
           <Button asChild size="sm" variant="ghost">
-            <RouterLink to="/focus">{t('today.timerTools')}</RouterLink>
+            <RouterLink to={APP_ROUTES.focus}>{t('today.timerTools')}</RouterLink>
           </Button>
         </HStack>
       </Flex>

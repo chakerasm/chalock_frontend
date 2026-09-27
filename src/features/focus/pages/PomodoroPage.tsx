@@ -2,6 +2,7 @@ import { Box, Button, Container, Flex, Stack, Text } from '@chakra-ui/react'
 import { Link as RouterLink } from '@tanstack/react-router'
 import { ArrowLeft } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { APP_ROUTES } from '@/lib/routes'
 import { toast } from '@/components/ui/Toaster/Toaster'
 import { PomodoroHistory } from '@/features/focus/components/PomodoroHistory'
 import { PomodoroSessionView } from '@/features/focus/components/PomodoroSessionView'
@@ -34,7 +35,7 @@ export function PomodoroPage() {
             {t('pomodoro.title')}
           </Text>
           <Button asChild size="sm" variant="ghost">
-            <RouterLink to="/focus">
+            <RouterLink to={APP_ROUTES.focus}>
               <ArrowLeft aria-hidden="true" size={16} />
               {t('pomodoro.exitMode')}
             </RouterLink>

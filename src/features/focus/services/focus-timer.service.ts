@@ -1,26 +1,26 @@
 import {
   getFocusTimerSnapshotFromStorage,
   saveFocusTimerSnapshotToStorage,
-} from '@/features/focus/api/focus.local-storage'
-import { mapFocusTimerSnapshotFromAPI } from '@/features/focus/mappers/focus.mapper'
-import { startFocusTimerInputSchema } from '@/features/focus/schemas/focus.schemas'
+} from "@/features/focus/api/focus.local-storage";
+import { mapFocusTimerSnapshotFromAPI } from "@/features/focus/mappers/focus.mapper";
+import { startFocusTimerInputSchema } from "@/features/focus/schemas/focus.schemas";
 import type {
   ActiveFocusTimer,
   FocusSession,
   FocusTimerSnapshot,
   StartFocusTimerInput,
-} from '@/features/focus/types/focus.types'
+} from "@/features/focus/types/focus.types";
 import {
   completeFocusTimer,
   formatFocusTimerDuration,
   getFocusElapsedSeconds,
   getFocusRemainingSeconds,
-} from './focus-timer-calculations'
+} from "./focus-timer-calculations";
 
-const focusTimerSnapshotEvent = 'daymark:focus-timer-snapshot-updated'
+const focusTimerSnapshotEvent = "chalock:focus-timer-snapshot-updated";
 
 function createSessionId() {
-  return `focus-${crypto.randomUUID()}`
+  return `focus-${crypto.randomUUID()}`;
 }
 
 export {
@@ -28,32 +28,32 @@ export {
   formatFocusTimerDuration,
   getFocusElapsedSeconds,
   getFocusRemainingSeconds,
-}
+};
 
 export function getFocusTimerSnapshot(): FocusTimerSnapshot {
-  return mapFocusTimerSnapshotFromAPI(getFocusTimerSnapshotFromStorage())
+  return mapFocusTimerSnapshotFromAPI(getFocusTimerSnapshotFromStorage());
 }
 
 export function persistFocusTimerSnapshot(snapshot: FocusTimerSnapshot) {
-  saveFocusTimerSnapshotToStorage(snapshot)
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new Event(focusTimerSnapshotEvent))
+  saveFocusTimerSnapshotToStorage(snapshot);
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(focusTimerSnapshotEvent));
   }
 }
 
 export function subscribeToFocusTimerSnapshot(listener: () => void) {
-  if (typeof window === 'undefined') return () => undefined
+  if (typeof window === "undefined") return () => undefined;
 
-  window.addEventListener(focusTimerSnapshotEvent, listener)
-  return () => window.removeEventListener(focusTimerSnapshotEvent, listener)
+  window.addEventListener(focusTimerSnapshotEvent, listener);
+  return () => window.removeEventListener(focusTimerSnapshotEvent, listener);
 }
 
 export function startFocusTimer(
   input: StartFocusTimerInput,
   now = Date.now(),
 ): ActiveFocusTimer {
-  const parsedInput = startFocusTimerInputSchema.parse(input)
-  const timestamp = new Date(now).toISOString()
+  const parsedInput = startFocusTimerInputSchema.parse(input);
+  const timestamp = new Date(now).toISOString();
 
   return {
     durationSeconds: 0,
@@ -62,10 +62,10 @@ export function startFocusTimer(
     plannedDurationSeconds: parsedInput.plannedDurationSeconds,
     runningSince: timestamp,
     startedAt: timestamp,
-    status: 'active',
+    status: "active",
     taskId: parsedInput.taskId,
     type: parsedInput.type,
-  }
+  };
 }
 
 export function pauseFocusTimer(
@@ -76,21 +76,21 @@ export function pauseFocusTimer(
     ...session,
     durationSeconds: getFocusElapsedSeconds(session, now),
     runningSince: undefined,
-    status: 'paused',
-  }
+    status: "paused",
+  };
 }
 
 export function resumeFocusTimer(
   session: ActiveFocusTimer,
   now = Date.now(),
 ): ActiveFocusTimer {
-  const timestamp = new Date(now).toISOString()
+  const timestamp = new Date(now).toISOString();
   return {
     ...session,
     runningSince: timestamp,
     startedAt: session.startedAt ?? timestamp,
-    status: 'active',
-  }
+    status: "active",
+  };
 }
 
 export function resetStopwatch(session: ActiveFocusTimer): ActiveFocusTimer {
@@ -100,8 +100,8 @@ export function resetStopwatch(session: ActiveFocusTimer): ActiveFocusTimer {
     endedAt: undefined,
     runningSince: undefined,
     startedAt: undefined,
-    status: 'paused',
-  }
+    status: "paused",
+  };
 }
 
 export function restartFocusTimer(
@@ -113,25 +113,25 @@ export function restartFocusTimer(
       goalId: session.goalId,
       plannedDurationSeconds: session.plannedDurationSeconds,
       taskId: session.taskId,
-      type: session.type === 'timer' ? 'timer' : 'stopwatch',
+      type: session.type === "timer" ? "timer" : "stopwatch",
     },
     now,
-  )
+  );
 }
 
 export function saveFocusTimerSession(
   snapshot: FocusTimerSnapshot,
   now = Date.now(),
 ): FocusTimerSnapshot {
-  if (!snapshot.activeTimer) return snapshot
+  if (!snapshot.activeTimer) return snapshot;
 
-  const completedSession = completeFocusTimer(snapshot.activeTimer, now)
-  const { runningSince: _runningSince, ...session } = completedSession
-  const savedSession: FocusSession = session
+  const completedSession = completeFocusTimer(snapshot.activeTimer, now);
+  const { runningSince: _runningSince, ...session } = completedSession;
+  const savedSession: FocusSession = session;
 
   return {
     ...snapshot,
     activeTimer: null,
     savedSessions: [savedSession, ...snapshot.savedSessions].slice(0, 50),
-  }
+  };
 }

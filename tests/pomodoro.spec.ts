@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test'
+import { APP_ROUTES } from '../src/lib/routes'
 
 test('keeps an active Pomodoro focus phase after a refresh', async ({
   page,
 }) => {
-  await page.goto('/focus/pomodoro')
+  await page.goto(APP_ROUTES.pomodoro)
 
   await expect(page.getByText('Ready when you are')).toBeVisible()
   await page
@@ -22,7 +23,7 @@ test('keeps an active Pomodoro focus phase after a refresh', async ({
 test('skips a focus phase without counting it and records cancellation clearly', async ({
   page,
 }) => {
-  await page.goto('/focus/pomodoro')
+  await page.goto(APP_ROUTES.pomodoro)
   await page.getByRole('button', { name: 'Start focus' }).click()
 
   await page.getByRole('button', { name: 'Skip phase' }).click()

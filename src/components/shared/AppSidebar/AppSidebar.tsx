@@ -11,6 +11,7 @@ import {
   NotebookPen,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { APP_ROUTES } from "@/lib/routes";
 
 type AppSidebarProps = {
   onNavigate?: () => void;
@@ -36,25 +37,25 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
         </HStack>
         <Stack gap={"1"}>
           <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={"/"}>
+            <RouterLink onClick={onNavigate} to={APP_ROUTES.home}>
               <CalendarCheck aria-hidden={true} size={18} />
               {t("app.home")}
             </RouterLink>
           </Button>
           <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={"/tasks"}>
+            <RouterLink onClick={onNavigate} to={APP_ROUTES.tasks}>
               <ListTodo aria-hidden={true} size={18} />
               {t("tasks.title")}
             </RouterLink>
           </Button>
           <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={"/habits"}>
+            <RouterLink onClick={onNavigate} to={APP_ROUTES.habits}>
               <CheckCheck aria-hidden={true} size={18} />
               {t("habits.title")}
             </RouterLink>
           </Button>
           <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={"/goals"}>
+            <RouterLink onClick={onNavigate} to={APP_ROUTES.goals}>
               <Goal aria-hidden={true} size={18} />
               {t("goals.title")}
             </RouterLink>
@@ -63,20 +64,20 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             <RouterLink
               onClick={onNavigate}
               search={{ range: "last-7-days" }}
-              to={"/statistics"}
+              to={APP_ROUTES.statistics}
             >
               <Activity aria-hidden={true} size={18} />
               {t("statistics.title")}
             </RouterLink>
           </Button>
           <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={"/notes"}>
+            <RouterLink onClick={onNavigate} to={APP_ROUTES.notes}>
               <NotebookPen aria-hidden={true} size={18} />
               {t("notes.title")}
             </RouterLink>
           </Button>
           <Button asChild justifyContent={"flex-start"} variant={"ghost"}>
-            <RouterLink onClick={onNavigate} to={"/focus"}>
+            <RouterLink onClick={onNavigate} to={APP_ROUTES.focus}>
               <Clock3 aria-hidden={true} size={18} />
               {t("focus.title")}
             </RouterLink>

@@ -1,13 +1,14 @@
 import { expect, test } from "@playwright/test";
+import { APP_ROUTES } from "../src/lib/routes";
 
 test("task-based progress updates from linked tasks but completion stays intentional", async ({
   page,
 }) => {
-  await page.goto("/goals");
+  await page.goto(APP_ROUTES.goals);
   await expect(page.getByRole("heading", { name: "Goals" })).toBeVisible();
   await expect(page.getByText("1 of 2 tasks completed")).toBeVisible();
 
-  await page.goto("/goals?goalId=goal-gh300");
+  await page.goto(`${APP_ROUTES.goals}?goalId=goal-gh300`);
   await page
     .getByText("Complete a practice assessment", { exact: true })
     .click();
@@ -24,7 +25,7 @@ test("task-based progress updates from linked tasks but completion stays intenti
 test("manual progress can reach 100 percent without completing the Goal", async ({
   page,
 }) => {
-  await page.goto("/goals?goalId=goal-1");
+  await page.goto(`${APP_ROUTES.goals}?goalId=goal-1`);
   await page.getByRole("spinbutton", { name: "Progress (%)" }).fill("100");
   await page.getByRole("button", { name: "Save progress" }).click();
 
@@ -37,7 +38,7 @@ test("manual progress can reach 100 percent without completing the Goal", async 
 test("tasks can be associated with a Goal from the task form", async ({
   page,
 }) => {
-  await page.goto("/tasks");
+  await page.goto(APP_ROUTES.tasks);
   await page.getByRole("button", { name: "New task" }).click();
 
   const dialog = page.getByRole("dialog");

@@ -15,6 +15,7 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog/ConfirmDialog";
+import { LoadingState } from "@/components/shared/LoadingState/LoadingState";
 import { ErrorState } from "@/components/shared/ErrorState/ErrorState";
 import { FilterPopover } from "@/components/shared/FilterPopover/FilterPopover";
 import { PageHeader } from "@/components/shared/PageHeader/PageHeader";
@@ -166,7 +167,7 @@ export function TasksPage() {
     );
   }
 
-  if (tasksQuery.isPending || goalsQuery.isPending) return null;
+  if (tasksQuery.isPending || goalsQuery.isPending) return <LoadingState />;
   if (tasksQuery.isError) {
     return (
       <Container maxW="6xl" py={{ base: "8", md: "12" }}>

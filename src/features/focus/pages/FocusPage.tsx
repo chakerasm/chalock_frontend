@@ -11,6 +11,7 @@ import { Link as RouterLink } from '@tanstack/react-router'
 import { TimerReset } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { APP_ROUTES } from '@/lib/routes'
 import { PageHeader } from '@/components/shared/PageHeader/PageHeader'
 import { toast } from '@/components/ui/Toaster/Toaster'
 import { ActiveFocusTimerCard } from '@/features/focus/components/ActiveFocusTimerCard'
@@ -82,7 +83,7 @@ export function FocusPage() {
         <PageHeader
           actions={
             <Button asChild colorPalette="brand" variant="outline">
-              <RouterLink to="/focus/pomodoro">
+              <RouterLink to={APP_ROUTES.pomodoro}>
                 <TimerReset aria-hidden="true" size={17} />
                 {t('focus.openPomodoro')}
               </RouterLink>
@@ -109,7 +110,7 @@ export function FocusPage() {
             <Stack align="start" gap="3">
               <Text fontWeight="semibold">{t('focus.pomodoroActive')}</Text>
               <Button asChild colorPalette="brand" size="sm">
-                <RouterLink to="/focus/pomodoro">
+                <RouterLink to={APP_ROUTES.pomodoro}>
                   {t('focus.openPomodoro')}
                 </RouterLink>
               </Button>
