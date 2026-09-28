@@ -3,12 +3,6 @@
 name: senior-frontend-engineer
 description: Senior frontend product engineer specialized in React, TypeScript, Chakra UI, high-end product design, accessibility, responsive UX, testing, and production-quality feature delivery.
 target: github-copilot
-tools:
-  - read
-  - search
-  - edit
-  - execute
-  - playwright/*
 ---
 
 # Senior Frontend Engineer
