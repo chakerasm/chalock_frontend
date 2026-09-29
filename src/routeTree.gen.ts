@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FinanceRouteImport } from './routes/finance'
 import { Route as FocusRouteImport } from './routes/focus'
 import { Route as GoalsRouteImport } from './routes/goals'
 import { Route as HabitsRouteImport } from './routes/habits'
@@ -23,6 +24,11 @@ import { Route as FocusPomodoroRouteImport } from './routes/focus/pomodoro'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceRoute = FinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FocusRoute = FocusRouteImport.update({
@@ -73,6 +79,7 @@ const FocusPomodoroRoute = FocusPomodoroRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/finance': typeof FinanceRoute
   '/focus': typeof FocusRouteWithChildren
   '/goals': typeof GoalsRoute
   '/habits': typeof HabitsRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/finance': typeof FinanceRoute
   '/goals': typeof GoalsRoute
   '/habits': typeof HabitsRoute
   '/notes': typeof NotesRoute
@@ -97,6 +105,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/finance': typeof FinanceRoute
   '/focus': typeof FocusRouteWithChildren
   '/goals': typeof GoalsRoute
   '/habits': typeof HabitsRoute
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/finance'
     | '/focus'
     | '/goals'
     | '/habits'
@@ -123,6 +133,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/finance'
     | '/goals'
     | '/habits'
     | '/notes'
@@ -134,6 +145,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/finance'
     | '/focus'
     | '/goals'
     | '/habits'
@@ -147,6 +159,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FinanceRoute: typeof FinanceRoute
   FocusRoute: typeof FocusRouteWithChildren
   GoalsRoute: typeof GoalsRoute
   HabitsRoute: typeof HabitsRoute
@@ -163,6 +176,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance': {
+      id: '/finance'
+      path: '/finance'
+      fullPath: '/finance'
+      preLoaderRoute: typeof FinanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/focus': {
@@ -245,6 +265,7 @@ const FocusRouteWithChildren = FocusRoute._addFileChildren(FocusRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FinanceRoute: FinanceRoute,
   FocusRoute: FocusRouteWithChildren,
   GoalsRoute: GoalsRoute,
   HabitsRoute: HabitsRoute,

@@ -1,3 +1,4 @@
+import { financeResources } from "@/features/finance/i18n/resources";
 import { focusResources } from "@/features/focus/i18n/resources";
 import { goalsResources } from "@/features/goals/i18n/resources";
 import { habitsResources } from "@/features/habits/i18n/resources";
@@ -210,6 +211,7 @@ export const resources = {
   en: {
     translation: {
       ...en,
+      ...financeResources.en.translation,
       ...focusResources.en.translation,
       ...goalsResources.en.translation,
       ...habitsResources.en.translation,
@@ -223,6 +225,7 @@ export const resources = {
   fr: {
     translation: {
       ...fr,
+      ...financeResources.fr.translation,
       ...focusResources.fr.translation,
       ...goalsResources.fr.translation,
       ...habitsResources.fr.translation,

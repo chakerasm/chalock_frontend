@@ -11,6 +11,7 @@ import {
   ListTodo,
   NotebookPen,
   Repeat,
+  WalletCards,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { APP_ROUTES, type AppRoute } from '@/lib/routes'
@@ -31,6 +32,7 @@ const navigationItems: NavigationItem[] = [
   { icon: CheckCheck, label: 'habits.title', to: APP_ROUTES.habits },
   { icon: Goal, label: 'goals.title', to: APP_ROUTES.goals },
   { icon: NotebookPen, label: 'notes.title', to: APP_ROUTES.notes },
+  { icon: WalletCards, label: 'finance.title', to: APP_ROUTES.finance },
   { icon: Repeat, label: 'subscriptions.title', to: APP_ROUTES.subscriptions },
   { icon: Clock3, label: 'focus.title', to: APP_ROUTES.focus },
 ]

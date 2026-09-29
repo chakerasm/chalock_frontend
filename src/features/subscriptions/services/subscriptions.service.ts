@@ -5,6 +5,7 @@ import {
 import { mapSubscriptionFromAPI } from '@/features/subscriptions/mappers/subscriptions.mapper'
 import {
   createSubscriptionInputSchema,
+  subscriptionInputSchema,
   updateSubscriptionInputSchema,
 } from '@/features/subscriptions/schemas/subscriptions.schemas'
 import type {
@@ -60,9 +61,13 @@ export async function updateSubscription({
   const subscriptions = getSubscriptionsFromStorage()
   const index = subscriptions.findIndex((item) => item.id === subscriptionId)
   if (index < 0) throw new Error('Subscription not found.')
-  const subscription = {
+  const nextInput = subscriptionInputSchema.parse({
     ...subscriptions[index],
     ...parsed,
+  })
+  const subscription = {
+    ...subscriptions[index],
+    ...nextInput,
     updatedAt: new Date().toISOString(),
   }
   subscriptions[index] = subscription
