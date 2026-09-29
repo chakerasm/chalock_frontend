@@ -15,6 +15,7 @@ import { Route as GoalsRouteImport } from './routes/goals'
 import { Route as HabitsRouteImport } from './routes/habits'
 import { Route as NotesRouteImport } from './routes/notes'
 import { Route as StatisticsRouteImport } from './routes/statistics'
+import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as FocusIndexRouteImport } from './routes/focus/index'
 import { Route as FocusPomodoroRouteImport } from './routes/focus/pomodoro'
@@ -49,6 +50,11 @@ const StatisticsRoute = StatisticsRouteImport.update({
   path: '/statistics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SubscriptionsRoute = SubscriptionsRouteImport.update({
+  id: '/subscriptions',
+  path: '/subscriptions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TasksRoute = TasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/habits': typeof HabitsRoute
   '/notes': typeof NotesRoute
   '/statistics': typeof StatisticsRoute
+  '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
   '/focus/': typeof FocusIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/habits': typeof HabitsRoute
   '/notes': typeof NotesRoute
   '/statistics': typeof StatisticsRoute
+  '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
   '/focus': typeof FocusIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/habits': typeof HabitsRoute
   '/notes': typeof NotesRoute
   '/statistics': typeof StatisticsRoute
+  '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
   '/focus/': typeof FocusIndexRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/habits'
     | '/notes'
     | '/statistics'
+    | '/subscriptions'
     | '/tasks'
     | '/focus/pomodoro'
     | '/focus/'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/habits'
     | '/notes'
     | '/statistics'
+    | '/subscriptions'
     | '/tasks'
     | '/focus/pomodoro'
     | '/focus'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/habits'
     | '/notes'
     | '/statistics'
+    | '/subscriptions'
     | '/tasks'
     | '/focus/pomodoro'
     | '/focus/'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   HabitsRoute: typeof HabitsRoute
   NotesRoute: typeof NotesRoute
   StatisticsRoute: typeof StatisticsRoute
+  SubscriptionsRoute: typeof SubscriptionsRoute
   TasksRoute: typeof TasksRoute
 }
 
@@ -187,6 +200,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StatisticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/subscriptions': {
+      id: '/subscriptions'
+      path: '/subscriptions'
+      fullPath: '/subscriptions'
+      preLoaderRoute: typeof SubscriptionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tasks': {
       id: '/tasks'
       path: '/tasks'
@@ -230,6 +250,7 @@ const rootRouteChildren: RootRouteChildren = {
   HabitsRoute: HabitsRoute,
   NotesRoute: NotesRoute,
   StatisticsRoute: StatisticsRoute,
+  SubscriptionsRoute: SubscriptionsRoute,
   TasksRoute: TasksRoute,
 }
 export const routeTree = rootRouteImport

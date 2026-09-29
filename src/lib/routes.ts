@@ -7,6 +7,7 @@ export const APP_ROUTES = {
   focus: '/focus',
   pomodoro: '/focus/pomodoro',
   statistics: '/statistics',
+  subscriptions: '/subscriptions',
 } as const
 
 export type AppRoute = (typeof APP_ROUTES)[keyof typeof APP_ROUTES]
