@@ -2,8 +2,9 @@ import { focusResources } from "@/features/focus/i18n/resources";
 import { goalsResources } from "@/features/goals/i18n/resources";
 import { habitsResources } from "@/features/habits/i18n/resources";
 import { notesResources } from "@/features/notes/i18n/resources";
-import { tasksResources } from "@/features/tasks/i18n/resources";
 import { statisticsResources } from "@/features/statistics/i18n/resources";
+import { subscriptionsResources } from "@/features/subscriptions/i18n/resources";
+import { tasksResources } from "@/features/tasks/i18n/resources";
 import { todayResources } from "@/features/today/i18n/resources";
 
 export const fallbackLanguage = "en";
@@ -216,6 +217,7 @@ export const resources = {
       ...tasksResources.en.translation,
       ...statisticsResources.en.translation,
       ...todayResources.en.translation,
+      ...subscriptionsResources.en.translation,
     },
   },
   fr: {
@@ -228,6 +230,7 @@ export const resources = {
       ...tasksResources.fr.translation,
       ...statisticsResources.fr.translation,
       ...todayResources.fr.translation,
+      ...subscriptionsResources.fr.translation,
     },
   },
 } as const;

@@ -1,5 +1,6 @@
 import { Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
 import { Link as RouterLink, useMatchRoute } from '@tanstack/react-router'
+import type { LucideIcon } from 'lucide-react'
 import {
   Activity,
   Boxes,
@@ -9,8 +10,8 @@ import {
   Goal,
   ListTodo,
   NotebookPen,
+  Repeat,
 } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { APP_ROUTES, type AppRoute } from '@/lib/routes'
 
@@ -30,6 +31,7 @@ const navigationItems: NavigationItem[] = [
   { icon: CheckCheck, label: 'habits.title', to: APP_ROUTES.habits },
   { icon: Goal, label: 'goals.title', to: APP_ROUTES.goals },
   { icon: NotebookPen, label: 'notes.title', to: APP_ROUTES.notes },
+  { icon: Repeat, label: 'subscriptions.title', to: APP_ROUTES.subscriptions },
   { icon: Clock3, label: 'focus.title', to: APP_ROUTES.focus },
 ]
 
