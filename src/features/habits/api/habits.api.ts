@@ -15,6 +15,7 @@ import type {
   UpdateHabitInput,
   WriteHabitLogInput,
 } from "@/features/habits/types/habits.types";
+import { apiFetch } from "@/lib/api/client";
 
 async function parseResponse<T>(
   response: Response,
@@ -30,7 +31,7 @@ export async function getHabitsFromAPI(filters: HabitListFilter = {}) {
   if (filters.state) params.set("state", filters.state);
   const query = params.size ? `?${params}` : "";
   return parseResponse(
-    await fetch(`/api/habits${query}`),
+    await apiFetch(`/api/habits${query}`),
     habitsFromAPISchema,
     "Unable to load habits.",
   );
@@ -39,7 +40,7 @@ export async function getHabitsFromAPI(filters: HabitListFilter = {}) {
 export async function createHabitFromAPI(input: CreateHabitInput) {
   const request = createHabitInputSchema.parse(input);
   return parseResponse(
-    await fetch("/api/habits", {
+    await apiFetch("/api/habits", {
       body: JSON.stringify(request),
       headers: { "Content-Type": "application/json" },
       method: "POST",
@@ -55,7 +56,7 @@ export async function updateHabitFromAPI({
 }: UpdateHabitInput) {
   const request = updateHabitInputSchema.parse(input);
   return parseResponse(
-    await fetch(`/api/habits/${encodeURIComponent(habitId)}`, {
+    await apiFetch(`/api/habits/${encodeURIComponent(habitId)}`, {
       body: JSON.stringify(request),
       headers: { "Content-Type": "application/json" },
       method: "PATCH",
@@ -67,7 +68,7 @@ export async function updateHabitFromAPI({
 
 export async function archiveHabitFromAPI(habitId: string) {
   return parseResponse(
-    await fetch(`/api/habits/${encodeURIComponent(habitId)}/archive`, {
+    await apiFetch(`/api/habits/${encodeURIComponent(habitId)}/archive`, {
       method: "POST",
     }),
     habitFromAPISchema,
@@ -82,7 +83,7 @@ export async function getHabitLogsFromAPI(
 ) {
   const params = new URLSearchParams({ from, to });
   return parseResponse(
-    await fetch(
+    await apiFetch(
       `/api/habits/${encodeURIComponent(habitId)}/logs?${params.toString()}`,
     ),
     habitLogsFromAPISchema,
@@ -93,7 +94,7 @@ export async function getHabitLogsFromAPI(
 export async function getAllHabitLogsFromAPI(from: string, to: string) {
   const params = new URLSearchParams({ from, to });
   return parseResponse(
-    await fetch(`/api/habit-logs?${params.toString()}`),
+    await apiFetch(`/api/habit-logs?${params.toString()}`),
     habitLogsFromAPISchema,
     "Unable to load habit history.",
   );
@@ -106,7 +107,7 @@ export async function writeHabitLogFromAPI(
 ): Promise<HabitLog> {
   const request = writeHabitLogInputSchema.parse(input);
   return parseResponse(
-    await fetch(
+    await apiFetch(
       `/api/habits/${encodeURIComponent(habitId)}/logs/${encodeURIComponent(date)}`,
       {
         body: JSON.stringify(request),

@@ -10,6 +10,7 @@ import type {
   TaskListFilters,
   UpdateTaskInput,
 } from '@/features/tasks/types/tasks.types'
+import { apiFetch } from '@/lib/api/client'
 
 const tasksEndpoint = '/api/tasks'
 
@@ -37,7 +38,7 @@ export async function getTasksFromAPI(
   filters: TaskListFilters = {},
 ): Promise<TaskFromAPI[]> {
   return parseResponse(
-    await fetch(`${tasksEndpoint}${createSearchParams(filters)}`),
+    await apiFetch(`${tasksEndpoint}${createSearchParams(filters)}`),
     taskListResponseFromAPISchema,
     'Unable to load tasks.',
   ).then((response) => response.data)
@@ -48,7 +49,7 @@ export async function createTaskFromAPI(
 ): Promise<TaskFromAPI> {
   const request = createTaskInputSchema.parse(input)
   return parseResponse(
-    await fetch(tasksEndpoint, {
+    await apiFetch(tasksEndpoint, {
       body: JSON.stringify(request),
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -64,7 +65,7 @@ export async function updateTaskFromAPI({
 }: UpdateTaskInput): Promise<TaskFromAPI> {
   const request = updateTaskInputSchema.parse(input)
   return parseResponse(
-    await fetch(`${tasksEndpoint}/${encodeURIComponent(taskId)}`, {
+    await apiFetch(`${tasksEndpoint}/${encodeURIComponent(taskId)}`, {
       body: JSON.stringify(request),
       headers: { 'Content-Type': 'application/json' },
       method: 'PATCH',
@@ -75,7 +76,7 @@ export async function updateTaskFromAPI({
 }
 
 export async function deleteTaskFromAPI(taskId: string): Promise<void> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${tasksEndpoint}/${encodeURIComponent(taskId)}`,
     {
       method: 'DELETE',
