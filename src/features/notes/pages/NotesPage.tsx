@@ -16,7 +16,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog/ConfirmDialog";
 import { EmptyState } from "@/components/shared/EmptyState/EmptyState";
-import { LoadingState } from "@/components/shared/LoadingState/LoadingState";
+import { NotesPageSkeleton } from "@/features/notes/components/NotesPageSkeleton";
 import { ErrorState } from "@/components/shared/ErrorState/ErrorState";
 import { PageHeader } from "@/components/shared/PageHeader/PageHeader";
 import { toast } from "@/components/ui/Toaster/Toaster";
@@ -300,7 +300,7 @@ export function NotesPage() {
     }
   }
 
-  if (notesQuery.isPending) return <LoadingState />;
+  if (notesQuery.isPending) return <NotesPageSkeleton />;
   if (notesQuery.isError) {
     return (
       <Box

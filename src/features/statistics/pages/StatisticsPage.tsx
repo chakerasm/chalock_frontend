@@ -15,7 +15,7 @@ import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { APP_ROUTES } from '@/lib/routes'
 import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
-import { LoadingState } from '@/components/shared/LoadingState/LoadingState'
+import { StatisticsPageSkeleton } from '@/features/statistics/components/StatisticsPageSkeleton'
 import { PageHeader } from '@/components/shared/PageHeader/PageHeader'
 import { DailyBarChart } from '@/features/statistics/components/DailyBarChart'
 import { HabitConsistencyHeatmap } from '@/features/statistics/components/HabitConsistencyHeatmap'
@@ -60,11 +60,7 @@ export function StatisticsPage() {
     )
   }
   if (statistics.isPending || !statistics.data) {
-    return (
-      <Container maxW="6xl" py={{ base: '8', md: '12' }}>
-        <LoadingState />
-      </Container>
-    )
+    return <StatisticsPageSkeleton />
   }
 
   if (statistics.isError) {

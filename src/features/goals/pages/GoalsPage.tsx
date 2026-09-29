@@ -14,7 +14,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { APP_ROUTES } from "@/lib/routes";
 import { EmptyState } from "@/components/shared/EmptyState/EmptyState";
-import { LoadingState } from "@/components/shared/LoadingState/LoadingState";
+import { GoalsListSkeleton } from "@/features/goals/components/GoalsListSkeleton";
 import { ErrorState } from "@/components/shared/ErrorState/ErrorState";
 import { PageHeader } from "@/components/shared/PageHeader/PageHeader";
 import { toast } from "@/components/ui/Toaster/Toaster";
@@ -58,7 +58,7 @@ function GoalsListPage() {
   const tasksQuery = useTasks();
   const createMutation = useCreateGoal();
 
-  if (goalsQuery.isPending) return <LoadingState />;
+  if (goalsQuery.isPending) return <GoalsListSkeleton />;
   if (goalsQuery.isError) {
     return (
       <Container maxW="6xl" py={{ base: "8", md: "12" }}>

@@ -21,7 +21,8 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
 import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
-import { LoadingState } from '@/components/shared/LoadingState/LoadingState'
+import { SubscriptionsListSkeleton } from '@/features/subscriptions/components/SubscriptionsListSkeleton'
+import { SubscriptionDetailSkeleton } from '@/features/subscriptions/components/SubscriptionDetailSkeleton'
 import { PageHeader } from '@/components/shared/PageHeader/PageHeader'
 import { toast } from '@/components/ui/Toaster/Toaster'
 import { SubscriptionFormDialog } from '@/features/subscriptions/components/SubscriptionFormDialog'
@@ -75,7 +76,7 @@ function SubscriptionsList() {
     status === 'all' ? { search } : { search, status },
   )
   const create = useCreateSubscription()
-  if (query.isPending) return <LoadingState />
+  if (query.isPending) return <SubscriptionsListSkeleton />
   if (query.isError) return <ErrorState onRetry={() => void query.refetch()} />
   const subscriptions = query.data ?? []
   const summary = getRecurringCostSummary(subscriptions)
@@ -249,7 +250,7 @@ function SubscriptionDetail({ subscriptionId }: { subscriptionId: string }) {
   const update = useUpdateSubscription()
   const cancel = useCancelSubscription()
   const [formOpen, setFormOpen] = useState(false)
-  if (query.isPending) return <LoadingState />
+  if (query.isPending) return <SubscriptionDetailSkeleton />
   if (query.isError || !query.data)
     return <ErrorState onRetry={() => void query.refetch()} />
   const item = query.data

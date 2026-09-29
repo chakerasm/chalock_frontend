@@ -9,7 +9,7 @@ import {
 import { Play, Plus, StickyNote } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LoadingState } from "@/components/shared/LoadingState/LoadingState";
+import { TodayDashboardSkeleton } from "@/features/today/components/TodayDashboardSkeleton";
 import { ErrorState } from "@/components/shared/ErrorState/ErrorState";
 import { PageHeader } from "@/components/shared/PageHeader/PageHeader";
 import { toast } from "@/components/ui/Toaster/Toaster";
@@ -95,7 +95,7 @@ export function TodayDashboardPage() {
     );
   }
 
-  if (dashboardQuery.isPending) return <LoadingState />;
+  if (dashboardQuery.isPending) return <TodayDashboardSkeleton />;
   if (dashboardQuery.isError || !dashboard) {
     return (
       <Container maxW="7xl" py={{ base: "8", md: "12" }}>
