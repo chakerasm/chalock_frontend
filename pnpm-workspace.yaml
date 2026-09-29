@@ -2,4 +2,3 @@ allowBuilds:
   esbuild: true
   lefthook: false
   lightningcss: true
-  msw: false

@@ -17,6 +17,7 @@ import type {
   UpdateHabitCheckInInput,
   UpdateTodayTaskInput,
 } from "@/features/today/types/today.types";
+import { apiFetch } from "@/lib/api/client";
 
 const todayDashboardEndpoint = "/api/dashboard/today";
 
@@ -42,7 +43,7 @@ async function parseResponse<T>(
 
 export async function getTodayDashboardFromAPI(): Promise<TodayDashboardFromAPI> {
   return parseResponse(
-    await fetch(todayDashboardEndpoint),
+    await apiFetch(todayDashboardEndpoint),
     todayDashboardFromAPISchema,
     "Unable to load today’s dashboard.",
   );
@@ -54,7 +55,7 @@ export async function createTodayTaskFromAPI(
   const request = createTodayTaskInputSchema.parse(input);
 
   return parseResponse(
-    await fetch("/api/tasks", {
+    await apiFetch("/api/tasks", {
       body: JSON.stringify(request),
       headers: { "Content-Type": "application/json" },
       method: "POST",
@@ -73,7 +74,7 @@ export async function updateTodayTaskFromAPI({
   });
 
   return parseResponse(
-    await fetch(`/api/tasks/${encodeURIComponent(taskId)}`, {
+    await apiFetch(`/api/tasks/${encodeURIComponent(taskId)}`, {
       body: JSON.stringify(request),
       headers: { "Content-Type": "application/json" },
       method: "PATCH",
@@ -104,7 +105,7 @@ export async function updateHabitCheckInFromAPI({
     progress,
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   };
-  const response = await fetch(
+  const response = await apiFetch(
     `/api/habits/${encodeURIComponent(habitId)}/logs/${date}`,
     {
       body: JSON.stringify(request),
@@ -125,7 +126,7 @@ export async function startFocusSessionFromAPI(
   const request = startFocusSessionInputSchema.parse(input);
 
   return parseResponse(
-    await fetch("/api/focus-sessions", {
+    await apiFetch("/api/focus-sessions", {
       body: JSON.stringify(request),
       headers: { "Content-Type": "application/json" },
       method: "POST",
@@ -146,7 +147,7 @@ export async function updateFocusSessionFromAPI({
   });
 
   return parseResponse(
-    await fetch(`/api/focus-sessions/${encodeURIComponent(sessionId)}`, {
+    await apiFetch(`/api/focus-sessions/${encodeURIComponent(sessionId)}`, {
       body: JSON.stringify(request),
       headers: { "Content-Type": "application/json" },
       method: "PATCH",

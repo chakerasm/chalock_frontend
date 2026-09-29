@@ -8,6 +8,10 @@ A reusable Vite and React 19 foundation for client-side product applications. It
 2. Copy `.env.example` to `.env.local` and set the values for this application.
 3. Run `pnpm dev` and open `http://localhost:3000`.
 
+`VITE_API_BASE_URL` configures the backend origin for API requests. Leave it empty
+to use the same origin, or set it to the backend origin when the API is hosted
+separately.
+
 ## Commands
 
 - `pnpm dev` - start the development server.
