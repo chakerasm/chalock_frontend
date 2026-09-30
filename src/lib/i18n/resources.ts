@@ -13,6 +13,7 @@ import { statisticsResources } from '@/features/statistics/i18n/resources'
 import { subscriptionsResources } from '@/features/subscriptions/i18n/resources'
 import { tasksResources } from '@/features/tasks/i18n/resources'
 import { todayResources } from '@/features/today/i18n/resources'
+import { weeklyReviewResources } from '@/features/weekly-review/i18n/resources'
 
 export const fallbackLanguage = 'en'
 
@@ -231,6 +232,7 @@ export const resources = {
       ...settingsResources.en.translation,
       ...statisticsResources.en.translation,
       ...todayResources.en.translation,
+      ...weeklyReviewResources.en.translation,
       ...subscriptionsResources.en.translation,
     },
   },
@@ -251,6 +253,7 @@ export const resources = {
       ...settingsResources.fr.translation,
       ...statisticsResources.fr.translation,
       ...todayResources.fr.translation,
+      ...weeklyReviewResources.fr.translation,
       ...subscriptionsResources.fr.translation,
     },
   },

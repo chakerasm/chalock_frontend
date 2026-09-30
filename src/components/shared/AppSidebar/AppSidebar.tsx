@@ -12,6 +12,7 @@ import {
   ListTodo,
   NotebookPen,
   Repeat,
+  BookOpenCheck,
   WalletCards,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -38,6 +39,7 @@ const navigationItems: NavigationItem[] = [
   { icon: WalletCards, label: 'finance.title', to: APP_ROUTES.finance },
   { icon: Repeat, label: 'subscriptions.title', to: APP_ROUTES.subscriptions },
   { icon: Clock3, label: 'focus.title', to: APP_ROUTES.focus },
+  { icon: BookOpenCheck, label: 'weeklyReview.title', to: APP_ROUTES.review },
 ]
 
 export function AppSidebar({ onNavigate }: AppSidebarProps) {

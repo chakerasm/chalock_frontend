@@ -11,6 +11,7 @@
   settings: '/settings',
   pomodoro: '/focus/pomodoro',
   statistics: '/statistics',
+  review: '/review',
   subscriptions: '/subscriptions',
   finance: '/finance',
 } as const
