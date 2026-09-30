@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { AppInfoMenu } from '@/components/shared/AppInfoMenu/AppInfoMenu'
 import { CommandMenu } from '@/components/shared/CommandMenu/CommandMenu'
 import { ProfileMenu } from '@/components/shared/ProfileMenu/ProfileMenu'
+import { QuickAddDialog } from '@/features/quick-add/components/QuickAddDialog'
 import { ColorModeToggle } from '@/components/ui/ColorModeToggle/ColorModeToggle'
 import { LanguageSelect } from '@/components/ui/LanguageSelect/LanguageSelect'
 
@@ -60,6 +61,7 @@ export function AppNavbar({ onOpenNavigation, onLogout }: AppNavbarProps) {
           </Text>
         </HStack>
         <HStack gap={{ base: '1', sm: '2' }}>
+          <QuickAddDialog />
           <CommandMenu />
           <Box display={{ base: 'none', md: 'block' }}>
             <LanguageSelect />
