@@ -2,6 +2,7 @@
 import { financeResources } from '@/features/finance/i18n/resources'
 import { focusResources } from '@/features/focus/i18n/resources'
 import { goalsResources } from '@/features/goals/i18n/resources'
+import { globalSearchResources } from '@/features/global-search/i18n/resources'
 import { habitsResources } from '@/features/habits/i18n/resources'
 import { notesResources } from '@/features/notes/i18n/resources'
 import { plannerResources } from '@/features/planner/i18n/resources'
@@ -219,6 +220,7 @@ export const resources = {
       ...financeResources.en.translation,
       ...focusResources.en.translation,
       ...goalsResources.en.translation,
+      ...globalSearchResources.en.translation,
       ...habitsResources.en.translation,
       ...notesResources.en.translation,
       ...plannerResources.en.translation,
@@ -237,6 +239,7 @@ export const resources = {
       ...financeResources.fr.translation,
       ...focusResources.fr.translation,
       ...goalsResources.fr.translation,
+      ...globalSearchResources.fr.translation,
       ...habitsResources.fr.translation,
       ...notesResources.fr.translation,
       ...plannerResources.fr.translation,

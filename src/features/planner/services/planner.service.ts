@@ -1,4 +1,4 @@
-import {
+﻿import {
   getTimeBlocksFromStorage,
   saveTimeBlocksToStorage,
 } from '@/features/planner/api/planner.local-storage'
@@ -27,6 +27,14 @@ function save(blocks: TimeBlock[]) {
   saveTimeBlocksToStorage(blocks.map(mapTimeBlockToAPI))
 }
 
+export async function getAllTimeBlocks(): Promise<TimeBlock[]> {
+  return [...getTimeBlocksFromStorage().map(mapTimeBlockFromAPI)].sort(
+    (left, right) =>
+      left.date.localeCompare(right.date) ||
+      left.startTime.localeCompare(right.startTime) ||
+      left.title.localeCompare(right.title),
+  )
+}
 export async function getTimeBlocks(date: string): Promise<TimeBlock[]> {
   return sortTimeBlocks(
     getTimeBlocksFromStorage()
