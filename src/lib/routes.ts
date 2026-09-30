@@ -5,6 +5,7 @@ export const APP_ROUTES = {
   goals: '/goals',
   notes: '/notes',
   focus: '/focus',
+  planner: '/planner',
   pomodoro: '/focus/pomodoro',
   statistics: '/statistics',
   subscriptions: '/subscriptions',

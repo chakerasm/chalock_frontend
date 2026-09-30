@@ -13,6 +13,7 @@ import {
   startFocusTimer,
 } from '@/features/focus/services/focus-timer.service'
 import type {
+  ActiveFocusTimer,
   FocusTimerSnapshot,
   StartFocusTimerInput,
 } from '@/features/focus/types/focus.types'
@@ -70,11 +71,15 @@ export function useFocusTimer() {
     }))
   }, [commit, isCountdownComplete])
 
-  function start(input: StartFocusTimerInput) {
+  function start(input: StartFocusTimerInput): ActiveFocusTimer | null {
+    let startedTimer: ActiveFocusTimer | null = null
     commit((current) => {
-      if (current.activePomodoro) return current
-      return { ...current, activeTimer: startFocusTimer(input) }
+      if (current.activePomodoro || current.activeTimer) return current
+      const nextTimer = startFocusTimer(input)
+      startedTimer = nextTimer
+      return { ...current, activeTimer: nextTimer }
     })
+    return startedTimer
   }
 
   function pause() {

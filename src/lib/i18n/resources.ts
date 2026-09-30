@@ -1,211 +1,212 @@
-import { financeResources } from "@/features/finance/i18n/resources";
-import { focusResources } from "@/features/focus/i18n/resources";
-import { goalsResources } from "@/features/goals/i18n/resources";
-import { habitsResources } from "@/features/habits/i18n/resources";
-import { notesResources } from "@/features/notes/i18n/resources";
-import { statisticsResources } from "@/features/statistics/i18n/resources";
-import { subscriptionsResources } from "@/features/subscriptions/i18n/resources";
-import { tasksResources } from "@/features/tasks/i18n/resources";
-import { todayResources } from "@/features/today/i18n/resources";
+import { financeResources } from '@/features/finance/i18n/resources'
+import { focusResources } from '@/features/focus/i18n/resources'
+import { goalsResources } from '@/features/goals/i18n/resources'
+import { habitsResources } from '@/features/habits/i18n/resources'
+import { notesResources } from '@/features/notes/i18n/resources'
+import { plannerResources } from '@/features/planner/i18n/resources'
+import { statisticsResources } from '@/features/statistics/i18n/resources'
+import { subscriptionsResources } from '@/features/subscriptions/i18n/resources'
+import { tasksResources } from '@/features/tasks/i18n/resources'
+import { todayResources } from '@/features/today/i18n/resources'
 
-export const fallbackLanguage = "en";
+export const fallbackLanguage = 'en'
 
 export const supportedLanguages = [
-  { code: "en", label: "English" },
-  { code: "fr", label: "Francais" },
-] as const;
+  { code: 'en', label: 'English' },
+  { code: 'fr', label: 'Francais' },
+] as const
 
-export type SupportedLanguage = (typeof supportedLanguages)[number]["code"];
+export type SupportedLanguage = (typeof supportedLanguages)[number]['code']
 
 export function isSupportedLanguage(value: string): value is SupportedLanguage {
-  return supportedLanguages.some((language) => language.code === value);
+  return supportedLanguages.some((language) => language.code === value)
 }
 
 const en = {
   appInfo: {
-    environment: "Environment",
-    menuLabel: "Application information",
-    version: "Version",
-    versionDescription: "Information about the current application build.",
-    versionTitle: "Application version",
+    environment: 'Environment',
+    menuLabel: 'Application information',
+    version: 'Version',
+    versionDescription: 'Information about the current application build.',
+    versionTitle: 'Application version',
   },
   appShell: {
-    logout: "Log out",
-    noSearchResults: "No matching pages found.",
-    openNavigation: "Open navigation",
-    openSearch: "Open global search",
-    primaryNavigation: "Primary navigation",
-    profileEmail: "chaker@example.com",
-    profileMenu: "Profile menu",
-    profileName: "Chaker Asman",
-    search: "Search",
-    searchPlaceholder: "Start typing to search pages...",
-    settings: "Settings",
-    sidebarFooter: "SaaS application starter",
-    workspace: "Workspace",
+    logout: 'Log out',
+    noSearchResults: 'No matching pages found.',
+    openNavigation: 'Open navigation',
+    openSearch: 'Open global search',
+    primaryNavigation: 'Primary navigation',
+    profileEmail: 'chaker@example.com',
+    profileMenu: 'Profile menu',
+    profileName: 'Chaker Asman',
+    search: 'Search',
+    searchPlaceholder: 'Start typing to search pages...',
+    settings: 'Settings',
+    sidebarFooter: 'SaaS application starter',
+    workspace: 'Workspace',
   },
   app: {
-    name: "Chalock",
-    home: "Today",
-    language: "Language",
+    name: 'Chalock',
+    home: 'Today',
+    language: 'Language',
     colorMode: {
-      switchToDark: "Switch to dark theme",
-      switchToLight: "Switch to light theme",
+      switchToDark: 'Switch to dark theme',
+      switchToLight: 'Switch to light theme',
     },
   },
   common: {
-    close: "Close",
-    notAvailable: "Not available",
+    close: 'Close',
+    notAvailable: 'Not available',
   },
   confirmDialog: {
-    confirm: "Confirm",
+    confirm: 'Confirm',
   },
   copyButton: {
-    action: "Copy",
-    error: "Could not copy to the clipboard.",
-    success: "Copied to the clipboard.",
+    action: 'Copy',
+    error: 'Could not copy to the clipboard.',
+    success: 'Copied to the clipboard.',
   },
   dateFields: {
-    end: "End date",
-    invalidInterval: "End date must not be before start date.",
-    required: "Choose a date.",
-    start: "Start date",
+    end: 'End date',
+    invalidInterval: 'End date must not be before start date.',
+    required: 'Choose a date.',
+    start: 'Start date',
   },
   filterPopover: {
-    apply: "Apply",
-    clear: "Clear",
-    open: "Filters",
+    apply: 'Apply',
+    clear: 'Clear',
+    open: 'Filters',
   },
   error: {
-    title: "Something went wrong",
-    description: "Please try again.",
-    retry: "Try again",
+    title: 'Something went wrong',
+    description: 'Please try again.',
+    retry: 'Try again',
   },
   fieldControls: {
-    decrease: "Decrease {{label}}",
-    hide: "Hide {{label}}",
-    increase: "Increase {{label}}",
-    show: "Show {{label}}",
+    decrease: 'Decrease {{label}}',
+    hide: 'Hide {{label}}',
+    increase: 'Increase {{label}}',
+    show: 'Show {{label}}',
   },
   form: {
-    cancel: "Cancel",
-    save: "Save",
+    cancel: 'Cancel',
+    save: 'Save',
   },
   home: {
-    eyebrow: "React application foundation",
-    heading: "A focused starting point for production applications.",
+    eyebrow: 'React application foundation',
+    heading: 'A focused starting point for production applications.',
     description:
-      "Build product features in isolated modules while the app shell, routing, server-state, forms, validation, and testing foundations remain consistent.",
+      'Build product features in isolated modules while the app shell, routing, server-state, forms, validation, and testing foundations remain consistent.',
     guidance:
-      "Add your first product capability under src/features. Keep API access, domain types, schemas, mappers, services, hooks, and components owned by that feature.",
+      'Add your first product capability under src/features. Keep API access, domain types, schemas, mappers, services, hooks, and components owned by that feature.',
   },
-  loading: "Loading...",
+  loading: 'Loading...',
   notFound: {
-    description: "The page you requested does not exist.",
-    returnHome: "Return home",
-    title: "Page not found",
+    description: 'The page you requested does not exist.',
+    returnHome: 'Return home',
+    title: 'Page not found',
   },
   pagination: {
-    goToPage: "Go to page {{page}}",
-    next: "Next page",
-    previous: "Previous page",
-    summary: "Page {{page}} of {{totalPages}}",
+    goToPage: 'Go to page {{page}}',
+    next: 'Next page',
+    previous: 'Previous page',
+    summary: 'Page {{page}} of {{totalPages}}',
   },
-};
+}
 
 const fr: typeof en = {
   appInfo: {
-    environment: "Environnement",
-    menuLabel: "Informations sur l application",
-    version: "Version",
+    environment: 'Environnement',
+    menuLabel: 'Informations sur l application',
+    version: 'Version',
     versionDescription:
-      "Informations sur la version actuelle de l application.",
-    versionTitle: "Version de l application",
+      'Informations sur la version actuelle de l application.',
+    versionTitle: 'Version de l application',
   },
   appShell: {
-    logout: "Se deconnecter",
-    noSearchResults: "Aucune page correspondante.",
-    openNavigation: "Ouvrir la navigation",
-    openSearch: "Ouvrir la recherche globale",
-    primaryNavigation: "Navigation principale",
-    profileEmail: "chaker@example.com",
-    profileMenu: "Menu du profil",
-    profileName: "Chaker Asman",
-    search: "Rechercher",
-    searchPlaceholder: "Commencez a taper pour rechercher des pages...",
-    settings: "Parametres",
-    sidebarFooter: "Base d application SaaS",
-    workspace: "Espace de travail",
+    logout: 'Se deconnecter',
+    noSearchResults: 'Aucune page correspondante.',
+    openNavigation: 'Ouvrir la navigation',
+    openSearch: 'Ouvrir la recherche globale',
+    primaryNavigation: 'Navigation principale',
+    profileEmail: 'chaker@example.com',
+    profileMenu: 'Menu du profil',
+    profileName: 'Chaker Asman',
+    search: 'Rechercher',
+    searchPlaceholder: 'Commencez a taper pour rechercher des pages...',
+    settings: 'Parametres',
+    sidebarFooter: 'Base d application SaaS',
+    workspace: 'Espace de travail',
   },
   app: {
-    name: "Chalock",
-    home: "Aujourd hui",
-    language: "Langue",
+    name: 'Chalock',
+    home: 'Aujourd hui',
+    language: 'Langue',
     colorMode: {
-      switchToDark: "Passer au theme sombre",
-      switchToLight: "Passer au theme clair",
+      switchToDark: 'Passer au theme sombre',
+      switchToLight: 'Passer au theme clair',
     },
   },
   common: {
-    close: "Fermer",
-    notAvailable: "Non disponible",
+    close: 'Fermer',
+    notAvailable: 'Non disponible',
   },
   confirmDialog: {
-    confirm: "Confirmer",
+    confirm: 'Confirmer',
   },
   copyButton: {
-    action: "Copier",
-    error: "Impossible de copier dans le presse-papiers.",
-    success: "Copie dans le presse-papiers.",
+    action: 'Copier',
+    error: 'Impossible de copier dans le presse-papiers.',
+    success: 'Copie dans le presse-papiers.',
   },
   dateFields: {
-    end: "Date de fin",
+    end: 'Date de fin',
     invalidInterval:
-      "La date de fin ne peut pas etre anterieure a la date de debut.",
-    required: "Choisissez une date.",
-    start: "Date de debut",
+      'La date de fin ne peut pas etre anterieure a la date de debut.',
+    required: 'Choisissez une date.',
+    start: 'Date de debut',
   },
   filterPopover: {
-    apply: "Appliquer",
-    clear: "Effacer",
-    open: "Filtres",
+    apply: 'Appliquer',
+    clear: 'Effacer',
+    open: 'Filtres',
   },
   error: {
-    title: "Un probleme est survenu",
-    description: "Veuillez reessayer.",
-    retry: "Reessayer",
+    title: 'Un probleme est survenu',
+    description: 'Veuillez reessayer.',
+    retry: 'Reessayer',
   },
   fieldControls: {
-    decrease: "Diminuer {{label}}",
-    hide: "Masquer {{label}}",
-    increase: "Augmenter {{label}}",
-    show: "Afficher {{label}}",
+    decrease: 'Diminuer {{label}}',
+    hide: 'Masquer {{label}}',
+    increase: 'Augmenter {{label}}',
+    show: 'Afficher {{label}}',
   },
   form: {
-    cancel: "Annuler",
-    save: "Enregistrer",
+    cancel: 'Annuler',
+    save: 'Enregistrer',
   },
   home: {
-    eyebrow: "Fondation d application React",
-    heading: "Un point de depart cible pour les applications de production.",
+    eyebrow: 'Fondation d application React',
+    heading: 'Un point de depart cible pour les applications de production.',
     description:
-      "Developpez les fonctionnalites produit dans des modules isoles, tout en conservant une base coherente pour l application, le routage, les donnees serveur, les formulaires, la validation et les tests.",
+      'Developpez les fonctionnalites produit dans des modules isoles, tout en conservant une base coherente pour l application, le routage, les donnees serveur, les formulaires, la validation et les tests.',
     guidance:
-      "Ajoutez votre premiere fonctionnalite produit dans src/features. Gardez les appels API, les types metier, les schemas, les mappers, les services, les hooks et les composants dans cette fonctionnalite.",
+      'Ajoutez votre premiere fonctionnalite produit dans src/features. Gardez les appels API, les types metier, les schemas, les mappers, les services, les hooks et les composants dans cette fonctionnalite.',
   },
-  loading: "Chargement...",
+  loading: 'Chargement...',
   notFound: {
-    description: "La page demandee n existe pas.",
-    returnHome: "Retour a l accueil",
-    title: "Page introuvable",
+    description: 'La page demandee n existe pas.',
+    returnHome: 'Retour a l accueil',
+    title: 'Page introuvable',
   },
   pagination: {
-    goToPage: "Aller a la page {{page}}",
-    next: "Page suivante",
-    previous: "Page precedente",
-    summary: "Page {{page}} sur {{totalPages}}",
+    goToPage: 'Aller a la page {{page}}',
+    next: 'Page suivante',
+    previous: 'Page precedente',
+    summary: 'Page {{page}} sur {{totalPages}}',
   },
-};
+}
 
 export const resources = {
   en: {
@@ -216,6 +217,7 @@ export const resources = {
       ...goalsResources.en.translation,
       ...habitsResources.en.translation,
       ...notesResources.en.translation,
+      ...plannerResources.en.translation,
       ...tasksResources.en.translation,
       ...statisticsResources.en.translation,
       ...todayResources.en.translation,
@@ -230,10 +232,11 @@ export const resources = {
       ...goalsResources.fr.translation,
       ...habitsResources.fr.translation,
       ...notesResources.fr.translation,
+      ...plannerResources.fr.translation,
       ...tasksResources.fr.translation,
       ...statisticsResources.fr.translation,
       ...todayResources.fr.translation,
       ...subscriptionsResources.fr.translation,
     },
   },
-} as const;
+} as const
