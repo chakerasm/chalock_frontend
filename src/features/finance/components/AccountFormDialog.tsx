@@ -8,6 +8,7 @@ import { FieldInput } from '@/components/ui/FieldInput/FieldInput'
 import { FieldInputNumber } from '@/components/ui/FieldInputNumber/FieldInputNumber'
 import { FieldSelect } from '@/components/ui/FieldSelect/FieldSelect'
 import { accountInputSchema } from '@/features/finance/schemas/finance.schemas'
+import { useDefaultCurrency } from '@/features/settings/hooks/use-settings'
 import type {
   Account,
   CreateAccountInput,
@@ -21,9 +22,12 @@ type Props = {
   open: boolean
 }
 
-function createDefaultValues(account?: Account): CreateAccountInput {
+function createDefaultValues(
+  account?: Account,
+  defaultCurrency = 'MAD',
+): CreateAccountInput {
   return {
-    currency: account?.currency ?? 'MAD',
+    currency: account?.currency ?? defaultCurrency,
     name: account?.name ?? '',
     openingBalance: account?.openingBalance ?? 0,
     type: account?.type ?? 'checking',
@@ -38,17 +42,18 @@ export function AccountFormDialog({
   open,
 }: Props) {
   const { t } = useTranslation()
+  const defaultCurrency = useDefaultCurrency()
   const form = useForm<CreateAccountInput>({
-    defaultValues: createDefaultValues(account),
+    defaultValues: createDefaultValues(account, defaultCurrency),
     resolver: zodResolver(accountInputSchema),
   })
 
   useEffect(() => {
-    if (open) form.reset(createDefaultValues(account))
-  }, [account, form, open])
+    if (open) form.reset(createDefaultValues(account, defaultCurrency))
+  }, [account, defaultCurrency, form, open])
 
   function handleOpenChange(nextOpen: boolean) {
-    if (!nextOpen) form.reset(createDefaultValues(account))
+    if (!nextOpen) form.reset(createDefaultValues(account, defaultCurrency))
     onOpenChange(nextOpen)
   }
 

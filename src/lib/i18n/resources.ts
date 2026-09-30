@@ -5,6 +5,7 @@ import { habitsResources } from '@/features/habits/i18n/resources'
 import { notesResources } from '@/features/notes/i18n/resources'
 import { plannerResources } from '@/features/planner/i18n/resources'
 import { remindersResources } from '@/features/reminders/i18n/resources'
+import { settingsResources } from '@/features/settings/i18n/resources'
 import { statisticsResources } from '@/features/statistics/i18n/resources'
 import { subscriptionsResources } from '@/features/subscriptions/i18n/resources'
 import { tasksResources } from '@/features/tasks/i18n/resources'
@@ -221,6 +222,7 @@ export const resources = {
       ...plannerResources.en.translation,
       ...remindersResources.en.translation,
       ...tasksResources.en.translation,
+      ...settingsResources.en.translation,
       ...statisticsResources.en.translation,
       ...todayResources.en.translation,
       ...subscriptionsResources.en.translation,
@@ -237,6 +239,7 @@ export const resources = {
       ...plannerResources.fr.translation,
       ...remindersResources.fr.translation,
       ...tasksResources.fr.translation,
+      ...settingsResources.fr.translation,
       ...statisticsResources.fr.translation,
       ...todayResources.fr.translation,
       ...subscriptionsResources.fr.translation,

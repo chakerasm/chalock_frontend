@@ -17,6 +17,7 @@ import { Route as HabitsRouteImport } from './routes/habits'
 import { Route as NotesRouteImport } from './routes/notes'
 import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as RemindersRouteImport } from './routes/reminders'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StatisticsRouteImport } from './routes/statistics'
 import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
 import { Route as TasksRouteImport } from './routes/tasks'
@@ -63,6 +64,11 @@ const RemindersRoute = RemindersRouteImport.update({
   path: '/reminders',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StatisticsRoute = StatisticsRouteImport.update({
   id: '/statistics',
   path: '/statistics',
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/notes': typeof NotesRoute
   '/planner': typeof PlannerRoute
   '/reminders': typeof RemindersRoute
+  '/settings': typeof SettingsRoute
   '/statistics': typeof StatisticsRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/notes': typeof NotesRoute
   '/planner': typeof PlannerRoute
   '/reminders': typeof RemindersRoute
+  '/settings': typeof SettingsRoute
   '/statistics': typeof StatisticsRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/notes': typeof NotesRoute
   '/planner': typeof PlannerRoute
   '/reminders': typeof RemindersRoute
+  '/settings': typeof SettingsRoute
   '/statistics': typeof StatisticsRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/notes'
     | '/planner'
     | '/reminders'
+    | '/settings'
     | '/statistics'
     | '/subscriptions'
     | '/tasks'
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/notes'
     | '/planner'
     | '/reminders'
+    | '/settings'
     | '/statistics'
     | '/subscriptions'
     | '/tasks'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/notes'
     | '/planner'
     | '/reminders'
+    | '/settings'
     | '/statistics'
     | '/subscriptions'
     | '/tasks'
@@ -190,6 +202,7 @@ export interface RootRouteChildren {
   NotesRoute: typeof NotesRoute
   PlannerRoute: typeof PlannerRoute
   RemindersRoute: typeof RemindersRoute
+  SettingsRoute: typeof SettingsRoute
   StatisticsRoute: typeof StatisticsRoute
   SubscriptionsRoute: typeof SubscriptionsRoute
   TasksRoute: typeof TasksRoute
@@ -253,6 +266,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/statistics': {
       id: '/statistics'
       path: '/statistics'
@@ -312,6 +332,7 @@ const rootRouteChildren: RootRouteChildren = {
   NotesRoute: NotesRoute,
   PlannerRoute: PlannerRoute,
   RemindersRoute: RemindersRoute,
+  SettingsRoute: SettingsRoute,
   StatisticsRoute: StatisticsRoute,
   SubscriptionsRoute: SubscriptionsRoute,
   TasksRoute: TasksRoute,

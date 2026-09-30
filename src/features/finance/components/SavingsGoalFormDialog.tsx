@@ -8,6 +8,7 @@ import { FieldInput } from '@/components/ui/FieldInput/FieldInput'
 import { FieldInputNumber } from '@/components/ui/FieldInputNumber/FieldInputNumber'
 import { FieldSelect } from '@/components/ui/FieldSelect/FieldSelect'
 import { savingsGoalInputSchema } from '@/features/finance/schemas/finance.schemas'
+import { useDefaultCurrency } from '@/features/settings/hooks/use-settings'
 import type {
   CreateSavingsGoalInput,
   SavingsGoal,
@@ -23,9 +24,10 @@ type Props = {
 
 function createDefaultValues(
   savingsGoal?: SavingsGoal,
+  defaultCurrency = 'MAD',
 ): CreateSavingsGoalInput {
   return {
-    currency: savingsGoal?.currency ?? 'MAD',
+    currency: savingsGoal?.currency ?? defaultCurrency,
     currentAmount: savingsGoal?.currentAmount ?? 0,
     name: savingsGoal?.name ?? '',
     status: savingsGoal?.status ?? 'active',
@@ -42,17 +44,18 @@ export function SavingsGoalFormDialog({
   savingsGoal,
 }: Props) {
   const { t } = useTranslation()
+  const defaultCurrency = useDefaultCurrency()
   const form = useForm<CreateSavingsGoalInput>({
-    defaultValues: createDefaultValues(savingsGoal),
+    defaultValues: createDefaultValues(savingsGoal, defaultCurrency),
     resolver: zodResolver(savingsGoalInputSchema),
   })
 
   useEffect(() => {
-    if (open) form.reset(createDefaultValues(savingsGoal))
-  }, [form, open, savingsGoal])
+    if (open) form.reset(createDefaultValues(savingsGoal, defaultCurrency))
+  }, [defaultCurrency, form, open, savingsGoal])
 
   function handleOpenChange(nextOpen: boolean) {
-    if (!nextOpen) form.reset(createDefaultValues(savingsGoal))
+    if (!nextOpen) form.reset(createDefaultValues(savingsGoal, defaultCurrency))
     onOpenChange(nextOpen)
   }
 

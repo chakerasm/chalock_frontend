@@ -11,6 +11,7 @@ type FieldInputProps<TFieldValues extends FieldValues> = {
   type?: 'date' | 'email' | 'search' | 'tel' | 'text' | 'time' | 'url'
   disabled?: boolean
   required?: boolean
+  step?: number
 }
 
 export function FieldInput<TFieldValues extends FieldValues>({
@@ -22,6 +23,7 @@ export function FieldInput<TFieldValues extends FieldValues>({
   type = 'text',
   disabled = false,
   required = false,
+  step,
 }: FieldInputProps<TFieldValues>) {
   const id = `field-${String(name)}`
 
@@ -36,7 +38,13 @@ export function FieldInput<TFieldValues extends FieldValues>({
           required={required}
         >
           <Field.Label htmlFor={id}>{label}</Field.Label>
-          <Input id={id} placeholder={placeholder} type={type} {...field} />
+          <Input
+            id={id}
+            placeholder={placeholder}
+            step={step}
+            type={type}
+            {...field}
+          />
           {description ? (
             <Field.HelperText>{description}</Field.HelperText>
           ) : null}

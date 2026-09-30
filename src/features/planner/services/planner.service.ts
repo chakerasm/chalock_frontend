@@ -6,7 +6,8 @@ import {
   mapTimeBlockFromAPI,
   mapTimeBlockToAPI,
 } from '@/features/planner/mappers/planner.mapper'
-import { timeBlockInputSchema } from '@/features/planner/schemas/planner.schemas'
+import { createTimeBlockInputSchema } from '@/features/planner/schemas/planner.schemas'
+import { getSettingsSnapshotSync } from '@/features/settings/services/settings.service'
 import { sortTimeBlocks } from '@/features/planner/services/planner-calculations'
 import type {
   CreateTimeBlockInput,
@@ -35,7 +36,9 @@ export async function getTimeBlocks(date: string): Promise<TimeBlock[]> {
 }
 
 export async function createTimeBlock(input: CreateTimeBlockInput) {
-  const request = timeBlockInputSchema.parse(input)
+  const request = createTimeBlockInputSchema(
+    getSettingsSnapshotSync().settings.planning.timeIncrementMinutes,
+  ).parse(input)
   const timestamp = now()
   const block: TimeBlock = {
     ...request,
@@ -57,7 +60,9 @@ export async function updateTimeBlock({
   const current = blocks.find((block) => block.id === timeBlockId)
   if (!current) throw new Error('Time block not found.')
 
-  const request = timeBlockInputSchema.parse({ ...current, ...input })
+  const request = createTimeBlockInputSchema(
+    getSettingsSnapshotSync().settings.planning.timeIncrementMinutes,
+  ).parse({ ...current, ...input })
   const block: TimeBlock = {
     ...current,
     ...request,

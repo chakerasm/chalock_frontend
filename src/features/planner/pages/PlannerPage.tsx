@@ -36,6 +36,7 @@ import type {
   TimeBlock,
 } from '@/features/planner/types/planner.types'
 import { useTasks } from '@/features/tasks/hooks/use-tasks'
+import { useSettings } from '@/features/settings/hooks/use-settings'
 
 type PlannerPageProps = {
   onSelectedDateChange: (date: string) => void
@@ -68,6 +69,14 @@ export function PlannerPage({
   const updateMutation = useUpdateTimeBlock()
   const deleteMutation = useDeleteTimeBlock()
   const focusTimer = useFocusTimer()
+  const settingsQuery = useSettings()
+  const planning = settingsQuery.data?.settings.planning ?? {
+    dayEndHour: 23,
+    dayStartHour: 7,
+    defaultBlockMinutes: 60,
+    timeIncrementMinutes: 15,
+  }
+  const timeFormat = settingsQuery.data?.settings.timeFormat ?? '24h'
   const [now, setNow] = useState(() => new Date())
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [defaultStartTime, setDefaultStartTime] = useState<string>()
@@ -171,10 +180,20 @@ export function PlannerPage({
     })
   }
 
-  if (blocksQuery.isPending || tasksQuery.isPending || goalsQuery.isPending)
+  if (
+    blocksQuery.isPending ||
+    tasksQuery.isPending ||
+    goalsQuery.isPending ||
+    settingsQuery.isPending
+  )
     return <PlannerPageSkeleton />
 
-  if (blocksQuery.isError || tasksQuery.isError || goalsQuery.isError) {
+  if (
+    blocksQuery.isError ||
+    tasksQuery.isError ||
+    goalsQuery.isError ||
+    settingsQuery.isError
+  ) {
     return (
       <Container maxW="6xl" py={{ base: '8', md: '12' }}>
         <ErrorState
@@ -184,6 +203,7 @@ export function PlannerPage({
               blocksQuery.refetch(),
               tasksQuery.refetch(),
               goalsQuery.refetch(),
+              settingsQuery.refetch(),
             ])
           }
           title={t('planner.loadErrorTitle')}
@@ -271,6 +291,9 @@ export function PlannerPage({
               }}
               onStartFocus={handleStartFocus}
               selectedDate={selectedDate}
+              locale={i18n.language}
+              planning={planning}
+              timeFormat={timeFormat}
             />
           </>
         ) : (
@@ -308,6 +331,7 @@ export function PlannerPage({
         onOpenChange={closeForm}
         onSubmit={handleSubmit}
         open={isFormOpen}
+        planning={planning}
         tasks={tasksQuery.data ?? []}
         timeBlock={blockToEdit}
       />

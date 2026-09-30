@@ -7,6 +7,7 @@ export const APP_ROUTES = {
   focus: '/focus',
   planner: '/planner',
   reminders: '/reminders',
+  settings: '/settings',
   pomodoro: '/focus/pomodoro',
   statistics: '/statistics',
   subscriptions: '/subscriptions',

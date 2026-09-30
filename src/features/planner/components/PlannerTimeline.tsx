@@ -1,33 +1,31 @@
-import { Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
-import { Play, Pencil } from 'lucide-react'
+﻿import { Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
+import { Pencil, Play } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import {
   formatDuration,
   getTimeBlockDurationMinutes,
   isTimeBlockCurrent,
-  plannerDayEndHour,
-  plannerDayStartHour,
-  plannerSlotMinutes,
   timeToMinutes,
 } from '@/features/planner/services/planner-calculations'
 import type { TimeBlock } from '@/features/planner/types/planner.types'
+import type {
+  PlanningPreferences,
+  TimeFormat,
+} from '@/features/settings/types/settings.types'
 
 const pixelsPerMinute = 1.1
-const dayStartMinutes = plannerDayStartHour * 60
-const timelineMinutes = (plannerDayEndHour - plannerDayStartHour) * 60
-const timelineHours = Array.from(
-  { length: plannerDayEndHour - plannerDayStartHour + 1 },
-  (_, offset) => plannerDayStartHour + offset,
-)
 
 type PlannerTimelineProps = {
   blocks: TimeBlock[]
+  focusAvailable: boolean
+  locale: string
   now: Date
   onAddAt: (time: string) => void
   onEdit: (block: TimeBlock) => void
   onStartFocus: (block: TimeBlock) => void
+  planning: PlanningPreferences
   selectedDate: string
-  focusAvailable: boolean
+  timeFormat: TimeFormat
 }
 
 function categoryBackground(block: TimeBlock) {
@@ -40,20 +38,44 @@ function categoryBackground(block: TimeBlock) {
   return 'bg.subtle'
 }
 
+function formatPlannerTime(
+  time: string,
+  locale: string,
+  timeFormat: TimeFormat,
+) {
+  const [hours, minutes] = time.split(':').map(Number)
+  return new Intl.DateTimeFormat(locale, {
+    hour: 'numeric',
+    hour12: timeFormat === '12h',
+    minute: '2-digit',
+  }).format(new Date(2000, 0, 1, hours, minutes))
+}
+
 function timeFromMinutes(minutes: number) {
-  return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
+  return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(
+    minutes % 60,
+  ).padStart(2, '0')}`
 }
 
 export function PlannerTimeline({
   blocks,
+  focusAvailable,
+  locale,
   now,
   onAddAt,
   onEdit,
   onStartFocus,
+  planning,
   selectedDate,
-  focusAvailable,
+  timeFormat,
 }: PlannerTimelineProps) {
   const { t } = useTranslation()
+  const dayStartMinutes = planning.dayStartHour * 60
+  const timelineMinutes = (planning.dayEndHour - planning.dayStartHour) * 60
+  const timelineHours = Array.from(
+    { length: planning.dayEndHour - planning.dayStartHour + 1 },
+    (_, offset) => planning.dayStartHour + offset,
+  )
   const isToday =
     selectedDate ===
     `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
@@ -72,31 +94,43 @@ export function PlannerTimeline({
               {timelineHours.map((hour) => (
                 <Box h={`${60 * pixelsPerMinute}px`} key={hour} pt="-1">
                   <Text color="fg.muted" fontSize="xs">
-                    {String(hour).padStart(2, '0')}:00
+                    {formatPlannerTime(
+                      `${String(hour).padStart(2, '0')}:00`,
+                      locale,
+                      timeFormat,
+                    )}
                   </Text>
                 </Box>
               ))}
             </Stack>
             <Box
+              flex="1"
               h={`${timelineMinutes * pixelsPerMinute}px`}
               position="relative"
-              flex="1"
             >
               {Array.from(
-                { length: timelineMinutes / plannerSlotMinutes },
+                {
+                  length: timelineMinutes / planning.timeIncrementMinutes,
+                },
                 (_, index) => {
                   const time = timeFromMinutes(
-                    dayStartMinutes + index * plannerSlotMinutes,
+                    dayStartMinutes + index * planning.timeIncrementMinutes,
                   )
                   return (
                     <Box
                       _hover={{ bg: 'bg.hover' }}
-                      aria-label={t('planner.addAtTime', { time })}
+                      aria-label={t('planner.addAtTime', {
+                        time: formatPlannerTime(time, locale, timeFormat),
+                      })}
                       as="button"
-                      borderTopWidth={index % 4 === 0 ? '1px' : '0'}
                       borderColor="border.subtle"
+                      borderTopWidth={
+                        index % (60 / planning.timeIncrementMinutes) === 0
+                          ? '1px'
+                          : '0'
+                      }
                       cursor="pointer"
-                      h={`${plannerSlotMinutes * pixelsPerMinute}px`}
+                      h={`${planning.timeIncrementMinutes * pixelsPerMinute}px`}
                       key={time}
                       onClick={() => onAddAt(time)}
                       w="full"
@@ -116,15 +150,16 @@ export function PlannerTimeline({
                   zIndex="1"
                 >
                   <Box bg="brand.solid" boxSize="2" rounded="full" />
-                  <Box bg="brand.solid" h="px" flex="1" />
+                  <Box bg="brand.solid" flex="1" h="px" />
                   <Text
                     bg="bg.panel"
                     fontSize="xs"
                     fontWeight="semibold"
                     px="2"
                   >
-                    {now.toLocaleTimeString([], {
-                      hour: '2-digit',
+                    {now.toLocaleTimeString(locale, {
+                      hour: 'numeric',
+                      hour12: timeFormat === '12h',
                       minute: '2-digit',
                     })}
                   </Text>
@@ -161,8 +196,14 @@ export function PlannerTimeline({
                           {block.title}
                         </Text>
                         <Text color="fg.muted" fontSize="xs">
-                          {block.startTime}–{block.endTime} ·{' '}
-                          {formatDuration(getTimeBlockDurationMinutes(block))}
+                          {formatPlannerTime(
+                            block.startTime,
+                            locale,
+                            timeFormat,
+                          )}
+                          –
+                          {formatPlannerTime(block.endTime, locale, timeFormat)}{' '}
+                          · {formatDuration(getTimeBlockDurationMinutes(block))}
                         </Text>
                       </Stack>
                       <HStack gap="1">
@@ -209,7 +250,8 @@ export function PlannerTimeline({
             <Flex gap="3" justify="space-between">
               <Stack gap="1">
                 <Text color="fg.muted" fontSize="sm">
-                  {block.startTime}–{block.endTime} ·{' '}
+                  {formatPlannerTime(block.startTime, locale, timeFormat)}–
+                  {formatPlannerTime(block.endTime, locale, timeFormat)} ·{' '}
                   {formatDuration(getTimeBlockDurationMinutes(block))}
                 </Text>
                 <Text fontWeight="semibold">{block.title}</Text>

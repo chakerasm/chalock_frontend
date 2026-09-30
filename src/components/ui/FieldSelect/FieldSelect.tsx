@@ -16,6 +16,7 @@ type FieldSelectProps<TFieldValues extends FieldValues> = {
   placeholder?: string
   disabled?: boolean
   required?: boolean
+  valueAsNumber?: boolean
 }
 
 export function FieldSelect<TFieldValues extends FieldValues>({
@@ -27,6 +28,7 @@ export function FieldSelect<TFieldValues extends FieldValues>({
   placeholder,
   disabled = false,
   required = false,
+  valueAsNumber = false,
 }: FieldSelectProps<TFieldValues>) {
   const id = `field-${String(name)}`
 
@@ -45,7 +47,18 @@ export function FieldSelect<TFieldValues extends FieldValues>({
             disabled={disabled}
             invalid={Boolean(fieldState.error)}
           >
-            <NativeSelect.Field id={id} placeholder={placeholder} {...field}>
+            <NativeSelect.Field
+              id={id}
+              {...field}
+              onChange={(event) =>
+                field.onChange(
+                  valueAsNumber
+                    ? Number(event.target.value)
+                    : event.target.value,
+                )
+              }
+              placeholder={placeholder}
+            >
               {options.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}

@@ -7,7 +7,7 @@ import { FormDialog } from '@/components/shared/FormDialog/FormDialog'
 import { FieldInput } from '@/components/ui/FieldInput/FieldInput'
 import { FieldSelect } from '@/components/ui/FieldSelect/FieldSelect'
 import { FieldTextarea } from '@/components/ui/FieldTextarea/FieldTextarea'
-import { timeBlockFormSchema } from '@/features/planner/schemas/planner.schemas'
+import { createTimeBlockFormSchema } from '@/features/planner/schemas/planner.schemas'
 import { findTimeBlockOverlaps } from '@/features/planner/services/planner-calculations'
 import type {
   CreateTimeBlockInput,
@@ -15,6 +15,7 @@ import type {
   TimeBlockCategory,
 } from '@/features/planner/types/planner.types'
 import type { Goal } from '@/features/goals/types/goals.types'
+import type { PlanningPreferences } from '@/features/settings/types/settings.types'
 import type { Task } from '@/features/tasks/types/tasks.types'
 
 type TimeBlockFormValues = {
@@ -40,6 +41,7 @@ type TimeBlockFormDialogProps = {
   onOpenChange: (open: boolean) => void
   onSubmit: (input: CreateTimeBlockInput) => void
   open: boolean
+  planning: PlanningPreferences
   tasks: Task[]
   timeBlock?: TimeBlock
 }
@@ -55,16 +57,24 @@ const categories: TimeBlockCategory[] = [
   'other',
 ]
 
+function addMinutes(time: string, minutesToAdd: number) {
+  const [hours, minutes] = time.split(':').map(Number)
+  const total = Math.min(hours * 60 + minutes + minutesToAdd, 23 * 60 + 59)
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+}
+
 function defaults(
   date: string,
+  planning: PlanningPreferences,
   defaultStartTime?: string,
   timeBlock?: TimeBlock,
 ): TimeBlockFormValues {
-  const startTime = timeBlock?.startTime ?? defaultStartTime ?? '09:00'
-  const [hours, minutes] = startTime.split(':').map(Number)
+  const startTime =
+    timeBlock?.startTime ??
+    defaultStartTime ??
+    `${String(planning.dayStartHour).padStart(2, '0')}:00`
   const endTime =
-    timeBlock?.endTime ??
-    `${String(Math.min(hours + 1, 23)).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
+    timeBlock?.endTime ?? addMinutes(startTime, planning.defaultBlockMinutes)
   return {
     category: timeBlock?.category ?? '',
     date: timeBlock?.date ?? date,
@@ -89,13 +99,16 @@ export function TimeBlockFormDialog({
   onOpenChange,
   onSubmit,
   open,
+  planning,
   tasks,
   timeBlock,
 }: TimeBlockFormDialogProps) {
   const { t } = useTranslation()
   const form = useForm<TimeBlockFormValues>({
-    defaultValues: defaults(defaultDate, defaultStartTime, timeBlock),
-    resolver: zodResolver(timeBlockFormSchema),
+    defaultValues: defaults(defaultDate, planning, defaultStartTime, timeBlock),
+    resolver: zodResolver(
+      createTimeBlockFormSchema(planning.timeIncrementMinutes),
+    ),
   })
   const values = form.watch()
   const overlaps =
@@ -107,8 +120,9 @@ export function TimeBlockFormDialog({
       : []
 
   useEffect(() => {
-    if (open) form.reset(defaults(defaultDate, defaultStartTime, timeBlock))
-  }, [defaultDate, defaultStartTime, form, open, timeBlock])
+    if (open)
+      form.reset(defaults(defaultDate, planning, defaultStartTime, timeBlock))
+  }, [defaultDate, defaultStartTime, form, open, planning, timeBlock])
 
   function handleSubmit(values: TimeBlockFormValues) {
     onSubmit({
@@ -125,7 +139,9 @@ export function TimeBlockFormDialog({
 
   return (
     <FormDialog
-      description={t('planner.formDescription')}
+      description={t('planner.formDescription', {
+        increment: planning.timeIncrementMinutes,
+      })}
       footer={
         timeBlock ? (
           <HStack gap="2" wrap="wrap">
@@ -190,6 +206,7 @@ export function TimeBlockFormDialog({
             label={t('planner.startTime')}
             name="startTime"
             required
+            step={planning.timeIncrementMinutes * 60}
             type="time"
           />
           <FieldInput
@@ -197,6 +214,7 @@ export function TimeBlockFormDialog({
             label={t('planner.endTime')}
             name="endTime"
             required
+            step={planning.timeIncrementMinutes * 60}
             type="time"
           />
         </SimpleGrid>

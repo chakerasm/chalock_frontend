@@ -14,6 +14,7 @@ import {
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { subscriptionInputSchema } from '@/features/subscriptions/schemas/subscriptions.schemas'
+import { useDefaultCurrency } from '@/features/settings/hooks/use-settings'
 import type {
   CreateSubscriptionInput,
   Subscription,
@@ -35,11 +36,12 @@ export function SubscriptionFormDialog({
   subscription,
 }: Props) {
   const { t } = useTranslation()
+  const defaultCurrency = useDefaultCurrency()
   const [form, setForm] = useState<CreateSubscriptionInput>({
     amount: 0,
     autoRenew: true,
     billingCycle: 'monthly',
-    currency: 'USD',
+    currency: defaultCurrency,
     name: '',
     nextBillingDate: '',
     status: 'active',
@@ -55,7 +57,7 @@ export function SubscriptionFormDialog({
               amount: 0,
               autoRenew: true,
               billingCycle: 'monthly',
-              currency: 'USD',
+              currency: defaultCurrency,
               name: '',
               nextBillingDate: '',
               status: 'active',
@@ -63,7 +65,7 @@ export function SubscriptionFormDialog({
       )
       setError('')
     }
-  }, [open, subscription])
+  }, [defaultCurrency, open, subscription])
 
   function update<K extends keyof CreateSubscriptionInput>(
     key: K,

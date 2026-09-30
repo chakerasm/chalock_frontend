@@ -9,6 +9,7 @@ import { FieldInputNumber } from '@/components/ui/FieldInputNumber/FieldInputNum
 import { FieldSelect } from '@/components/ui/FieldSelect/FieldSelect'
 import { FieldSwitch } from '@/components/ui/FieldSwitch/FieldSwitch'
 import { recurringTransactionInputSchema } from '@/features/finance/schemas/finance.schemas'
+import { useDefaultCurrency } from '@/features/settings/hooks/use-settings'
 import type {
   Account,
   CreateRecurringTransactionInput,
@@ -33,6 +34,7 @@ function today() {
 function createDefaultValues(
   accounts: Account[],
   recurringTransaction?: RecurringTransaction,
+  defaultCurrency = 'MAD',
 ): CreateRecurringTransactionInput {
   const account = accounts.find((item) => !item.isArchived)
 
@@ -40,7 +42,8 @@ function createDefaultValues(
     accountId: recurringTransaction?.accountId ?? account?.id ?? '',
     amount: recurringTransaction?.amount ?? 0,
     categoryId: recurringTransaction?.categoryId ?? '',
-    currency: recurringTransaction?.currency ?? account?.currency ?? 'MAD',
+    currency:
+      recurringTransaction?.currency ?? account?.currency ?? defaultCurrency,
     customInterval: recurringTransaction?.customInterval ?? {
       unit: 'month',
       value: 1,
@@ -64,9 +67,14 @@ export function RecurringTransactionFormDialog({
   recurringTransaction,
 }: Props) {
   const { t } = useTranslation()
+  const defaultCurrency = useDefaultCurrency()
   const availableAccounts = accounts.filter((account) => !account.isArchived)
   const form = useForm<CreateRecurringTransactionInput>({
-    defaultValues: createDefaultValues(accounts, recurringTransaction),
+    defaultValues: createDefaultValues(
+      accounts,
+      recurringTransaction,
+      defaultCurrency,
+    ),
     resolver: zodResolver(recurringTransactionInputSchema),
   })
   const type = useWatch({ control: form.control, name: 'type' })
@@ -78,11 +86,15 @@ export function RecurringTransactionFormDialog({
   useEffect(() => {
     if (!open) return
 
-    const values = createDefaultValues(accounts, recurringTransaction)
+    const values = createDefaultValues(
+      accounts,
+      recurringTransaction,
+      defaultCurrency,
+    )
     previousType.current = values.type
     previousAccountId.current = values.accountId
     form.reset(values)
-  }, [accounts, form, open, recurringTransaction])
+  }, [accounts, defaultCurrency, form, open, recurringTransaction])
 
   useEffect(() => {
     if (previousType.current === type) return
@@ -101,7 +113,9 @@ export function RecurringTransactionFormDialog({
 
   function handleOpenChange(nextOpen: boolean) {
     if (!nextOpen)
-      form.reset(createDefaultValues(accounts, recurringTransaction))
+      form.reset(
+        createDefaultValues(accounts, recurringTransaction, defaultCurrency),
+      )
     onOpenChange(nextOpen)
   }
 

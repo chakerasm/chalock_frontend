@@ -1,7 +1,10 @@
 import { Button, HStack, Menu, Portal, Text } from '@chakra-ui/react'
 import { CircleUserRound, LogOut, Settings, UserRound } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { toast } from '@/components/ui/Toaster/Toaster'
+import { useSettings } from '@/features/settings/hooks/use-settings'
+import { APP_ROUTES } from '@/lib/routes'
 
 type ProfileMenuProps = {
   onLogout?: () => void
@@ -9,6 +12,10 @@ type ProfileMenuProps = {
 
 export function ProfileMenu({ onLogout }: ProfileMenuProps) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const settingsQuery = useSettings()
+  const displayName =
+    settingsQuery.data?.profile.displayName ?? t('appShell.profileName')
 
   function notifyUnavailable() {
     toast.warning({ title: t('common.notAvailable') })
@@ -24,7 +31,7 @@ export function ProfileMenu({ onLogout }: ProfileMenuProps) {
         >
           <CircleUserRound aria-hidden="true" size={19} />
           <Text display={{ base: 'none', sm: 'inline' }} fontWeight="medium">
-            {t('appShell.profileName')}
+            {displayName}
           </Text>
         </Button>
       </Menu.Trigger>
@@ -38,7 +45,10 @@ export function ProfileMenu({ onLogout }: ProfileMenuProps) {
               </HStack>
             </Menu.Item>
             <Menu.Separator />
-            <Menu.Item onClick={notifyUnavailable} value="settings">
+            <Menu.Item
+              onClick={() => void navigate({ to: APP_ROUTES.settings })}
+              value="settings"
+            >
               <Settings aria-hidden="true" size={16} />
               {t('appShell.settings')}
             </Menu.Item>

@@ -9,6 +9,7 @@ import { FieldInputNumber } from '@/components/ui/FieldInputNumber/FieldInputNum
 import { FieldSelect } from '@/components/ui/FieldSelect/FieldSelect'
 import { FieldTextarea } from '@/components/ui/FieldTextarea/FieldTextarea'
 import { transactionInputSchema } from '@/features/finance/schemas/finance.schemas'
+import { useDefaultCurrency } from '@/features/settings/hooks/use-settings'
 import type {
   Account,
   CreateTransactionInput,
@@ -33,6 +34,7 @@ function today() {
 function createDefaultValues(
   accounts: Account[],
   transaction?: Transaction,
+  defaultCurrency = 'MAD',
 ): CreateTransactionInput {
   const account = accounts.find((item) => !item.isArchived)
 
@@ -40,7 +42,7 @@ function createDefaultValues(
     accountId: transaction?.accountId ?? account?.id ?? '',
     amount: transaction?.amount ?? 0,
     categoryId: transaction?.categoryId ?? '',
-    currency: transaction?.currency ?? account?.currency ?? 'MAD',
+    currency: transaction?.currency ?? account?.currency ?? defaultCurrency,
     description: transaction?.description ?? '',
     destinationAccountId: transaction?.destinationAccountId ?? '',
     recurringTransactionId: transaction?.recurringTransactionId,
@@ -60,9 +62,10 @@ export function TransactionFormDialog({
   transaction,
 }: Props) {
   const { t } = useTranslation()
+  const defaultCurrency = useDefaultCurrency()
   const availableAccounts = accounts.filter((account) => !account.isArchived)
   const form = useForm<CreateTransactionInput>({
-    defaultValues: createDefaultValues(accounts, transaction),
+    defaultValues: createDefaultValues(accounts, transaction, defaultCurrency),
     resolver: zodResolver(transactionInputSchema),
   })
   const type = useWatch({ control: form.control, name: 'type' })
@@ -74,11 +77,11 @@ export function TransactionFormDialog({
   useEffect(() => {
     if (!open) return
 
-    const values = createDefaultValues(accounts, transaction)
+    const values = createDefaultValues(accounts, transaction, defaultCurrency)
     previousType.current = values.type
     previousAccountId.current = values.accountId
     form.reset(values)
-  }, [accounts, form, open, transaction])
+  }, [accounts, defaultCurrency, form, open, transaction])
 
   useEffect(() => {
     if (previousType.current === type) return
@@ -97,7 +100,8 @@ export function TransactionFormDialog({
   }, [accountId, availableAccounts, form])
 
   function handleOpenChange(nextOpen: boolean) {
-    if (!nextOpen) form.reset(createDefaultValues(accounts, transaction))
+    if (!nextOpen)
+      form.reset(createDefaultValues(accounts, transaction, defaultCurrency))
     onOpenChange(nextOpen)
   }
 

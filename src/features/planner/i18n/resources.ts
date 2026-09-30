@@ -33,7 +33,7 @@ const en = {
     focusSummary: 'Focus: {{duration}}',
     focusUnavailable: 'Finish or cancel your active focus session first.',
     formDescription:
-      'Blocks use 15-minute planning increments. Overlaps are allowed and shown as a warning.',
+      'Blocks use {{increment}}-minute planning increments. Overlaps are allowed and shown as a warning.',
     goal: 'Goal',
     loadErrorDescription: 'Check your connection and try again.',
     loadErrorTitle: 'We couldn’t load your plan for this day.',
