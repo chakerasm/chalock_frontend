@@ -1,3 +1,4 @@
+﻿import { authResources } from '@/features/auth/i18n/resources'
 import { financeResources } from '@/features/finance/i18n/resources'
 import { focusResources } from '@/features/focus/i18n/resources'
 import { goalsResources } from '@/features/goals/i18n/resources'
@@ -214,6 +215,7 @@ export const resources = {
   en: {
     translation: {
       ...en,
+      ...authResources.en.translation,
       ...financeResources.en.translation,
       ...focusResources.en.translation,
       ...goalsResources.en.translation,
@@ -231,6 +233,7 @@ export const resources = {
   fr: {
     translation: {
       ...fr,
+      ...authResources.fr.translation,
       ...financeResources.fr.translation,
       ...focusResources.fr.translation,
       ...goalsResources.fr.translation,

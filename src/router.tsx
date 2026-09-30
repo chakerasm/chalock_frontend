@@ -1,8 +1,10 @@
-import { createRouter as createTanStackRouter } from '@tanstack/react-router'
+﻿import { createRouter as createTanStackRouter } from '@tanstack/react-router'
+import { unavailableAuth } from '@/features/auth/components/AuthProvider'
 import { routeTree } from './routeTree.gen'
 
 export function getRouter() {
   const router = createTanStackRouter({
+    context: { auth: unavailableAuth },
     routeTree,
     scrollRestoration: true,
     defaultPreload: 'intent',

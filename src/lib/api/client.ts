@@ -1,4 +1,19 @@
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
+﻿const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
+
+const unauthorizedListeners = new Set<() => void>()
+
+export function subscribeToUnauthorized(listener: () => void) {
+  unauthorizedListeners.add(listener)
+  return () => {
+    unauthorizedListeners.delete(listener)
+  }
+}
+
+function notifyUnauthorized() {
+  unauthorizedListeners.forEach((listener) => {
+    listener()
+  })
+}
 
 export class ApiError extends Error {
   constructor(
@@ -19,6 +34,7 @@ export function apiFetch(path: string, init?: RequestInit) {
     },
   }).then(async (response) => {
     if (response.ok) return response
+    if (response.status === 401) notifyUnauthorized()
 
     let message = `Request failed with status ${response.status}.`
     try {
