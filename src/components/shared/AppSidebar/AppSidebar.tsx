@@ -4,6 +4,7 @@ import type { LucideIcon } from 'lucide-react'
 import {
   Activity,
   Boxes,
+  Bell,
   CalendarCheck,
   CheckCheck,
   Clock3,
@@ -32,6 +33,7 @@ const navigationItems: NavigationItem[] = [
   { icon: CheckCheck, label: 'habits.title', to: APP_ROUTES.habits },
   { icon: Goal, label: 'goals.title', to: APP_ROUTES.goals },
   { icon: CalendarCheck, label: 'planner.title', to: APP_ROUTES.planner },
+  { icon: Bell, label: 'reminders.title', to: APP_ROUTES.reminders },
   { icon: NotebookPen, label: 'notes.title', to: APP_ROUTES.notes },
   { icon: WalletCards, label: 'finance.title', to: APP_ROUTES.finance },
   { icon: Repeat, label: 'subscriptions.title', to: APP_ROUTES.subscriptions },

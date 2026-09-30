@@ -1,0 +1,106 @@
+const en = {
+  reminders: {
+    atChosenTime: 'At the chosen time',
+    cancelBlock: 'Cancel',
+    completeReminder: 'Complete reminder',
+    createReminder: 'Create reminder',
+    date: 'Date',
+    delete: 'Delete',
+    deleteDescription: 'Delete “{{title}}”? This cannot be undone.',
+    deleteReminder: 'Delete reminder',
+    description: 'Keep important moments visible without losing their context.',
+    dismissReminder: 'Dismiss reminder',
+    doesNotRepeat: 'Does not repeat',
+    edit: 'Edit',
+    editReminder: 'Edit reminder',
+    enableNotifications: 'Enable browser notifications',
+    entityTypes: {
+      goal: 'Goal',
+      habit: 'Habit',
+      subscription: 'Subscription',
+      task: 'Task',
+      time_block: 'Time block',
+    },
+    eyebrow: 'Reminders',
+    empty: {
+      completed: {
+        title: 'No completed reminders yet.',
+        description: 'Completed and dismissed reminders appear here.',
+      },
+      recurring: {
+        title: 'No recurring reminders yet.',
+        description: 'Create a repeating reminder for a useful routine.',
+      },
+      upcoming: {
+        title: 'No upcoming reminders.',
+        description: 'Create a reminder to keep an important moment visible.',
+      },
+    },
+    formError:
+      'Add a title and choose a time, or a relative reminder for a related item.',
+    frequencies: {
+      daily: 'Daily',
+      monthly: 'Monthly',
+      weekly: 'Weekly',
+      yearly: 'Yearly',
+    },
+    loadError: 'We couldn’t load your reminders.',
+    noRelatedItem: 'No related item',
+    note: 'Note',
+    notificationsDenied:
+      'Browser notifications are unavailable. In-app reminders still work.',
+    notificationsEnabled: 'Browser notifications enabled.',
+    notificationsUnsupported: 'This browser does not support notifications.',
+    offsets: {
+      oneDay: '1 day before',
+      oneHour: '1 hour before',
+      oneWeek: '1 week before',
+      tenMinutes: '10 minutes before',
+      thirtyMinutes: '30 minutes before',
+      threeDays: '3 days before',
+    },
+    relatedItem: 'Related item',
+    relatedTo: 'Related to',
+    remindMe: 'Remind me',
+    repeat: 'Repeat',
+    saveError: 'Could not save this reminder.',
+    saveReminder: 'Save changes',
+    selectItem: 'Select an item',
+    snoozeTen: 'Snooze 10 min',
+    time: 'Time',
+    title: 'Reminders',
+    titleLabel: 'Title',
+    unscheduled: 'Needs a related date',
+    views: {
+      upcoming: 'Upcoming',
+      recurring: 'Recurring',
+      completed: 'Completed',
+    },
+    weekday: {
+      0: 'Sun',
+      1: 'Mon',
+      2: 'Tue',
+      3: 'Wed',
+      4: 'Thu',
+      5: 'Fri',
+      6: 'Sat',
+    },
+    weekdays: 'Selected weekdays',
+  },
+}
+const fr: typeof en = {
+  reminders: {
+    ...en.reminders,
+    createReminder: 'Creer un rappel',
+    title: 'Rappels',
+    views: {
+      upcoming: 'A venir',
+      recurring: 'Recurrents',
+      completed: 'Termines',
+    },
+  },
+}
+export const remindersResources = {
+  en: { translation: en },
+  fr: { translation: fr },
+} as const
