@@ -7,7 +7,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { Bell, BellRing, Check, Plus, X } from 'lucide-react'
+import { Bell, Check, Plus, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog/ConfirmDialog'
@@ -39,6 +39,12 @@ import type {
   ResolvedReminder,
 } from '@/features/reminders/types/reminders.types'
 import { useSubscriptions } from '@/features/subscriptions/hooks/use-subscriptions'
+import { useNotificationPreferences } from '@/features/settings/hooks/use-notification-preferences'
+import { useSettings } from '@/features/settings/hooks/use-settings'
+import {
+  getTimeInTimezone,
+  isWithinQuietHours,
+} from '@/features/settings/services/notification-preferences-calculations'
 import { useTasks } from '@/features/tasks/hooks/use-tasks'
 
 type ReminderView = 'upcoming' | 'recurring' | 'completed'
@@ -55,6 +61,8 @@ export function RemindersPage() {
   const habitsQuery = useHabits({ state: 'active' })
   const goalsQuery = useGoals({ status: 'active' })
   const blocksQuery = useTimeBlocks(getLocalDate())
+  const notificationPreferencesQuery = useNotificationPreferences()
+  const settingsQuery = useSettings()
   const createMutation = useCreateReminder()
   const updateMutation = useUpdateReminder()
   const deleteMutation = useDeleteReminder()
@@ -125,7 +133,16 @@ export function RemindersPage() {
   )
 
   useEffect(() => {
+    const preferences = notificationPreferencesQuery.data
+    const timezone = settingsQuery.data?.settings.timezone
     if (
+      !preferences?.browserEnabled ||
+      !preferences.categories.reminders ||
+      (timezone &&
+        isWithinQuietHours(
+          preferences.quietHours,
+          getTimeInTimezone(now, timezone),
+        )) ||
       typeof Notification === 'undefined' ||
       Notification.permission !== 'granted'
     )
@@ -137,7 +154,12 @@ export function RemindersPage() {
         notified.current.add(reminder.id)
         new Notification(reminder.title, { body: reminder.note })
       })
-  }, [reminders])
+  }, [
+    notificationPreferencesQuery.data,
+    now,
+    reminders,
+    settingsQuery.data?.settings.timezone,
+  ])
 
   const visible = reminders
     .filter((reminder) => {
@@ -190,20 +212,6 @@ export function RemindersPage() {
     setFormOpen(open)
     if (!open) setEditing(undefined)
   }
-  function enableNotifications() {
-    if (typeof Notification === 'undefined') {
-      toast.warning({ title: t('reminders.notificationsUnsupported') })
-      return
-    }
-    void Notification.requestPermission().then((permission) =>
-      toast[permission === 'granted' ? 'success' : 'warning']({
-        title:
-          permission === 'granted'
-            ? t('reminders.notificationsEnabled')
-            : t('reminders.notificationsDenied'),
-      }),
-    )
-  }
   async function deleteSelected() {
     if (deleting)
       await deleteMutation.mutateAsync(deleting.id, {
@@ -243,22 +251,16 @@ export function RemindersPage() {
       <Stack gap={{ base: '5', md: '7' }}>
         <PageHeader
           actions={
-            <HStack>
-              <Button onClick={enableNotifications} size="sm" variant="outline">
-                <BellRing aria-hidden="true" size={16} />
-                {t('reminders.enableNotifications')}
-              </Button>
-              <Button
-                colorPalette="brand"
-                onClick={() => {
-                  setEditing(undefined)
-                  setFormOpen(true)
-                }}
-              >
-                <Plus aria-hidden="true" size={18} />
-                {t('reminders.createReminder')}
-              </Button>
-            </HStack>
+            <Button
+              colorPalette="brand"
+              onClick={() => {
+                setEditing(undefined)
+                setFormOpen(true)
+              }}
+            >
+              <Plus aria-hidden="true" size={18} />
+              {t('reminders.createReminder')}
+            </Button>
           }
           description={t('reminders.description')}
           eyebrow={t('reminders.eyebrow')}

@@ -3,6 +3,50 @@ const en = {
     appearance: 'Appearance',
     appearanceDescription: 'Choose how Chalock follows your device theme.',
     avatarUrl: 'Avatar URL',
+    browserNotifications: 'Browser notifications',
+    browserNotificationsDescription:
+      'Requires an explicit browser permission grant.',
+    browserPermission: 'Browser permission',
+    browserPermissionStates: {
+      default: 'Not requested. Enable notifications to ask your browser.',
+      denied: 'Blocked. Change this permission in your browser settings.',
+      granted: 'Allowed by your browser.',
+      unsupported: 'This browser does not support notifications.',
+    },
+    emailNotifications: 'Email notifications',
+    emailNotificationsDescription:
+      'Email delivery will be available with a future backend service.',
+    enableBrowserNotifications: 'Enable browser notifications',
+    inAppNotifications: 'In-app notifications',
+    inAppNotificationsDescription: 'Show due items inside the application.',
+    notificationCategories: 'Notification categories',
+    notificationCategoriesDescription:
+      'Choose the product areas that may notify you.',
+    notificationCategory: {
+      finance: 'Finance',
+      goals: 'Goals',
+      habits: 'Habits',
+      planner: 'Planner',
+      reminders: 'Reminders',
+      subscriptions: 'Subscriptions',
+      tasks: 'Tasks',
+    },
+    notifications: 'Notifications',
+    notificationsDescription:
+      'Control when and how the application may notify you.',
+    notificationsLoadErrorDescription:
+      'Notification preferences could not be loaded. Please try again.',
+    notificationsLoadErrorTitle: 'We could not load notification preferences.',
+    notificationsSaveError: 'Could not save notification preferences.',
+    notificationsSaveSuccess: 'Notification preferences saved.',
+    quietHours: 'Quiet hours',
+    quietHoursDescription:
+      'Suppress browser delivery during this local-time range.',
+    quietHoursEnd: 'Ends',
+    quietHoursStart: 'Starts',
+    saveNotifications: 'Save notification preferences',
+    sounds: 'Notification sounds',
+    soundsDescription: 'Play sound for supported in-app notifications.',
     bio: 'Short bio',
     dateFormat: 'Date format',
     dateFormats: {
