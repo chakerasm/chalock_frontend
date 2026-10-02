@@ -26,6 +26,7 @@ import { Route as StatisticsRouteImport } from './routes/statistics'
 import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as TemplatesRouteImport } from './routes/templates'
+import { Route as FinanceAccountRouteImport } from './routes/finance/account'
 import { Route as FocusIndexRouteImport } from './routes/focus/index'
 import { Route as FocusPomodoroRouteImport } from './routes/focus/pomodoro'
 
@@ -114,6 +115,11 @@ const TemplatesRoute = TemplatesRouteImport.update({
   path: '/templates',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FinanceAccountRoute = FinanceAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => FinanceRoute,
+} as any)
 const FocusIndexRoute = FocusIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -128,7 +134,7 @@ const FocusPomodoroRoute = FocusPomodoroRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/activity': typeof ActivityRoute
-  '/finance': typeof FinanceRoute
+  '/finance': typeof FinanceRouteWithChildren
   '/focus': typeof FocusRouteWithChildren
   '/goals': typeof GoalsRoute
   '/habits': typeof HabitsRoute
@@ -143,13 +149,14 @@ export interface FileRoutesByFullPath {
   '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
   '/templates': typeof TemplatesRoute
+  '/finance/account': typeof FinanceAccountRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
   '/focus/': typeof FocusIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/activity': typeof ActivityRoute
-  '/finance': typeof FinanceRoute
+  '/finance': typeof FinanceRouteWithChildren
   '/goals': typeof GoalsRoute
   '/habits': typeof HabitsRoute
   '/login': typeof LoginRoute
@@ -163,6 +170,7 @@ export interface FileRoutesByTo {
   '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
   '/templates': typeof TemplatesRoute
+  '/finance/account': typeof FinanceAccountRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
   '/focus': typeof FocusIndexRoute
 }
@@ -170,7 +178,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/activity': typeof ActivityRoute
-  '/finance': typeof FinanceRoute
+  '/finance': typeof FinanceRouteWithChildren
   '/focus': typeof FocusRouteWithChildren
   '/goals': typeof GoalsRoute
   '/habits': typeof HabitsRoute
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
   '/templates': typeof TemplatesRoute
+  '/finance/account': typeof FinanceAccountRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
   '/focus/': typeof FocusIndexRoute
 }
@@ -208,6 +217,7 @@ export interface FileRouteTypes {
     | '/subscriptions'
     | '/tasks'
     | '/templates'
+    | '/finance/account'
     | '/focus/pomodoro'
     | '/focus/'
   fileRoutesByTo: FileRoutesByTo
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/subscriptions'
     | '/tasks'
     | '/templates'
+    | '/finance/account'
     | '/focus/pomodoro'
     | '/focus'
   id:
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/subscriptions'
     | '/tasks'
     | '/templates'
+    | '/finance/account'
     | '/focus/pomodoro'
     | '/focus/'
   fileRoutesById: FileRoutesById
@@ -256,7 +268,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ActivityRoute: typeof ActivityRoute
-  FinanceRoute: typeof FinanceRoute
+  FinanceRoute: typeof FinanceRouteWithChildren
   FocusRoute: typeof FocusRouteWithChildren
   GoalsRoute: typeof GoalsRoute
   HabitsRoute: typeof HabitsRoute
@@ -394,6 +406,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TemplatesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/finance/account': {
+      id: '/finance/account'
+      path: '/account'
+      fullPath: '/finance/account'
+      preLoaderRoute: typeof FinanceAccountRouteImport
+      parentRoute: typeof FinanceRoute
+    }
     '/focus/': {
       id: '/focus/'
       path: '/'
@@ -411,6 +430,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface FinanceRouteChildren {
+  FinanceAccountRoute: typeof FinanceAccountRoute
+}
+
+const FinanceRouteChildren: FinanceRouteChildren = {
+  FinanceAccountRoute: FinanceAccountRoute,
+}
+
+const FinanceRouteWithChildren =
+  FinanceRoute._addFileChildren(FinanceRouteChildren)
+
 interface FocusRouteChildren {
   FocusPomodoroRoute: typeof FocusPomodoroRoute
   FocusIndexRoute: typeof FocusIndexRoute
@@ -426,7 +456,7 @@ const FocusRouteWithChildren = FocusRoute._addFileChildren(FocusRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ActivityRoute: ActivityRoute,
-  FinanceRoute: FinanceRoute,
+  FinanceRoute: FinanceRouteWithChildren,
   FocusRoute: FocusRouteWithChildren,
   GoalsRoute: GoalsRoute,
   HabitsRoute: HabitsRoute,

@@ -15,6 +15,7 @@ export const APP_ROUTES = {
   review: '/review',
   subscriptions: '/subscriptions',
   finance: '/finance',
+  financeAccount: '/finance/account',
   templates: '/templates',
 } as const
 

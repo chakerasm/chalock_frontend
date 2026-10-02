@@ -13,6 +13,8 @@ import {
   Goal,
   History,
   ListTodo,
+  PanelLeftClose,
+  PanelLeftOpen,
   LayoutTemplate,
   NotebookPen,
   Repeat,
@@ -23,7 +25,9 @@ import { QuickAddDialog } from '@/features/quick-add/components/QuickAddDialog'
 import { APP_ROUTES, type AppRoute } from '@/lib/routes'
 
 type AppSidebarProps = {
+  collapsed?: boolean
   onNavigate?: () => void
+  onToggle?: () => void
 }
 
 type NavigationItem = {
@@ -46,7 +50,7 @@ const navigationItems: NavigationItem[] = [
   { icon: LayoutTemplate, label: 'Templates', to: APP_ROUTES.templates },
 ]
 
-export function AppSidebar({ onNavigate }: AppSidebarProps) {
+export function AppSidebar({ collapsed = false, onNavigate, onToggle }: AppSidebarProps) {
   const { t } = useTranslation()
   const matchRoute = useMatchRoute()
   const isActive = (to: AppRoute) =>
@@ -67,7 +71,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
       p="3"
     >
       <Stack gap="5">
-        <HStack gap="2" px="2">
+        <HStack gap="2" justify={collapsed ? "center" : "start"} px="2">
           <Flex
             align="center"
             bg="brand.solid"
@@ -80,13 +84,14 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
           >
             <Boxes aria-hidden="true" size={17} />
           </Flex>
-          <Text fontSize="md" fontWeight="bold" letterSpacing="tight">
+          <Text display={collapsed ? "none" : "block"} fontSize="md" fontWeight="bold" letterSpacing="tight">
             {t('app.name')}
           </Text>
         </HStack>
         <Stack gap="0.5">
           {navigationItems.map((item) => (
             <NavigationLink
+              collapsed={collapsed}
               isActive={isActive(item.to)}
               item={item}
               key={item.to}
@@ -98,7 +103,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             asChild
             colorPalette={isActive(APP_ROUTES.statistics) ? 'brand' : undefined}
             fontWeight={isActive(APP_ROUTES.statistics) ? 'semibold' : 'medium'}
-            justifyContent="flex-start"
+            justifyContent={collapsed ? "center" : "flex-start"}
             fontSize="sm"
             h="9"
             px="2.5"
@@ -113,10 +118,11 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
               to={APP_ROUTES.statistics}
             >
               <Activity aria-hidden="true" size={16} />
-              {t('statistics.title')}
+<Text display={collapsed ? "none" : "block"}>{t('statistics.title')}</Text>
             </RouterLink>
           </Button>
           <NavigationLink
+            collapsed={collapsed}
             isActive={isActive(APP_ROUTES.review)}
             item={{
               icon: BookOpenCheck,
@@ -126,6 +132,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             onNavigate={onNavigate}
           />
           <NavigationLink
+            collapsed={collapsed}
             isActive={isActive(APP_ROUTES.activity)}
             item={{
               icon: History,
@@ -137,8 +144,9 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
         </Stack>
       </Stack>
       <Stack gap="3">
-        <QuickAddDialog />
-        <Box borderTopWidth="1px" borderColor="border.subtle" pt="3">
+        <Button aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} onClick={onToggle} size="sm" variant="ghost">{collapsed ? <PanelLeftOpen aria-hidden="true" size={17} /> : <PanelLeftClose aria-hidden="true" size={17} />}</Button>
+        <Box display={collapsed ? "none" : "block"}><QuickAddDialog /></Box>
+        <Box borderTopWidth="1px" borderColor="border.subtle" display={collapsed ? "none" : "block"} pt="3">
           <Text color="fg.muted" fontSize="xs" px="2">
             {t('appShell.workspace')}
           </Text>
@@ -155,23 +163,25 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
 }
 
 type NavigationLinkProps = {
+  collapsed: boolean
   isActive: boolean
   item: NavigationItem
   onNavigate?: () => void
 }
 
-function NavigationLink({ isActive, item, onNavigate }: NavigationLinkProps) {
+function NavigationLink({ collapsed, isActive, item, onNavigate }: NavigationLinkProps) {
   const { t } = useTranslation()
   const Icon = item.icon
 
   return (
     <Button
       asChild
+      aria-label={t(item.label)}
       colorPalette={isActive ? 'brand' : undefined}
       fontWeight={isActive ? 'semibold' : 'medium'}
       fontSize="sm"
       h="9"
-      justifyContent="flex-start"
+      justifyContent={collapsed ? "center" : "flex-start"}
       px="2.5"
       rounded="control"
       variant={isActive ? 'subtle' : 'ghost'}
@@ -183,7 +193,7 @@ function NavigationLink({ isActive, item, onNavigate }: NavigationLinkProps) {
         to={item.to}
       >
         <Icon aria-hidden="true" size={16} />
-        {t(item.label)}
+<Text display={collapsed ? "none" : "block"}>{t(item.label)}</Text>
       </RouterLink>
     </Button>
   )

@@ -51,6 +51,7 @@ const subscriptionFieldsSchema = z.object({
     .regex(/^[A-Za-z]{3}$/),
   customBillingInterval: customIntervalSchema.optional(),
   description: z.string().trim().max(2_000).optional(),
+  imageUrl: z.string().url().optional(),
   name: z.string().trim().min(1).max(120),
   nextBillingDate: z.string().date(),
   notes: z.string().trim().max(5_000).optional(),

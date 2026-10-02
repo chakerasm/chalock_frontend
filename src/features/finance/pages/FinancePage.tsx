@@ -102,7 +102,7 @@ function MoneyList({
   if (!totals.length)
     return (
       <Text fontSize="lg" fontWeight="semibold">
-        —
+        â€”
       </Text>
     )
   return (
@@ -150,10 +150,12 @@ function SummaryCard({
   )
 }
 
-export function FinancePage() {
+type FinancePageProps = { initialSection?: FinanceSection }
+
+export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
   const { i18n, t } = useTranslation()
   const defaultCurrency = 'MAD'
-  const [section, setSection] = useState<FinanceSection>('overview')
+  const [section, setSection] = useState<FinanceSection>(initialSection)
   const isOverview = section === 'overview'
   const financeQuery = useFinanceSnapshot({
     accounts:
@@ -398,7 +400,7 @@ export function FinancePage() {
                   {t('finance.incomeVsExpenses')}
                 </Text>
                 <Text color="fg.muted" fontSize="xs">
-                  {latestMonth} · {overviewCurrency ?? defaultCurrency}
+                  {latestMonth} Â· {overviewCurrency ?? defaultCurrency}
                 </Text>
               </Stack>
               <HStack gap="3">
@@ -618,7 +620,7 @@ export function FinancePage() {
                         {payment.title}
                       </Text>
                       <Text color="fg.muted" fontSize="xs">
-                        {dateLabel(payment.date, i18n.language)} ·{' '}
+                        {dateLabel(payment.date, i18n.language)} Â·{' '}
                         {t(`finance.paymentSources.${payment.source}`)}
                       </Text>
                     </Stack>
@@ -832,7 +834,7 @@ export function FinancePage() {
                   <Table.Row key={item.id}>
                     <Table.Cell fontWeight="medium">{item.title}</Table.Cell>
                     <Table.Cell color="fg.muted">
-                      {t(`finance.types.${item.type}`)} ·{' '}
+                      {t(`finance.types.${item.type}`)} Â·{' '}
                       {t('finance.paymentSources.recurring')}
                     </Table.Cell>
                     <Table.Cell>

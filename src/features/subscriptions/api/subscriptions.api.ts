@@ -1,4 +1,4 @@
-﻿import { z } from 'zod'
+import { z } from 'zod'
 import {
   subscriptionFromAPISchema,
   subscriptionsFromAPISchema,
@@ -76,4 +76,8 @@ export function updateSubscriptionFromAPI({
     ),
     subscriptionFromAPISchema,
   )
+}
+
+export async function deleteSubscriptionFromAPI(subscriptionId: string) {
+  await apiFetch(subscriptionsEndpoint + '/' + encodeURIComponent(subscriptionId), { method: 'DELETE' })
 }

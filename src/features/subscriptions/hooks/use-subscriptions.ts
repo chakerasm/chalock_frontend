@@ -1,7 +1,8 @@
-﻿import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   cancelSubscription,
   createSubscription,
+  deleteSubscription,
   getSubscription,
   getSubscriptions,
   updateSubscription,
@@ -59,3 +60,6 @@ export const useUpdateSubscription = () =>
   )
 export const useCancelSubscription = () =>
   useSubscriptionMutation((id: string) => cancelSubscription(id))
+
+export const useDeleteSubscription = () =>
+  useSubscriptionMutation((id: string) => deleteSubscription(id))

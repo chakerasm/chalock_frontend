@@ -1,5 +1,6 @@
-﻿import {
+import {
   createSubscriptionFromAPI,
+  deleteSubscriptionFromAPI,
   getSubscriptionFromAPI,
   getSubscriptionsFromAPI,
   updateSubscriptionFromAPI,
@@ -56,4 +57,8 @@ export async function cancelSubscription(id: string) {
     status: 'cancelled',
     subscriptionId: id,
   })
+}
+
+export async function deleteSubscription(id: string) {
+  await deleteSubscriptionFromAPI(id)
 }

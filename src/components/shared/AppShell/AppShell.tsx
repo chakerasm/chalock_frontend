@@ -13,6 +13,7 @@ type AppShellProps = {
 export function AppShell({ children, onLogout }: AppShellProps) {
   const { t } = useTranslation()
   const [isNavigationOpen, setIsNavigationOpen] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true)
 
   return (
     <Flex bg="bg.canvas" color="fg" minH="100dvh">
@@ -22,14 +23,14 @@ export function AppShell({ children, onLogout }: AppShellProps) {
         borderColor="border.subtle"
         borderRightWidth="1px"
         display={{ base: 'none', lg: 'block' }}
-        flex="0 0 14rem"
+        flex={isSidebarCollapsed ? "0 0 4rem" : "0 0 14rem"}
         h="100dvh"
         overflowY="auto"
         position="sticky"
         top="0"
         zIndex="docked"
       >
-        <AppSidebar />
+<AppSidebar collapsed={isSidebarCollapsed} onToggle={() => setIsSidebarCollapsed((value) => !value)} />
       </Box>
       <Box flex="1" minW="0">
         <AppNavbar

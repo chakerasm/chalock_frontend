@@ -14,10 +14,10 @@ replacement boundary for a future API. Calendar fields are date-only values
 (`active|trial|paused|cancelled|expired`), optional category
 (`software|entertainment|productivity|fitness|education|cloud|finance|utilities|membership|other`),
 optional `paymentMethodId`, optional `trialEndDate`, `cancellationDate`,
-boolean `autoRenew`, optional `websiteUrl`, `notes`, `createdAt`, and
+boolean `autoRenew`, optional `websiteUrl`, optional absolute HTTPS/HTTP `imageUrl`, `notes`, `createdAt`, and
 `updatedAt`.
 
-Names are required (1–120 characters), currency is a three-letter ISO code,
+Names are required (1â€“120 characters), currency is a three-letter ISO code,
 and a custom interval is required when `billingCycle=custom`. Trial records
 must include `trialEndDate`. A referenced payment method must exist. Payment
 methods are display metadata only; never store full card numbers.
