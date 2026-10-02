@@ -6,6 +6,7 @@
   createTransactionFromAPI,
   deleteTransactionFromAPI,
   getFinanceSnapshotFromAPI,
+  type FinanceSnapshotResources,
   getFinanceSummaryFromAPI,
   updateAccountFromAPI,
   updateCategoryFromAPI,
@@ -48,8 +49,10 @@ import type {
   UpdateTransactionInput,
 } from '@/features/finance/types/finance.types'
 
-export async function getFinanceSnapshot(): Promise<FinanceSnapshot> {
-  return mapFinanceSnapshotFromAPI(await getFinanceSnapshotFromAPI())
+export async function getFinanceSnapshot(
+  resources?: FinanceSnapshotResources,
+): Promise<FinanceSnapshot> {
+  return mapFinanceSnapshotFromAPI(await getFinanceSnapshotFromAPI(resources))
 }
 
 export function getFinanceSummary(

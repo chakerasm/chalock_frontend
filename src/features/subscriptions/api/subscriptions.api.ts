@@ -10,6 +10,7 @@ import type {
   UpdateSubscriptionInput,
 } from '@/features/subscriptions/types/subscriptions.types'
 import { apiFetch } from '@/lib/api/client'
+import { parseApiJson } from '@/lib/api/response'
 
 const subscriptionsEndpoint = '/api/subscriptions'
 const subscriptionsListResponseSchema = z.union([
@@ -21,7 +22,7 @@ async function parseResponse<T>(
   response: Response | Promise<Response>,
   schema: { parse: (data: unknown) => T },
 ): Promise<T> {
-  return schema.parse(await (await response).json())
+  return parseApiJson(response, schema)
 }
 
 function createSearchParams(filters: SubscriptionListFilter) {

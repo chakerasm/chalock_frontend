@@ -10,12 +10,13 @@ import type {
   UpdateSettingsInput,
 } from '@/features/settings/types/settings.types'
 import { apiFetch } from '@/lib/api/client'
+import { parseApiJson } from '@/lib/api/response'
 
 async function json<T>(
   request: Promise<Response>,
   schema: { parse: (data: unknown) => T },
 ) {
-  return schema.parse(await (await request).json())
+  return parseApiJson(request, schema)
 }
 const patch = (body: unknown) => ({
   body: JSON.stringify(body),

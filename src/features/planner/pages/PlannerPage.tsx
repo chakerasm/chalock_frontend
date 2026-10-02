@@ -1,13 +1,15 @@
-﻿import {
+import {
   Box,
   Button,
   Container,
   Flex,
+  Grid,
   HStack,
+  SimpleGrid,
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { ChevronLeft, ChevronRight, Clock3, Plus } from 'lucide-react'
+import { Bell, CalendarDays, CheckSquare, ChevronLeft, Circle, ChevronRight, Clock3, Grid3X3, Plus, Sun, Timer } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog/ConfirmDialog'
@@ -37,6 +39,7 @@ import type {
 } from '@/features/planner/types/planner.types'
 import { useTasks } from '@/features/tasks/hooks/use-tasks'
 import { useSettings } from '@/features/settings/hooks/use-settings'
+import { useReminders } from '@/features/reminders/hooks/use-reminders'
 
 type PlannerPageProps = {
   onSelectedDateChange: (date: string) => void
@@ -62,9 +65,11 @@ export function PlannerPage({
   selectedDate,
 }: PlannerPageProps) {
   const { i18n, t } = useTranslation()
+  const [isFormOpen, setIsFormOpen] = useState(false)
   const blocksQuery = useTimeBlocks(selectedDate)
   const tasksQuery = useTasks()
-  const goalsQuery = useGoals({ status: 'active' })
+  const goalsQuery = useGoals({ status: 'active' }, isFormOpen)
+  const remindersQuery = useReminders()
   const createMutation = useCreateTimeBlock()
   const updateMutation = useUpdateTimeBlock()
   const deleteMutation = useDeleteTimeBlock()
@@ -78,7 +83,6 @@ export function PlannerPage({
   }
   const timeFormat = settingsQuery.data?.settings.timeFormat ?? '24h'
   const [now, setNow] = useState(() => new Date())
-  const [isFormOpen, setIsFormOpen] = useState(false)
   const [defaultStartTime, setDefaultStartTime] = useState<string>()
   const [blockToEdit, setBlockToEdit] = useState<TimeBlock>()
   const [blockToDelete, setBlockToDelete] = useState<TimeBlock>()
@@ -180,20 +184,10 @@ export function PlannerPage({
     })
   }
 
-  if (
-    blocksQuery.isPending ||
-    tasksQuery.isPending ||
-    goalsQuery.isPending ||
-    settingsQuery.isPending
-  )
+  if (blocksQuery.isPending)
     return <PlannerPageSkeleton />
 
-  if (
-    blocksQuery.isError ||
-    tasksQuery.isError ||
-    goalsQuery.isError ||
-    settingsQuery.isError
-  ) {
+  if (blocksQuery.isError) {
     return (
       <Container maxW="6xl" py={{ base: '8', md: '12' }}>
         <ErrorState
@@ -213,8 +207,7 @@ export function PlannerPage({
   }
 
   return (
-    <Container maxW="6xl" py={{ base: '6', md: '10' }}>
-      <Stack gap={{ base: '5', md: '7' }}>
+    <Container maxW="8xl" py={{ base: '6', md: '10' }}><Grid alignItems="start" gap="6" templateColumns={{ base: '1fr', xl: 'minmax(0, 1fr) 19rem' }}><Stack gap={{ base: '5', md: '7' }}>
         <PageHeader
           actions={
             <Button colorPalette="brand" onClick={() => openCreate()}>
@@ -226,6 +219,19 @@ export function PlannerPage({
           eyebrow={t('planner.eyebrow')}
           title={t('planner.title')}
         />
+        <SimpleGrid columns={{ base: 2, md: 4 }} gap="3">
+          {[
+            { icon: Clock3, label: 'Planned hours', value: formatDuration(plannedMinutes) },
+            { icon: Timer, label: 'Focus hours', value: formatDuration(focusMinutes) },
+            { icon: Sun, label: 'Free time', value: formatDuration(Math.max(0, (planning.dayEndHour - planning.dayStartHour) * 60 - plannedMinutes)) },
+            { icon: Grid3X3, label: 'Time blocks', value: String(blocks.length) },
+          ].map(({ icon: Icon, label, value }) => (
+            <Flex key={label} align="center" bg="bg.panel" borderWidth="1px" gap="3" p="4" rounded="l2" shadow="xs">
+              <Box bg="brand.subtle" color="brand.fg" p="2" rounded="full"><Icon aria-hidden="true" size={18} /></Box>
+              <Box><Text color="fg.muted" fontSize="xs">{label}</Text><Text fontSize="lg" fontWeight="bold">{value}</Text></Box>
+            </Flex>
+          ))}
+        </SimpleGrid>
         <Flex
           align={{ base: 'stretch', md: 'center' }}
           bg="bg.panel"
@@ -316,6 +322,18 @@ export function PlannerPage({
           </Box>
         )}
       </Stack>
+      <Stack display={{ base: 'none', xl: 'flex' }} gap="4" position="sticky" top="6">
+        <Box bg="bg.panel" borderWidth="1px" p="4" rounded="l2" shadow="xs">
+          <HStack justify="space-between" mb="3"><Text fontWeight="semibold">Today’s tasks</Text><CheckSquare aria-hidden="true" color="brand.fg" size={17} /></HStack>
+          <Stack gap="2">{(tasksQuery.data ?? []).filter((task) => task.dueDate === selectedDate && task.status !== 'completed').slice(0, 4).map((task) => <HStack key={task.id} gap="2" minW="0"><Circle aria-hidden="true" color="fg.muted" size={10} /><Text fontSize="sm" lineClamp={1}>{task.title}</Text></HStack>)}</Stack>
+        </Box>
+        <Box bg="bg.panel" borderWidth="1px" p="4" rounded="l2" shadow="xs">
+          <HStack justify="space-between" mb="3"><Text fontWeight="semibold">Upcoming reminders</Text><Bell aria-hidden="true" color="brand.fg" size={17} /></HStack>
+          <Stack gap="2">{(remindersQuery.data ?? []).filter((reminder) => reminder.status === 'scheduled').slice(0, 3).map((reminder) => <HStack key={reminder.id} gap="2" minW="0"><Bell aria-hidden="true" color="brand.fg" size={14} /><Text fontSize="sm" lineClamp={1}>{reminder.title}</Text></HStack>)}</Stack>
+        </Box>
+        <Box bg="brand.subtle" borderColor="brand.border" borderWidth="1px" p="4" rounded="l2"><HStack mb="1"><CalendarDays aria-hidden="true" color="brand.fg" size={17}/><Text color="brand.fg" fontWeight="semibold">Plan with intent</Text></HStack><Text color="fg.muted" fontSize="sm">Time blocking protects space for what matters most.</Text></Box>
+      </Stack>
+      </Grid>
       <TimeBlockFormDialog
         blocks={blocks}
         defaultDate={selectedDate}

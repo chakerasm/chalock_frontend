@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   FinanceSnapshot,
   Transaction,
 } from '@/features/finance/types/finance.types'
@@ -107,7 +107,7 @@ export function createSearchResults(sources: SearchSources): SearchResult[] {
     ...(sources.plannerBlocks ?? []).map<SearchResult>((block) => ({
       href: APP_ROUTES.planner,
       id: block.id,
-      metadata: `${block.date} Â· ${block.startTime}â€“${block.endTime}`,
+      metadata: `${block.date} \u00b7 ${block.startTime}\u2013${block.endTime}`,
       subtitle: compactText(block.description),
       title: block.title,
       type: 'planner',

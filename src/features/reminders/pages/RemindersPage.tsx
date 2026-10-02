@@ -55,12 +55,13 @@ function taskReferenceAt(date?: string, time?: string) {
 
 export function RemindersPage() {
   const { i18n, t } = useTranslation()
+  const [formOpen, setFormOpen] = useState(false)
   const remindersQuery = useReminders()
-  const tasksQuery = useTasks()
-  const subscriptionsQuery = useSubscriptions()
-  const habitsQuery = useHabits({ state: 'active' })
-  const goalsQuery = useGoals({ status: 'active' })
-  const blocksQuery = useTimeBlocks(getLocalDate())
+  const tasksQuery = useTasks({}, formOpen)
+  const subscriptionsQuery = useSubscriptions({}, formOpen)
+  const habitsQuery = useHabits({ state: 'active' }, formOpen)
+  const goalsQuery = useGoals({ status: 'active' }, formOpen)
+  const blocksQuery = useTimeBlocks(getLocalDate(), formOpen)
   const notificationPreferencesQuery = useNotificationPreferences()
   const settingsQuery = useSettings()
   const createMutation = useCreateReminder()
@@ -70,7 +71,6 @@ export function RemindersPage() {
   const acknowledgeMutation = useAcknowledgeReminder()
   const [view, setView] = useState<ReminderView>('upcoming')
   const [now, setNow] = useState(() => new Date())
-  const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Reminder>()
   const [deleting, setDeleting] = useState<Reminder>()
   const notified = useRef(new Set<string>())
@@ -179,13 +179,7 @@ export function RemindersPage() {
         Date.parse(left.nextTriggerAt ?? '') -
         Date.parse(right.nextTriggerAt ?? ''),
     )
-  const loading =
-    remindersQuery.isPending ||
-    tasksQuery.isPending ||
-    subscriptionsQuery.isPending ||
-    habitsQuery.isPending ||
-    goalsQuery.isPending ||
-    blocksQuery.isPending
+  const loading = remindersQuery.isPending
   const isSubmitting =
     createMutation.isPending ||
     updateMutation.isPending ||
@@ -220,14 +214,7 @@ export function RemindersPage() {
   }
 
   if (loading) return <RemindersPageSkeleton />
-  if (
-    remindersQuery.isError ||
-    tasksQuery.isError ||
-    subscriptionsQuery.isError ||
-    habitsQuery.isError ||
-    goalsQuery.isError ||
-    blocksQuery.isError
-  )
+  if (remindersQuery.isError)
     return (
       <Container maxW="6xl" py={{ base: '8', md: '12' }}>
         <ErrorState

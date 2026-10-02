@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+﻿import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   cancelSubscription,
   createSubscription,
@@ -19,8 +19,12 @@ export const subscriptionQueryKeys = {
     ['subscriptions', 'list', filters] as const,
 }
 
-export function useSubscriptions(filters: SubscriptionListFilter = {}) {
+export function useSubscriptions(
+  filters: SubscriptionListFilter = {},
+  enabled = true,
+) {
   return useQuery({
+    enabled,
     queryFn: () => getSubscriptions(filters),
     queryKey: subscriptionQueryKeys.list(filters),
   })

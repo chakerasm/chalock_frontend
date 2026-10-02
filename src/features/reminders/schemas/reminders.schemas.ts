@@ -60,13 +60,38 @@ export const reminderInputSchema = z
     }
   })
 
-export const reminderFromAPISchema = reminderInputSchema.and(
-  z.object({
-    createdAt: z.string().datetime(),
-    lastHandledAt: z.string().datetime().optional(),
-    id: z.string().min(1),
-    snoozedUntil: z.string().datetime().optional(),
-    status: reminderStatusSchema,
-    updatedAt: z.string().datetime(),
+const reminderResponseSchema = z.object({
+  advanceOffset: z.number().int().positive().optional(),
+  advanceUnit: z.enum(['minute', 'hour', 'day', 'week']).optional(),
+  createdAt: z.string().datetime({ offset: true }),
+  entityId: z.string().trim().min(1).optional(),
+  entityType: reminderEntityTypeSchema.optional(),
+  id: z.string().min(1),
+  lastHandledAt: z.string().datetime({ offset: true }).optional(),
+  note: z.string().trim().min(1).max(2_000).optional(),
+  recurrence: z
+    .object({
+      dayOfMonth: z.number().int().min(1).max(31).optional(),
+      daysOfWeek: z.array(z.number().int().min(0).max(6)).optional(),
+      endDate: z.string().date().optional(),
+      frequency: z.enum(['daily', 'weekly', 'monthly', 'yearly']),
+      interval: z.number().int().positive().max(365).optional().default(1),
+      month: z.number().int().min(1).max(12).optional(),
+    })
+    .optional(),
+  snoozedUntil: z.string().datetime({ offset: true }).optional(),
+  status: reminderStatusSchema,
+  title: z.string().trim().min(1).max(120),
+  triggerAt: z.string().datetime({ offset: true }).optional(),
+  updatedAt: z.string().datetime({ offset: true }),
+})
+
+export const reminderFromAPISchema = reminderResponseSchema.transform(
+  ({ advanceOffset, advanceUnit, ...reminder }) => ({
+    ...reminder,
+    advanceOffset:
+      advanceOffset && advanceUnit
+        ? { unit: advanceUnit, value: advanceOffset }
+        : undefined,
   }),
 )

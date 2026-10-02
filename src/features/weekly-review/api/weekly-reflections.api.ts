@@ -2,6 +2,7 @@
 import { weeklyReflectionSchema } from '@/features/weekly-review/schemas/weekly-review.schemas'
 import type { WeeklyReflectionFromAPI } from '@/features/weekly-review/types/weekly-review.types'
 import { ApiError, apiFetch } from '@/lib/api/client'
+import { parseApiJson } from '@/lib/api/response'
 
 const schema = weeklyReflectionSchema.extend({
   updatedAt: z.string().datetime(),
@@ -13,7 +14,7 @@ export async function getWeeklyReflectionFromAPI(
   week: string,
 ): Promise<WeeklyReflectionFromAPI | undefined> {
   try {
-    return schema.parse(await (await apiFetch(endpoint(week))).json())
+    return await parseApiJson(apiFetch(endpoint(week)), schema)
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) return undefined
     throw error
@@ -23,13 +24,12 @@ export async function getWeeklyReflectionFromAPI(
 export async function saveWeeklyReflectionToAPI(
   reflection: Omit<WeeklyReflectionFromAPI, 'updatedAt'>,
 ): Promise<WeeklyReflectionFromAPI> {
-  return schema.parse(
-    await (
-      await apiFetch(endpoint(reflection.weekStart), {
-        method: 'PUT',
-        body: JSON.stringify(reflection),
-        headers: { 'Content-Type': 'application/json' },
-      })
-    ).json(),
+  return parseApiJson(
+    apiFetch(endpoint(reflection.weekStart), {
+      method: 'PUT',
+      body: JSON.stringify(reflection),
+      headers: { 'Content-Type': 'application/json' },
+    }),
+    schema,
   )
 }

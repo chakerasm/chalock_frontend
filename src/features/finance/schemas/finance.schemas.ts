@@ -135,7 +135,7 @@ export const updateAccountInputSchema = accountInputSchema.partial()
 export const updateCategoryInputSchema = categoryInputSchema.partial()
 export const updateSavingsGoalInputSchema = savingsGoalInputSchema.partial()
 
-const timestampSchema = z.string().datetime()
+const timestampSchema = z.string().datetime({ offset: true })
 
 export const accountFromAPISchema = accountInputSchema.extend({
   createdAt: timestampSchema,
@@ -164,23 +164,34 @@ export const savingsGoalFromAPISchema = savingsGoalInputSchema.extend({
   updatedAt: timestampSchema,
 })
 
-export const accountsListResponseSchema = z.object({
-  data: z.array(accountFromAPISchema),
-  nextCursor: z.string().nullable().optional(),
-})
-export const transactionsListResponseSchema = z.object({
-  data: z.array(transactionFromAPISchema),
-  nextCursor: z.string().nullable().optional(),
-})
-export const financeCategoriesListResponseSchema = z.object({
-  data: z.array(financeCategoryFromAPISchema),
-  nextCursor: z.string().nullable().optional(),
-})
-export const recurringTransactionsListResponseSchema = z.object({
-  data: z.array(recurringTransactionFromAPISchema),
-  nextCursor: z.string().nullable().optional(),
-})
-export const savingsGoalsListResponseSchema = z.object({
-  data: z.array(savingsGoalFromAPISchema),
-  nextCursor: z.string().nullable().optional(),
-})
+function listResponseSchema<Item extends z.ZodType>(itemSchema: Item) {
+  const envelope = z.object({
+    data: z.array(itemSchema),
+    nextCursor: z.string().nullable().optional(),
+  })
+
+  return z.union([
+    envelope,
+    z.array(itemSchema).transform((data) => ({ data })),
+    z
+      .object({
+        items: z.array(itemSchema),
+        nextCursor: z.string().nullable().optional(),
+      })
+      .transform(({ items, nextCursor }) => ({ data: items, nextCursor })),
+  ])
+}
+
+export const accountsListResponseSchema = listResponseSchema(accountFromAPISchema)
+export const transactionsListResponseSchema = listResponseSchema(
+  transactionFromAPISchema,
+)
+export const financeCategoriesListResponseSchema = listResponseSchema(
+  financeCategoryFromAPISchema,
+)
+export const recurringTransactionsListResponseSchema = listResponseSchema(
+  recurringTransactionFromAPISchema,
+)
+export const savingsGoalsListResponseSchema = listResponseSchema(
+  savingsGoalFromAPISchema,
+)

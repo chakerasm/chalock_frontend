@@ -22,8 +22,9 @@ export const habitQueryKeys = {
     [...habitQueryKeys.all, "logs", from, to] as const,
 };
 
-export function useHabits(filters: HabitListFilter = {}) {
+export function useHabits(filters: HabitListFilter = {}, enabled = true) {
   return useQuery({
+    enabled,
     queryFn: () => getHabits(filters),
     queryKey: habitQueryKeys.list(filters),
   });

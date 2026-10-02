@@ -58,8 +58,9 @@ function formatGroupDate(date: string, locale: string) {
 
 export function TasksPage() {
   const { i18n, t } = useTranslation();
+  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const tasksQuery = useTasks();
-  const goalsQuery = useGoals({ status: "active" });
+  const goalsQuery = useGoals({ status: "active" }, isTaskFormOpen);
   const focusDashboardQuery = useTodayDashboard();
   const createTaskMutation = useCreateTask();
   const updateTaskMutation = useUpdateTask();
@@ -70,7 +71,6 @@ export function TasksPage() {
   const [priority, setPriority] = useState<TaskPriority | undefined>();
   const [search, setSearch] = useState("");
   const [quickTitle, setQuickTitle] = useState("");
-  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<Task>();
   const [taskToDelete, setTaskToDelete] = useState<Task>();
 
@@ -167,7 +167,7 @@ export function TasksPage() {
     );
   }
 
-  if (tasksQuery.isPending || goalsQuery.isPending) return <TasksPageSkeleton />;
+  if (tasksQuery.isPending) return <TasksPageSkeleton />;
   if (tasksQuery.isError) {
     return (
       <Container maxW="6xl" py={{ base: "8", md: "12" }}>

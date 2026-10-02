@@ -19,8 +19,9 @@ export const goalQueryKeys = {
     [...goalQueryKeys.all, "list", filters] as const,
 };
 
-export function useGoals(filters: GoalListFilter = {}) {
+export function useGoals(filters: GoalListFilter = {}, enabled = true) {
   return useQuery({
+    enabled,
     queryFn: () => getGoals(filters),
     queryKey: goalQueryKeys.list(filters),
   });

@@ -1,4 +1,4 @@
-import { Stack } from '@chakra-ui/react'
+﻿import { Stack } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
@@ -42,7 +42,7 @@ export function AccountFormDialog({
   open,
 }: Props) {
   const { t } = useTranslation()
-  const defaultCurrency = useDefaultCurrency()
+  const defaultCurrency = useDefaultCurrency(open)
   const form = useForm<CreateAccountInput>({
     defaultValues: createDefaultValues(account, defaultCurrency),
     resolver: zodResolver(accountInputSchema),

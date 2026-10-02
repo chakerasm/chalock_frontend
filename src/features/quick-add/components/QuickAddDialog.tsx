@@ -1,4 +1,4 @@
-import {
+﻿import {
   Button,
   Dialog,
   HStack,
@@ -446,7 +446,7 @@ function ExpenseQuickAdd({
 }: Pick<QuickAddFormProps, 'onCreated'> & { moreOptions: React.ReactNode }) {
   const { t } = useTranslation()
   const mutation = useCreateTransaction()
-  const finance = useFinanceSnapshot()
+  const finance = useFinanceSnapshot({ accounts: true })
   const currency = useDefaultCurrency()
   const form = useForm<z.infer<typeof expenseSchema>>({
     defaultValues: { accountId: '', amount: undefined, title: '' },

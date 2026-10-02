@@ -12,8 +12,9 @@ export const taskQueryKeys = {
   list: (filters: TaskListFilters) => [...taskQueryKeys.all, filters] as const,
 };
 
-export function useTasks(filters: TaskListFilters = {}) {
+export function useTasks(filters: TaskListFilters = {}, enabled = true) {
   return useQuery({
+    enabled,
     queryFn: () => getTasks(filters),
     queryKey: taskQueryKeys.list(filters),
   });

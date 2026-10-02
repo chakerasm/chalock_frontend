@@ -1,4 +1,4 @@
-﻿import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createTimeBlock,
   deleteTimeBlock,
@@ -13,19 +13,21 @@ import type {
 
 export const plannerQueryKeys = {
   all: ['planner'] as const,
-  allBlocks: ['planner', 'all-blocks'] as const,
+  allBlocks: (from: string, to: string) =>
+    ['planner', 'all-blocks', from, to] as const,
   day: (date: string) => [...plannerQueryKeys.all, 'day', date] as const,
 }
 
-export function useAllTimeBlocks() {
+export function useAllTimeBlocks(from: string, to: string) {
   return useQuery({
-    queryFn: getAllTimeBlocks,
-    queryKey: plannerQueryKeys.allBlocks,
+    queryFn: () => getAllTimeBlocks(from, to),
+    queryKey: plannerQueryKeys.allBlocks(from, to),
   })
 }
 
-export function useTimeBlocks(date: string) {
+export function useTimeBlocks(date: string, enabled = true) {
   return useQuery({
+    enabled,
     queryFn: () => getTimeBlocks(date),
     queryKey: plannerQueryKeys.day(date),
   })

@@ -91,12 +91,20 @@ export function createTimeBlockInputSchema(timeIncrementMinutes: number) {
 
 export const timeBlockFormSchema = createTimeBlockFormSchema(15)
 export const timeBlockInputSchema = createTimeBlockInputSchema(15)
-export const timeBlockFromAPISchema = timeBlockInputSchema.and(
-  z.object({
-    createdAt: z.string().datetime(),
-    focusSessionId: z.string().min(1).optional(),
-    id: z.string().min(1),
-    status: timeBlockStatusSchema,
-    updatedAt: z.string().datetime(),
-  }),
-)
+// Responses use the backend's portable HH:mm contract. The UI applies its
+// 15-minute increment rule only when users create or edit a block.
+export const timeBlockFromAPISchema = z.object({
+  category: timeBlockCategorySchema.optional(),
+  createdAt: z.string().datetime({ offset: true }),
+  date: z.string().date(),
+  description: z.string().max(2_000).optional(),
+  endTime: timeSchema,
+  focusSessionId: z.string().min(1).optional(),
+  goalId: z.string().trim().min(1).optional(),
+  id: z.string().min(1),
+  startTime: timeSchema,
+  status: timeBlockStatusSchema,
+  taskId: z.string().trim().min(1).optional(),
+  title: z.string().trim().min(1).max(120),
+  updatedAt: z.string().datetime({ offset: true }),
+})

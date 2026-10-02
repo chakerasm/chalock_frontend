@@ -22,7 +22,7 @@ export function useWeeklyReview(weekOffset: number) {
   const tasksQuery = useTasks()
   const habitsQuery = useHabits({ state: 'active' })
   const goalsQuery = useGoals()
-  const plannerQuery = useAllTimeBlocks()
+  const plannerQuery = useAllTimeBlocks(range.from, range.to)
   const financeQuery = useFinanceSnapshot()
   const subscriptionsQuery = useSubscriptions()
   const historyFrom = (habitsQuery.data ?? []).reduce((earliest, habit) => {

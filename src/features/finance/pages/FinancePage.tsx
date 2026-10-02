@@ -1,4 +1,4 @@
-﻿import {
+import {
   Box,
   Button,
   Container,
@@ -68,7 +68,6 @@ import type {
   Transaction,
   TransactionListFilters,
 } from '@/features/finance/types/finance.types'
-import { useDefaultCurrency } from '@/features/settings/hooks/use-settings'
 import { useSubscriptions } from '@/features/subscriptions/hooks/use-subscriptions'
 
 const sections = [
@@ -103,7 +102,7 @@ function MoneyList({
   if (!totals.length)
     return (
       <Text fontSize="lg" fontWeight="semibold">
-        â€”
+        —
       </Text>
     )
   return (
@@ -153,8 +152,20 @@ function SummaryCard({
 
 export function FinancePage() {
   const { i18n, t } = useTranslation()
-  const defaultCurrency = useDefaultCurrency()
-  const financeQuery = useFinanceSnapshot()
+  const defaultCurrency = 'MAD'
+  const [section, setSection] = useState<FinanceSection>('overview')
+  const isOverview = section === 'overview'
+  const financeQuery = useFinanceSnapshot({
+    accounts:
+      isOverview ||
+      section === 'transactions' ||
+      section === 'recurring' ||
+      section === 'accounts',
+    categories: section === 'transactions' || section === 'recurring',
+    recurringTransactions: section === 'recurring',
+    savingsGoals: section === 'savings',
+    transactions: isOverview || section === 'transactions',
+  })
   const summaryDate = new Date()
   const summaryYear = String(summaryDate.getFullYear())
   const summaryMonth = String(summaryDate.getMonth() + 1).padStart(2, '0')
@@ -167,8 +178,12 @@ export function FinancePage() {
     ).getDate(),
   ).padStart(2, '0')
   const summaryTo = `${summaryYear}-${summaryMonth}-${summaryLastDay}`
-  const financeSummaryQuery = useFinanceSummary(summaryFrom, summaryTo)
-  const subscriptionsQuery = useSubscriptions()
+  const financeSummaryQuery = useFinanceSummary(
+    summaryFrom,
+    summaryTo,
+    isOverview,
+  )
+  const subscriptionsQuery = useSubscriptions({}, section === 'recurring')
   const createAccount = useCreateAccount()
   const updateAccount = useUpdateAccount()
   const createTransaction = useCreateTransaction()
@@ -180,7 +195,6 @@ export function FinancePage() {
   const updateRecurring = useUpdateRecurringTransaction()
   const createSavingsGoal = useCreateSavingsGoal()
   const updateSavingsGoal = useUpdateSavingsGoal()
-  const [section, setSection] = useState<FinanceSection>('overview')
   const [transactionFilters, setTransactionFilters] =
     useState<TransactionListFilters>({})
   const [accountFormOpen, setAccountFormOpen] = useState(false)
@@ -197,16 +211,16 @@ export function FinancePage() {
 
   if (
     financeQuery.isPending ||
-    subscriptionsQuery.isPending ||
-    financeSummaryQuery.isPending
+    (isOverview && financeSummaryQuery.isPending) ||
+    (section === 'recurring' && subscriptionsQuery.isPending)
   )
     return <FinancePageSkeleton />
   if (
     financeQuery.isError ||
     subscriptionsQuery.isError ||
-    financeSummaryQuery.isError ||
+    (isOverview && financeSummaryQuery.isError) ||
     !financeQuery.data ||
-    !financeSummaryQuery.data
+    (isOverview && !financeSummaryQuery.data)
   ) {
     return (
       <Container maxW="6xl" py={{ base: '8', md: '12' }}>
@@ -221,7 +235,12 @@ export function FinancePage() {
     )
   }
 
-  const financeSummary = financeSummaryQuery.data
+  const financeSummary = financeSummaryQuery.data ?? {
+    byCurrency: [],
+    from: summaryFrom,
+    to: summaryTo,
+    upcomingPayments: [],
+  }
   const {
     accounts,
     categories,
@@ -379,7 +398,7 @@ export function FinancePage() {
                   {t('finance.incomeVsExpenses')}
                 </Text>
                 <Text color="fg.muted" fontSize="xs">
-                  {latestMonth} Â· {overviewCurrency ?? defaultCurrency}
+                  {latestMonth} · {overviewCurrency ?? defaultCurrency}
                 </Text>
               </Stack>
               <HStack gap="3">
@@ -599,7 +618,7 @@ export function FinancePage() {
                         {payment.title}
                       </Text>
                       <Text color="fg.muted" fontSize="xs">
-                        {dateLabel(payment.date, i18n.language)} Â·{' '}
+                        {dateLabel(payment.date, i18n.language)} ·{' '}
                         {t(`finance.paymentSources.${payment.source}`)}
                       </Text>
                     </Stack>
@@ -813,7 +832,7 @@ export function FinancePage() {
                   <Table.Row key={item.id}>
                     <Table.Cell fontWeight="medium">{item.title}</Table.Cell>
                     <Table.Cell color="fg.muted">
-                      {t(`finance.types.${item.type}`)} Â·{' '}
+                      {t(`finance.types.${item.type}`)} ·{' '}
                       {t('finance.paymentSources.recurring')}
                     </Table.Cell>
                     <Table.Cell>

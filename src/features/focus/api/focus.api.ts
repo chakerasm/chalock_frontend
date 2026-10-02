@@ -12,6 +12,7 @@ import type {
   StartPomodoroInput,
 } from '@/features/focus/types/focus.types'
 import { apiFetch } from '@/lib/api/client'
+import { parseApiJson } from '@/lib/api/response'
 
 const listSchema = z.object({
   data: z.array(focusSessionFromAPISchema),
@@ -38,13 +39,15 @@ export async function getFocusTimerSnapshotFromAPI(): Promise<FocusTimerSnapshot
       apiFetch('/api/pomodoro-cycles/active'),
     ],
   )
-  const sessions = listSchema.parse(await sessionsResponse.json()).data
-  const activeTimer = activeFocusTimerFromAPISchema
-    .nullable()
-    .parse(await timerResponse.json())
-  const activePomodoro = pomodoroCycleFromAPISchema
-    .nullable()
-    .parse(await pomodoroResponse.json())
+  const sessions = (await parseApiJson(sessionsResponse, listSchema)).data
+  const activeTimer = await parseApiJson(
+    timerResponse,
+    activeFocusTimerFromAPISchema.nullable(),
+  )
+  const activePomodoro = await parseApiJson(
+    pomodoroResponse,
+    pomodoroCycleFromAPISchema.nullable(),
+  )
   return {
     activeTimer,
     activePomodoro,
@@ -58,7 +61,7 @@ export async function startFocusTimerFromAPI(input: StartFocusTimerInput) {
     '/api/focus-sessions',
     json('POST', startFocusTimerInputSchema.parse(input)),
   )
-  return activeFocusTimerFromAPISchema.parse(await response.json())
+  return parseApiJson(response, activeFocusTimerFromAPISchema)
 }
 export async function updateFocusTimerFromAPI(
   sessionId: string,
@@ -68,14 +71,14 @@ export async function updateFocusTimerFromAPI(
     `/api/focus-sessions/${encodeURIComponent(sessionId)}`,
     json('PATCH', { action }),
   )
-  return activeFocusTimerFromAPISchema.parse(await response.json())
+  return parseApiJson(response, activeFocusTimerFromAPISchema)
 }
 export async function startPomodoroFromAPI(input: StartPomodoroInput) {
   const response = await apiFetch(
     '/api/pomodoro-cycles',
     json('POST', startPomodoroInputSchema.parse(input)),
   )
-  return pomodoroCycleFromAPISchema.parse(await response.json())
+  return parseApiJson(response, pomodoroCycleFromAPISchema)
 }
 export async function updatePomodoroFromAPI(
   cycleId: string,
@@ -85,5 +88,5 @@ export async function updatePomodoroFromAPI(
     `/api/pomodoro-cycles/${encodeURIComponent(cycleId)}`,
     json('PATCH', { action }),
   )
-  return pomodoroCycleFromAPISchema.parse(await response.json())
+  return parseApiJson(response, pomodoroCycleFromAPISchema)
 }

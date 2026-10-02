@@ -1,4 +1,4 @@
-import {
+﻿import {
   createTaskInputSchema,
   taskFromAPISchema,
   taskListResponseFromAPISchema,
@@ -11,6 +11,7 @@ import type {
   UpdateTaskInput,
 } from '@/features/tasks/types/tasks.types'
 import { apiFetch } from '@/lib/api/client'
+import { parseApiJson } from '@/lib/api/response'
 
 const tasksEndpoint = '/api/tasks'
 
@@ -20,7 +21,7 @@ async function parseResponse<T>(
   errorMessage: string,
 ): Promise<T> {
   if (!response.ok) throw new Error(errorMessage)
-  return schema.parse(await response.json())
+  return parseApiJson(response, schema)
 }
 
 function createSearchParams(filters: TaskListFilters) {

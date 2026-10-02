@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+﻿import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   getSettingsSnapshot,
   updateSettingsSnapshot,
@@ -10,8 +10,9 @@ export const settingsQueryKeys = {
   snapshot: ['settings', 'snapshot'] as const,
 }
 
-export function useSettings() {
+export function useSettings(enabled = true) {
   return useQuery({
+    enabled,
     queryFn: getSettingsSnapshot,
     queryKey: settingsQueryKeys.snapshot,
   })
@@ -26,6 +27,6 @@ export function useUpdateSettings() {
   })
 }
 
-export function useDefaultCurrency() {
-  return useSettings().data?.settings.defaultCurrency ?? 'MAD'
+export function useDefaultCurrency(enabled = true) {
+  return useSettings(enabled).data?.settings.defaultCurrency ?? 'MAD'
 }

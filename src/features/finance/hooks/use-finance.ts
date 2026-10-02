@@ -14,6 +14,7 @@ import {
   updateSavingsGoal,
   updateTransaction,
 } from '@/features/finance/services/finance.service'
+import type { FinanceSnapshotResources } from '@/features/finance/api/finance.api'
 import type {
   CreateAccountInput,
   CreateCategoryInput,
@@ -29,20 +30,26 @@ import type {
 
 export const financeQueryKeys = {
   all: ['finance'] as const,
-  snapshot: ['finance', 'snapshot'] as const,
+  snapshot: (resources: FinanceSnapshotResources) =>
+    ['finance', 'snapshot', resources] as const,
   summary: (from: string, to: string) =>
     ['finance', 'summary', from, to] as const,
 }
 
-export function useFinanceSnapshot() {
+export function useFinanceSnapshot(
+  resources: FinanceSnapshotResources = {},
+  enabled = true,
+) {
   return useQuery({
-    queryFn: getFinanceSnapshot,
-    queryKey: financeQueryKeys.snapshot,
+    enabled,
+    queryFn: () => getFinanceSnapshot(resources),
+    queryKey: financeQueryKeys.snapshot(resources),
   })
 }
 
-export function useFinanceSummary(from: string, to: string) {
+export function useFinanceSummary(from: string, to: string, enabled = true) {
   return useQuery({
+    enabled,
     queryKey: financeQueryKeys.summary(from, to),
     queryFn: () => getFinanceSummary(from, to),
   })

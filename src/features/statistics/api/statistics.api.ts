@@ -1,6 +1,7 @@
 ﻿import { z } from 'zod'
 import type { StatisticsDateRange } from '@/features/statistics/types/statistics.types'
 import { apiFetch } from '@/lib/api/client'
+import { parseApiJson } from '@/lib/api/response'
 
 const rangeSchema = z.object({
   from: z.string().date(),
@@ -96,9 +97,9 @@ export async function getStatisticsFromAPI(
     apiFetch(`/api/statistics/habits?${query}`),
   ])
   return {
-    summary: summarySchema.parse(await summary.json()),
-    focus: focusSchema.parse(await focus.json()),
-    tasks: tasksSchema.parse(await tasks.json()),
-    habits: habitsSchema.parse(await habits.json()),
+    summary: await parseApiJson(summary, summarySchema),
+    focus: await parseApiJson(focus, focusSchema),
+    tasks: await parseApiJson(tasks, tasksSchema),
+    habits: await parseApiJson(habits, habitsSchema),
   }
 }

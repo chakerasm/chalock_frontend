@@ -1,4 +1,4 @@
-﻿import { Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
 import { Pencil, Play } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -28,16 +28,30 @@ type PlannerTimelineProps = {
   timeFormat: TimeFormat
 }
 
-function categoryBackground(block: TimeBlock) {
-  if (block.status === 'completed') return 'bg.subtle'
-  if (block.status === 'cancelled') return 'bg.muted'
-  if (block.category === 'focus' || block.category === 'study')
-    return 'brand.subtle'
-  if (block.category === 'fitness') return 'success.subtle'
-  if (block.category === 'break') return 'warning.subtle'
-  return 'bg.subtle'
-}
+type TimeBlockColor = { accent: string; background: string }
 
+function getTimeBlockColor(block: TimeBlock): TimeBlockColor {
+  if (block.status === 'completed')
+    return { accent: 'success.solid', background: 'success.subtle' }
+  if (block.status === 'cancelled')
+    return { accent: 'fg.disabled', background: 'bg.muted' }
+
+  switch (block.category) {
+    case 'focus':
+    case 'work':
+      return { accent: 'brand.solid', background: 'brand.muted' }
+    case 'study':
+    case 'break':
+      return { accent: 'warning.solid', background: 'warning.subtle' }
+    case 'fitness':
+    case 'personal':
+      return { accent: 'success.solid', background: 'success.subtle' }
+    case 'routine':
+      return { accent: 'danger.solid', background: 'danger.subtle' }
+    default:
+      return { accent: 'border.emphasized', background: 'bg.subtle' }
+  }
+}
 function formatPlannerTime(
   time: string,
   locale: string,
@@ -170,11 +184,13 @@ export function PlannerTimeline({
                   (timeToMinutes(block.startTime) - dayStartMinutes) *
                   pixelsPerMinute
                 const current = isTimeBlockCurrent(block, now)
+                const colors = getTimeBlockColor(block)
                 return (
                   <Box
-                    bg={categoryBackground(block)}
-                    borderColor={current ? 'brand.border' : 'border.subtle'}
-                    borderLeftWidth="3px"
+                    bg={colors.background}
+                    borderColor={current ? 'brand.border' : colors.accent}
+                    borderLeftColor={colors.accent}
+                    borderLeftWidth="4px"
                     borderWidth="1px"
                     cursor="default"
                     insetInlineEnd="3"
@@ -201,9 +217,9 @@ export function PlannerTimeline({
                             locale,
                             timeFormat,
                           )}
-                          –
-                          {formatPlannerTime(block.endTime, locale, timeFormat)}{' '}
-                          · {formatDuration(getTimeBlockDurationMinutes(block))}
+                          {' \u2013 '}
+                          {formatPlannerTime(block.endTime, locale, timeFormat)}
+                          {' \u00b7 '}{formatDuration(getTimeBlockDurationMinutes(block))}
                         </Text>
                       </Stack>
                       <HStack gap="1">
@@ -241,7 +257,9 @@ export function PlannerTimeline({
       <Stack display={{ base: 'flex', md: 'none' }} gap="3">
         {blocks.map((block) => (
           <Box
-            bg={categoryBackground(block)}
+            bg={getTimeBlockColor(block).background}
+            borderLeftColor={getTimeBlockColor(block).accent}
+            borderLeftWidth="4px"
             borderWidth="1px"
             key={block.id}
             p="4"
@@ -250,8 +268,8 @@ export function PlannerTimeline({
             <Flex gap="3" justify="space-between">
               <Stack gap="1">
                 <Text color="fg.muted" fontSize="sm">
-                  {formatPlannerTime(block.startTime, locale, timeFormat)}–
-                  {formatPlannerTime(block.endTime, locale, timeFormat)} ·{' '}
+                  {formatPlannerTime(block.startTime, locale, timeFormat)}{' \u2013 '}
+                  {formatPlannerTime(block.endTime, locale, timeFormat)}{' \u00b7 '}
                   {formatDuration(getTimeBlockDurationMinutes(block))}
                 </Text>
                 <Text fontWeight="semibold">{block.title}</Text>

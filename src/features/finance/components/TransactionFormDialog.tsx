@@ -1,4 +1,4 @@
-import { Stack } from '@chakra-ui/react'
+﻿import { Stack } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useRef } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
@@ -62,7 +62,7 @@ export function TransactionFormDialog({
   transaction,
 }: Props) {
   const { t } = useTranslation()
-  const defaultCurrency = useDefaultCurrency()
+  const defaultCurrency = useDefaultCurrency(open)
   const availableAccounts = accounts.filter((account) => !account.isArchived)
   const form = useForm<CreateTransactionInput>({
     defaultValues: createDefaultValues(accounts, transaction, defaultCurrency),

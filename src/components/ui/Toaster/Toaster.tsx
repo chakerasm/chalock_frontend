@@ -1,4 +1,4 @@
-import {
+﻿import {
   Toaster as ChakraToaster,
   CloseButton,
   createToaster,
@@ -38,18 +38,22 @@ export const toast = {
 function getToastStyles(type: string | undefined) {
   switch (type) {
     case 'error':
-      return { bg: 'danger.subtle', borderColor: 'danger.fg', color: 'danger.fg' }
+      return {
+        bg: 'danger.solid',
+        borderColor: 'danger.solid',
+        color: 'fg.inverted',
+      }
     case 'success':
       return {
-        bg: 'success.subtle',
-        borderColor: 'success.fg',
-        color: 'success.fg',
+        bg: 'success.solid',
+        borderColor: 'success.solid',
+        color: 'fg.inverted',
       }
     case 'warning':
       return {
-        bg: 'warning.subtle',
-        borderColor: 'warning.fg',
-        color: 'warning.fg',
+        bg: 'warning.solid',
+        borderColor: 'warning.solid',
+        color: 'fg.inverted',
       }
     default:
       return { bg: 'bg.elevated', borderColor: 'border.subtle', color: 'fg' }

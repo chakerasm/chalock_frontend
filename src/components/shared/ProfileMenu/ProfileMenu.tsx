@@ -1,6 +1,7 @@
-import { Button, HStack, Menu, Portal, Text } from '@chakra-ui/react'
+﻿import { Button, HStack, Menu, Portal, Text } from '@chakra-ui/react'
 import { CircleUserRound, LogOut, Settings, UserRound } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from '@/components/ui/Toaster/Toaster'
 import { useSettings } from '@/features/settings/hooks/use-settings'
@@ -13,7 +14,8 @@ type ProfileMenuProps = {
 export function ProfileMenu({ onLogout }: ProfileMenuProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const settingsQuery = useSettings()
+  const [isOpen, setIsOpen] = useState(false)
+  const settingsQuery = useSettings(isOpen)
   const displayName =
     settingsQuery.data?.profile.displayName ?? t('appShell.profileName')
 
@@ -22,7 +24,10 @@ export function ProfileMenu({ onLogout }: ProfileMenuProps) {
   }
 
   return (
-    <Menu.Root positioning={{ placement: 'bottom-end' }}>
+    <Menu.Root
+      onOpenChange={(details) => setIsOpen(details.open)}
+      positioning={{ placement: 'bottom-end' }}
+    >
       <Menu.Trigger asChild>
         <Button
           aria-label={t('appShell.profileMenu')}

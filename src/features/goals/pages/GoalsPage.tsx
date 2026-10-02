@@ -21,12 +21,10 @@ import { toast } from "@/components/ui/Toaster/Toaster";
 import { GoalFormDialog } from "@/features/goals/components/GoalFormDialog";
 import { useCreateGoal, useGoals } from "@/features/goals/hooks/use-goals";
 import { GoalDetailPage } from "@/features/goals/pages/GoalDetailPage";
-import { getGoalProgressSummary } from "@/features/goals/services/goal-progress.service";
 import type {
   CreateGoalInput,
   GoalStatus,
 } from "@/features/goals/types/goals.types";
-import { useTasks } from "@/features/tasks/hooks/use-tasks";
 
 const statuses: Array<GoalStatus | "all"> = [
   "active",
@@ -55,7 +53,6 @@ function GoalsListPage() {
   const [status, setStatus] = useState<GoalStatus | "all">("active");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const goalsQuery = useGoals(status === "all" ? {} : { status });
-  const tasksQuery = useTasks();
   const createMutation = useCreateGoal();
 
   if (goalsQuery.isPending) return <GoalsListSkeleton />;
@@ -68,7 +65,6 @@ function GoalsListPage() {
   }
 
   const goals = goalsQuery.data ?? [];
-  const tasks = tasksQuery.data ?? [];
 
   function handleCreate(input: CreateGoalInput) {
     createMutation.mutate(input, {
@@ -126,11 +122,7 @@ function GoalsListPage() {
             rounded="l2"
           >
             {goals.map((goal) => {
-              const summary = getGoalProgressSummary(
-                goal,
-                tasks,
-                tasksQuery.isSuccess,
-              );
+              const progress = goal.progress;
               return (
                 <RouterLink
                   key={goal.id}
@@ -163,10 +155,10 @@ function GoalsListPage() {
                         ) : null}
                       </Box>
                       <Text flexShrink="0" fontSize="lg" fontWeight="semibold">
-                        {summary.progress}%
+                        {progress}%
                       </Text>
                     </Flex>
-                    <Progress.Root max={100} size="sm" value={summary.progress}>
+                    <Progress.Root max={100} size="sm" value={progress}>
                       <Progress.Track>
                         <Progress.Range />
                       </Progress.Track>
@@ -181,15 +173,10 @@ function GoalsListPage() {
                     >
                       <Text>
                         {goal.progressStrategy.mode === "task-based"
-                          ? summary.totalTasks
-                            ? t("goals.taskSummary", {
-                                completed: summary.completedTasks,
-                                total: summary.totalTasks,
-                              })
-                            : t("goals.noLinkedTasks")
-                          : summary.isAvailable
-                            ? t("goals.manualProgress")
-                            : t("goals.taskDataUnavailable")}
+                          ? progress === 0
+                            ? t("goals.noLinkedTasks")
+                            : t("goals.taskDataUnavailable")
+                          : t("goals.manualProgress")}
                       </Text>
                       <HStack gap="3">
                         <Text>{t(`goals.status.${goal.status}`)}</Text>

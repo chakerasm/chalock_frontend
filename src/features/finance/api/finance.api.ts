@@ -1,4 +1,4 @@
-﻿import { z } from 'zod'
+import { z } from 'zod'
 import {
   accountFromAPISchema,
   accountsListResponseSchema,
@@ -25,12 +25,13 @@ import type {
   UpdateTransactionInput,
 } from '@/features/finance/types/finance.types'
 import { apiFetch } from '@/lib/api/client'
+import { parseApiJson } from '@/lib/api/response'
 
 async function parseResponse<T>(
   response: Response | Promise<Response>,
   schema: { parse: (data: unknown) => T },
 ): Promise<T> {
-  return schema.parse(await (await response).json())
+  return parseApiJson(response, schema)
 }
 
 function jsonRequest(method: 'PATCH' | 'POST', body: unknown) {
@@ -41,7 +42,26 @@ function jsonRequest(method: 'PATCH' | 'POST', body: unknown) {
   }
 }
 
-export async function getFinanceSnapshotFromAPI() {
+export type FinanceSnapshotResources = {
+  accounts?: boolean
+  categories?: boolean
+  recurringTransactions?: boolean
+  savingsGoals?: boolean
+  transactions?: boolean
+}
+
+const allResources: Required<FinanceSnapshotResources> = {
+  accounts: true,
+  categories: true,
+  recurringTransactions: true,
+  savingsGoals: true,
+  transactions: true,
+}
+
+export async function getFinanceSnapshotFromAPI(
+  resources: FinanceSnapshotResources = allResources,
+) {
+  const enabled = { ...allResources, ...resources }
   const [
     accounts,
     categories,
@@ -49,23 +69,33 @@ export async function getFinanceSnapshotFromAPI() {
     savingsGoals,
     transactions,
   ] = await Promise.all([
-    parseResponse(await apiFetch('/api/accounts'), accountsListResponseSchema),
-    parseResponse(
-      await apiFetch('/api/finance/categories'),
-      financeCategoriesListResponseSchema,
-    ),
-    parseResponse(
-      await apiFetch('/api/recurring-transactions'),
-      recurringTransactionsListResponseSchema,
-    ),
-    parseResponse(
-      await apiFetch('/api/savings-goals'),
-      savingsGoalsListResponseSchema,
-    ),
-    parseResponse(
-      await apiFetch('/api/transactions'),
-      transactionsListResponseSchema,
-    ),
+    enabled.accounts
+      ? parseResponse(apiFetch('/api/accounts'), accountsListResponseSchema)
+      : Promise.resolve({ data: [] }),
+    enabled.categories
+      ? parseResponse(
+          apiFetch('/api/finance/categories'),
+          financeCategoriesListResponseSchema,
+        )
+      : Promise.resolve({ data: [] }),
+    enabled.recurringTransactions
+      ? parseResponse(
+          apiFetch('/api/recurring-transactions'),
+          recurringTransactionsListResponseSchema,
+        )
+      : Promise.resolve({ data: [] }),
+    enabled.savingsGoals
+      ? parseResponse(
+          apiFetch('/api/savings-goals'),
+          savingsGoalsListResponseSchema,
+        )
+      : Promise.resolve({ data: [] }),
+    enabled.transactions
+      ? parseResponse(
+          apiFetch('/api/transactions'),
+          transactionsListResponseSchema,
+        )
+      : Promise.resolve({ data: [] }),
   ])
 
   return {
@@ -185,6 +215,21 @@ export function updateSavingsGoalFromAPI({
   )
 }
 
+const upcomingPaymentFromAPISchema = z
+  .object({
+    amount: z.number().optional(),
+    currency: z.string().length(3).optional(),
+    date: z.string().date().optional(),
+    dueDate: z.string().date().optional(),
+    id: z.string().optional(),
+    nextBillingDate: z.string().date().optional(),
+    nextOccurrenceDate: z.string().date().optional(),
+    source: z.enum(['recurring', 'subscription']).optional(),
+    title: z.string().optional(),
+    type: z.string().optional(),
+  })
+  .passthrough()
+
 const financeSummarySchema = z.object({
   from: z.string().date(),
   to: z.string().date(),
@@ -197,32 +242,70 @@ const financeSummarySchema = z.object({
       recurringExpenses: z.number(),
       topExpenseCategories: z.array(
         z.object({
-          categoryId: z.string(),
+          categoryId: z.string().optional().default('uncategorized'),
           name: z.string(),
           amount: z.number(),
         }),
       ),
     }),
   ),
-  upcomingPayments: z.array(
-    z.object({
-      id: z.string(),
-      title: z.string(),
-      amount: z.number(),
-      currency: z.string().length(3),
-      date: z.string().date(),
-      source: z.enum(['recurring', 'subscription']),
-    }),
-  ),
+  // The summary contract guarantees this collection, but does not prescribe
+  // the projection shape of an individual upcoming payment.
+  upcomingPayments: z.array(upcomingPaymentFromAPISchema).default([]),
 })
 
-export function getFinanceSummaryFromAPI(
+const financeSummaryResponseSchema = z.union([
+  financeSummarySchema,
+  z.object({ data: financeSummarySchema }).transform(({ data }) => data),
+])
+
+function mapFinanceSummaryFromAPI(
+  summary: z.infer<typeof financeSummarySchema>,
+): FinanceSummary {
+  return {
+    ...summary,
+    upcomingPayments: summary.upcomingPayments.flatMap((payment) => {
+      const date =
+        payment.date ??
+        payment.dueDate ??
+        payment.nextBillingDate ??
+        payment.nextOccurrenceDate
+
+      if (
+        !payment.id ||
+        !payment.title ||
+        payment.amount === undefined ||
+        !payment.currency ||
+        !date
+      ) {
+        return []
+      }
+
+      return [
+        {
+          amount: payment.amount,
+          currency: payment.currency,
+          date,
+          id: payment.id,
+          source:
+            payment.source ??
+            (payment.type === 'subscription' ? 'subscription' : 'recurring'),
+          title: payment.title,
+        },
+      ]
+    }),
+  }
+}
+
+export async function getFinanceSummaryFromAPI(
   from: string,
   to: string,
 ): Promise<FinanceSummary> {
   const query = new URLSearchParams({ from, to })
-  return parseResponse(
+  const summary = await parseResponse(
     apiFetch(`/api/finance/summary?${query}`),
-    financeSummarySchema,
+    financeSummaryResponseSchema,
   )
+
+  return mapFinanceSummaryFromAPI(summary)
 }

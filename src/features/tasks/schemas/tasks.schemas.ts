@@ -16,26 +16,32 @@ const optionalTimeSchema = z
   .optional();
 
 export const taskFromAPISchema = z.object({
-  completedAt: z.string().datetime().optional(),
-  createdAt: z.string().datetime(),
+  completedAt: z.string().datetime({ offset: true }).optional(),
+  createdAt: z.string().datetime({ offset: true }),
   description: z.string().max(2_000).optional(),
   dueDate: optionalDateSchema,
   dueTime: optionalTimeSchema,
   estimatedMinutes: z.number().int().positive().max(1_440).optional(),
   goalId: z.string().min(1).optional(),
   id: z.string().min(1),
-  priority: taskPrioritySchema,
+  priority: taskPrioritySchema.optional().default('medium'),
   status: taskStatusSchema,
   title: z.string().trim().min(1).max(120),
-  updatedAt: z.string().datetime(),
+  updatedAt: z.string().datetime({ offset: true }),
 });
 
 export const tasksFromAPISchema = z.array(taskFromAPISchema);
 
-export const taskListResponseFromAPISchema = z.object({
+const taskListEnvelopeSchema = z.object({
   data: tasksFromAPISchema,
-  nextCursor: z.string().nullable(),
+  nextCursor: z.string().nullable().optional(),
 });
+
+export const taskListResponseFromAPISchema = z.union([
+  taskListEnvelopeSchema,
+  tasksFromAPISchema.transform((data) => ({ data })),
+  z.object({ items: tasksFromAPISchema }).transform(({ items }) => ({ data: items })),
+]);
 
 export const createTaskInputSchema = z.object({
   description: z.string().trim().min(1).max(2_000).optional(),

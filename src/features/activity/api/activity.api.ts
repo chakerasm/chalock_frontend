@@ -5,6 +5,7 @@ import type {
   ActivityType,
 } from '@/features/activity/types/activity.types'
 import { apiFetch } from '@/lib/api/client'
+import { parseApiJson } from '@/lib/api/response'
 
 const activityTypeSchema = z.enum([
   'task_completed',
@@ -25,7 +26,7 @@ const activityFromAPISchema = z.object({
   entityId: z.string().min(1),
   title: z.string(),
   description: z.string().optional(),
-  occurredAt: z.string().datetime(),
+  occurredAt: z.string().datetime({ offset: true }),
   href: z.string().startsWith('/').optional(),
   durationSeconds: z.number().int().nonnegative().optional(),
   amount: z.number().optional(),
@@ -33,7 +34,7 @@ const activityFromAPISchema = z.object({
 })
 const responseSchema = z.object({
   items: z.array(activityFromAPISchema),
-  nextCursor: z.string().nullable(),
+  nextCursor: z.string().nullable().optional(),
 })
 
 function categoryFor(type: ActivityType): ActivityCategory {
@@ -44,8 +45,9 @@ function categoryFor(type: ActivityType): ActivityCategory {
 }
 
 export async function getActivityFromAPI(): Promise<Activity[]> {
-  const response = responseSchema.parse(
-    await (await apiFetch('/api/activity?limit=100')).json(),
+  const response = await parseApiJson(
+    apiFetch('/api/activity?limit=100'),
+    responseSchema,
   )
   return response.items.map((item) => ({
     ...item,

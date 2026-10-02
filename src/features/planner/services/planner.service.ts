@@ -1,4 +1,4 @@
-﻿import {
+import {
   createTimeBlockFromAPI,
   deleteTimeBlockFromAPI,
   getTimeBlocksFromAPI,
@@ -13,8 +13,12 @@ import type {
   UpdateTimeBlockInput,
 } from '@/features/planner/types/planner.types'
 const increment = 15
-export async function getAllTimeBlocks(): Promise<TimeBlock[]> {
-  return (await getTimeBlocksFromAPI())
+export async function getAllTimeBlocks(
+  from: string,
+  to: string,
+): Promise<TimeBlock[]> {
+  const query = new URLSearchParams({ from, to })
+  return (await getTimeBlocksFromAPI(`?${query}`))
     .map(mapTimeBlockFromAPI)
     .sort(
       (a, b) =>
