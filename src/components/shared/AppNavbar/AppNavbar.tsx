@@ -1,10 +1,8 @@
-import { Box, Flex, HStack, IconButton, Text } from '@chakra-ui/react'
-import { Boxes, Menu } from 'lucide-react'
+import { Box, Flex, HStack, IconButton } from '@chakra-ui/react'
+import { Menu } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { AppInfoMenu } from '@/components/shared/AppInfoMenu/AppInfoMenu'
 import { CommandMenu } from '@/components/shared/CommandMenu/CommandMenu'
 import { ProfileMenu } from '@/components/shared/ProfileMenu/ProfileMenu'
-import { QuickAddDialog } from '@/features/quick-add/components/QuickAddDialog'
 import { ColorModeToggle } from '@/components/ui/ColorModeToggle/ColorModeToggle'
 import { LanguageSelect } from '@/components/ui/LanguageSelect/LanguageSelect'
 
@@ -31,10 +29,10 @@ export function AppNavbar({ onOpenNavigation, onLogout }: AppNavbarProps) {
         align="center"
         gap="3"
         justify="space-between"
-        minH={{ base: '16', md: '18' }}
-        px={{ base: '4', md: '6', xl: '8' }}
+        minH="14"
+        px={{ base: '3', md: '5' }}
       >
-        <HStack gap="3" minW="0">
+        <HStack gap="3" minW="0" flex="1">
           <IconButton
             aria-label={t('appShell.openNavigation')}
             display={{ base: 'inline-flex', lg: 'none' }}
@@ -44,29 +42,14 @@ export function AppNavbar({ onOpenNavigation, onLogout }: AppNavbarProps) {
           >
             <Menu aria-hidden="true" size={19} />
           </IconButton>
-          <Flex
-            align="center"
-            bg="brand.subtle"
-            color="brand.fg"
-            display={{ base: 'none', sm: 'flex', lg: 'none' }}
-            h="9"
-            justify="center"
-            rounded="l1"
-            w="9"
-          >
-            <Boxes aria-hidden="true" size={18} />
-          </Flex>
-          <Text fontWeight="semibold" letterSpacing="tight" truncate>
-            {t('appShell.workspace')}
-          </Text>
+          <Box flex="1" maxW="36rem" minW="0">
+            <CommandMenu />
+          </Box>
         </HStack>
-        <HStack gap={{ base: '1', sm: '2' }}>
-          <QuickAddDialog />
-          <CommandMenu />
-          <Box display={{ base: 'none', md: 'block' }}>
+        <HStack gap={{ base: '1', sm: '2' }} flexShrink="0">
+          <Box display={{ base: 'none', sm: 'block' }}>
             <LanguageSelect />
           </Box>
-          <AppInfoMenu />
           <ColorModeToggle />
           <ProfileMenu onLogout={onLogout} />
         </HStack>

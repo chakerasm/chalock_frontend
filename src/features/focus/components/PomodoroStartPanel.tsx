@@ -36,20 +36,19 @@ export function PomodoroStartPanel({
 
   return (
     <Box
-      bg="bg.panel"
-      borderWidth="1px"
-      maxW="lg"
+      bg="transparent"
+      maxW="md"
       mx="auto"
-      p={{ base: '5', md: '7' }}
-      rounded="l2"
+      px={{ base: '2', md: '4' }}
+      py="2"
       w="full"
     >
-      <Stack gap="5">
+      <Stack gap="3">
         <Stack align="center" gap="2" textAlign="center">
-          <Text fontSize="2xl" fontWeight="semibold">
+          <Text color="white" fontSize="xl" fontWeight="semibold">
             {t('pomodoro.readyTitle')}
           </Text>
-          <Text color="fg.muted" fontSize="sm">
+          <Text color="whiteAlpha.900" fontSize="sm">
             {t('pomodoro.readyDescription')}
           </Text>
         </Stack>

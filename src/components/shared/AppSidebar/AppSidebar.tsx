@@ -3,20 +3,22 @@ import { Link as RouterLink, useMatchRoute } from '@tanstack/react-router'
 import type { LucideIcon } from 'lucide-react'
 import {
   Activity,
-  Boxes,
   Bell,
+  BookOpenCheck,
+  Boxes,
   CalendarCheck,
+  CalendarDays,
   CheckCheck,
   Clock3,
   Goal,
+  History,
   ListTodo,
   NotebookPen,
   Repeat,
-  BookOpenCheck,
-  History,
   WalletCards,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { QuickAddDialog } from '@/features/quick-add/components/QuickAddDialog'
 import { APP_ROUTES, type AppRoute } from '@/lib/routes'
 
 type AppSidebarProps = {
@@ -35,13 +37,11 @@ const navigationItems: NavigationItem[] = [
   { icon: CheckCheck, label: 'habits.title', to: APP_ROUTES.habits },
   { icon: Goal, label: 'goals.title', to: APP_ROUTES.goals },
   { icon: CalendarCheck, label: 'planner.title', to: APP_ROUTES.planner },
+  { icon: Clock3, label: 'focus.title', to: APP_ROUTES.focus },
   { icon: Bell, label: 'reminders.title', to: APP_ROUTES.reminders },
   { icon: NotebookPen, label: 'notes.title', to: APP_ROUTES.notes },
   { icon: WalletCards, label: 'finance.title', to: APP_ROUTES.finance },
   { icon: Repeat, label: 'subscriptions.title', to: APP_ROUTES.subscriptions },
-  { icon: Clock3, label: 'focus.title', to: APP_ROUTES.focus },
-  { icon: BookOpenCheck, label: 'weeklyReview.title', to: APP_ROUTES.review },
-  { icon: History, label: 'activity.title', to: APP_ROUTES.activity },
 ]
 
 export function AppSidebar({ onNavigate }: AppSidebarProps) {
@@ -59,31 +59,31 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
     <Stack
       as="nav"
       aria-label={t('appShell.primaryNavigation')}
-      gap="6"
+      gap="4"
       h="full"
       justify="space-between"
-      p="4"
+      p="3"
     >
-      <Stack gap="7">
-        <HStack gap="3" px="2">
+      <Stack gap="5">
+        <HStack gap="2" px="2">
           <Flex
             align="center"
             bg="brand.solid"
             color="brand.contrast"
-            h="10"
+            h="8"
             justify="center"
             rounded="l1"
             shadow="sm"
-            w="10"
+            w="8"
           >
-            <Boxes aria-hidden="true" size={20} />
+            <Boxes aria-hidden="true" size={17} />
           </Flex>
-          <Text fontSize="lg" fontWeight="bold" letterSpacing="tight">
+          <Text fontSize="md" fontWeight="bold" letterSpacing="tight">
             {t('app.name')}
           </Text>
         </HStack>
-        <Stack gap="1">
-          {navigationItems.slice(0, 4).map((item) => (
+        <Stack gap="0.5">
+          {navigationItems.map((item) => (
             <NavigationLink
               isActive={isActive(item.to)}
               item={item}
@@ -91,14 +91,16 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
               onNavigate={onNavigate}
             />
           ))}
-          <Box bg="border.subtle" h="px" mx="2" my="2" />
+          <Box bg="border.subtle" h="px" mx="2" my="1.5" />
           <Button
             asChild
             colorPalette={isActive(APP_ROUTES.statistics) ? 'brand' : undefined}
             fontWeight={isActive(APP_ROUTES.statistics) ? 'semibold' : 'medium'}
             justifyContent="flex-start"
-            px="3"
-            rounded="l1"
+            fontSize="sm"
+            h="9"
+            px="2.5"
+            rounded="control"
             variant={isActive(APP_ROUTES.statistics) ? 'subtle' : 'ghost'}
             w="full"
           >
@@ -108,31 +110,44 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
               search={{ range: 'last-7-days' }}
               to={APP_ROUTES.statistics}
             >
-              <Activity aria-hidden="true" size={18} />
+              <Activity aria-hidden="true" size={16} />
               {t('statistics.title')}
             </RouterLink>
           </Button>
-          {navigationItems.slice(4).map((item) => (
-            <NavigationLink
-              isActive={isActive(item.to)}
-              item={item}
-              key={item.to}
-              onNavigate={onNavigate}
-            />
-          ))}
+          <NavigationLink
+            isActive={isActive(APP_ROUTES.review)}
+            item={{
+              icon: BookOpenCheck,
+              label: 'weeklyReview.title',
+              to: APP_ROUTES.review,
+            }}
+            onNavigate={onNavigate}
+          />
+          <NavigationLink
+            isActive={isActive(APP_ROUTES.activity)}
+            item={{
+              icon: History,
+              label: 'activity.title',
+              to: APP_ROUTES.activity,
+            }}
+            onNavigate={onNavigate}
+          />
         </Stack>
       </Stack>
-      <Box
-        bg="bg.subtle"
-        borderColor="border.subtle"
-        borderWidth="1px"
-        p="3"
-        rounded="l2"
-      >
-        <Text color="fg.muted" fontSize="xs" lineHeight="tall">
-          {t('appShell.sidebarFooter')}
-        </Text>
-      </Box>
+      <Stack gap="3">
+        <QuickAddDialog />
+        <Box borderTopWidth="1px" borderColor="border.subtle" pt="3">
+          <Text color="fg.muted" fontSize="xs" px="2">
+            {t('appShell.workspace')}
+          </Text>
+          <HStack gap="2" px="2" pt="2">
+            <CalendarDays aria-hidden="true" size={15} />
+            <Text fontSize="sm" fontWeight="medium">
+              {t('appShell.personalWorkspace')}
+            </Text>
+          </HStack>
+        </Box>
+      </Stack>
     </Stack>
   )
 }
@@ -152,9 +167,11 @@ function NavigationLink({ isActive, item, onNavigate }: NavigationLinkProps) {
       asChild
       colorPalette={isActive ? 'brand' : undefined}
       fontWeight={isActive ? 'semibold' : 'medium'}
+      fontSize="sm"
+      h="9"
       justifyContent="flex-start"
-      px="3"
-      rounded="l1"
+      px="2.5"
+      rounded="control"
       variant={isActive ? 'subtle' : 'ghost'}
       w="full"
     >
@@ -163,7 +180,7 @@ function NavigationLink({ isActive, item, onNavigate }: NavigationLinkProps) {
         onClick={onNavigate}
         to={item.to}
       >
-        <Icon aria-hidden="true" size={18} />
+        <Icon aria-hidden="true" size={16} />
         {t(item.label)}
       </RouterLink>
     </Button>

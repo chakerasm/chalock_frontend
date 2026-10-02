@@ -32,7 +32,7 @@ export function PomodoroSessionView({
   return (
     <Stack
       align="center"
-      gap={{ base: '6', md: '8' }}
+      gap={{ base: '4', md: '5' }}
       maxW="xl"
       mx="auto"
       textAlign="center"
@@ -40,7 +40,7 @@ export function PomodoroSessionView({
     >
       <Stack align="center" gap="2">
         <Text
-          color="brand.fg"
+          color="white"
           fontSize="sm"
           fontWeight="bold"
           letterSpacing="widest"
@@ -49,7 +49,7 @@ export function PomodoroSessionView({
           {phaseLabel}
         </Text>
         <Text
-          fontSize={{ base: '6xl', md: '8xl' }}
+          fontSize={{ base: '6xl', md: '7xl' }}
           fontVariantNumeric="tabular-nums"
           fontWeight="bold"
           letterSpacing="tight"
@@ -57,7 +57,7 @@ export function PomodoroSessionView({
         >
           {formatFocusTimerDuration(remainingSeconds)}
         </Text>
-        <Text color="fg.muted" fontSize="sm">
+        <Text color="whiteAlpha.900" fontSize="sm">
           {t('pomodoro.sessionOf', {
             current: sessionNumber,
             total: cycle.focusSessionsUntilLongBreak,
@@ -71,7 +71,7 @@ export function PomodoroSessionView({
       </Progress.Root>
       {cycle.intention ? (
         <Box bg="bg.subtle" px="4" py="3" rounded="l2" w="full">
-          <Text color="fg.muted" fontSize="sm">
+          <Text color="whiteAlpha.900" fontSize="sm">
             {cycle.intention}
           </Text>
         </Box>

@@ -10,11 +10,7 @@ import { useAuth } from '@/features/auth/components/AuthProvider'
 import { loginInputSchema } from '@/features/auth/schemas/auth.schemas'
 import type { LoginInput } from '@/features/auth/types/auth.types'
 
-type LoginPageProps = {
-  onSuccess: () => void
-}
-
-export function LoginPage({ onSuccess }: LoginPageProps) {
+export function LoginPage() {
   const { t } = useTranslation()
   const auth = useAuth()
   const [error, setError] = useState<string>()
@@ -27,7 +23,6 @@ export function LoginPage({ onSuccess }: LoginPageProps) {
     setError(undefined)
     try {
       await auth.signIn(values)
-      onSuccess()
     } catch {
       setError(t('auth.loginError'))
     }

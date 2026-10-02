@@ -22,11 +22,10 @@ export function AppShell({ children, onLogout }: AppShellProps) {
         borderColor="border.subtle"
         borderRightWidth="1px"
         display={{ base: 'none', lg: 'block' }}
-        flex="0 0 18rem"
+        flex="0 0 14rem"
         h="100dvh"
         overflowY="auto"
         position="sticky"
-        shadow="sm"
         top="0"
         zIndex="docked"
       >
@@ -51,10 +50,13 @@ export function AppShell({ children, onLogout }: AppShellProps) {
               bg="bg.surface"
               borderColor="border.subtle"
               borderRightWidth="1px"
-              maxW="sm"
+              maxW="xs"
               shadow="lg"
             >
-              <Drawer.Header borderBottomWidth="1px" borderColor="border.subtle">
+              <Drawer.Header
+                borderBottomWidth="1px"
+                borderColor="border.subtle"
+              >
                 <Drawer.Title>{t('appShell.primaryNavigation')}</Drawer.Title>
                 <Drawer.CloseTrigger asChild>
                   <CloseButton aria-label={t('common.close')} size="sm" />

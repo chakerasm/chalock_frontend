@@ -2,8 +2,8 @@
 import { authResources } from '@/features/auth/i18n/resources'
 import { financeResources } from '@/features/finance/i18n/resources'
 import { focusResources } from '@/features/focus/i18n/resources'
-import { goalsResources } from '@/features/goals/i18n/resources'
 import { globalSearchResources } from '@/features/global-search/i18n/resources'
+import { goalsResources } from '@/features/goals/i18n/resources'
 import { habitsResources } from '@/features/habits/i18n/resources'
 import { notesResources } from '@/features/notes/i18n/resources'
 import { plannerResources } from '@/features/planner/i18n/resources'
@@ -46,6 +46,7 @@ const en = {
     profileEmail: 'chaker@example.com',
     profileMenu: 'Profile menu',
     profileName: 'Chaker Asman',
+    personalWorkspace: 'Personal',
     search: 'Search',
     searchPlaceholder: 'Start typing to search pages...',
     settings: 'Settings',
@@ -139,6 +140,7 @@ const fr: typeof en = {
     profileEmail: 'chaker@example.com',
     profileMenu: 'Menu du profil',
     profileName: 'Chaker Asman',
+    personalWorkspace: 'Personnel',
     search: 'Rechercher',
     searchPlaceholder: 'Commencez a taper pour rechercher des pages...',
     settings: 'Parametres',

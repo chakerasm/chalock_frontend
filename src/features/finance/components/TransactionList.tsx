@@ -1,7 +1,6 @@
-import { Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
+import { Button, HStack, Table, Text } from '@chakra-ui/react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { groupTransactionsByDate } from '@/features/finance/services/finance-calculations'
 import type {
   Account,
   FinanceCategory,
@@ -27,7 +26,6 @@ function dateLabel(date: string, locale: string) {
   return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
     month: 'short',
-    weekday: 'long',
   }).format(new Date(`${date}T12:00:00`))
 }
 
@@ -43,84 +41,84 @@ export function TransactionList({
   const categoryById = new Map(
     categories.map((category) => [category.id, category]),
   )
-  const groups = groupTransactionsByDate(transactions)
   return (
-    <Stack gap="5">
-      {Object.entries(groups).map(([date, items]) => (
-        <Stack gap="2" key={date}>
-          <Text color="fg.muted" fontSize="sm" fontWeight="semibold">
-            {dateLabel(date, i18n.language)}
-          </Text>
-          <Stack bg="bg.panel" borderWidth="1px" divideY="1px" rounded="l2">
-            {items.map((transaction) => {
-              const category = transaction.categoryId
-                ? categoryById.get(transaction.categoryId)
-                : undefined
-              const account = accountById.get(transaction.accountId)
-              const destination = transaction.destinationAccountId
-                ? accountById.get(transaction.destinationAccountId)
-                : undefined
-              const amountPrefix =
-                transaction.type === 'income'
-                  ? '+'
-                  : transaction.type === 'expense'
-                    ? '−'
-                    : '↔'
-              const stateLabel = t(`finance.types.${transaction.type}`)
-              return (
-                <Flex
-                  align="center"
-                  gap="3"
-                  key={transaction.id}
-                  p={{ base: '3', md: '4' }}
+    <Table.ScrollArea
+      borderColor="border.subtle"
+      borderWidth="1px"
+      rounded="l2"
+    >
+      <Table.Root minW="48rem" size="sm">
+        <Table.Header>
+          <Table.Row bg="bg.subtle">
+            <Table.ColumnHeader>{t('finance.date')}</Table.ColumnHeader>
+            <Table.ColumnHeader>{t('finance.titleLabel')}</Table.ColumnHeader>
+            <Table.ColumnHeader>{t('finance.category')}</Table.ColumnHeader>
+            <Table.ColumnHeader>{t('finance.account')}</Table.ColumnHeader>
+            <Table.ColumnHeader textAlign="end">
+              {t('finance.amount')}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader aria-label={t('finance.actions')} />
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {transactions.map((transaction) => {
+            const category = transaction.categoryId
+              ? categoryById.get(transaction.categoryId)
+              : undefined
+            const account = accountById.get(transaction.accountId)
+            const destination = transaction.destinationAccountId
+              ? accountById.get(transaction.destinationAccountId)
+              : undefined
+            const amountPrefix =
+              transaction.type === 'income'
+                ? '+'
+                : transaction.type === 'expense'
+                  ? '−'
+                  : '↔'
+            return (
+              <Table.Row key={transaction.id}>
+                <Table.Cell color="fg.muted" whiteSpace="nowrap">
+                  {dateLabel(transaction.transactionDate, i18n.language)}
+                </Table.Cell>
+                <Table.Cell>
+                  <Text fontWeight="medium" lineClamp="1" maxW="15rem">
+                    {transaction.title}
+                  </Text>
+                </Table.Cell>
+                <Table.Cell>
+                  {transaction.type === 'transfer'
+                    ? t('finance.types.transfer')
+                    : (category?.name ?? t('finance.uncategorized'))}
+                </Table.Cell>
+                <Table.Cell color="fg.muted" whiteSpace="nowrap">
+                  {transaction.type === 'transfer'
+                    ? `${account?.name ?? t('common.notAvailable')} → ${destination?.name ?? t('common.notAvailable')}`
+                    : (account?.name ?? t('common.notAvailable'))}
+                </Table.Cell>
+                <Table.Cell
+                  color={
+                    transaction.type === 'income'
+                      ? 'success.fg'
+                      : transaction.type === 'expense'
+                        ? 'danger.fg'
+                        : 'fg'
+                  }
+                  fontWeight="semibold"
+                  textAlign="end"
+                  whiteSpace="nowrap"
                 >
-                  <Box
-                    bg="bg.subtle"
-                    color="fg.muted"
-                    flex="0 0 auto"
-                    fontSize="xs"
-                    fontWeight="semibold"
-                    p="2"
-                    rounded="l1"
-                  >
-                    {stateLabel}
-                  </Box>
-                  <Stack flex="1" gap="0" minW="0">
-                    <Text fontWeight="medium" truncate>
-                      {transaction.title}
-                    </Text>
-                    <Text color="fg.muted" fontSize="sm" truncate>
-                      {transaction.type === 'transfer'
-                        ? `${account?.name ?? t('common.notAvailable')} → ${destination?.name ?? t('common.notAvailable')}`
-                        : `${category?.name ?? t('finance.uncategorized')} · ${account?.name ?? t('common.notAvailable')}`}
-                    </Text>
-                  </Stack>
-                  <Stack align="end" gap="1">
-                    <Text
-                      color={
-                        transaction.type === 'income'
-                          ? 'success.fg'
-                          : transaction.type === 'expense'
-                            ? 'danger.fg'
-                            : 'fg'
-                      }
-                      fontWeight="semibold"
-                    >
-                      {amountPrefix}
-                      {money(transaction.amount, transaction.currency)}
-                    </Text>
-                    <Text color="fg.muted" fontSize="xs">
-                      {stateLabel}
-                    </Text>
-                  </Stack>
-                  <HStack gap="1">
+                  {amountPrefix}
+                  {money(transaction.amount, transaction.currency)}
+                </Table.Cell>
+                <Table.Cell>
+                  <HStack justify="end" gap="1">
                     <Button
                       aria-label={t('finance.editTransaction')}
                       onClick={() => onEdit(transaction)}
                       size="xs"
                       variant="ghost"
                     >
-                      <Pencil aria-hidden="true" size={15} />
+                      <Pencil aria-hidden="true" size={14} />
                     </Button>
                     <Button
                       aria-label={t('finance.deleteTransaction')}
@@ -128,15 +126,15 @@ export function TransactionList({
                       size="xs"
                       variant="ghost"
                     >
-                      <Trash2 aria-hidden="true" size={15} />
+                      <Trash2 aria-hidden="true" size={14} />
                     </Button>
                   </HStack>
-                </Flex>
-              )
-            })}
-          </Stack>
-        </Stack>
-      ))}
-    </Stack>
+                </Table.Cell>
+              </Table.Row>
+            )
+          })}
+        </Table.Body>
+      </Table.Root>
+    </Table.ScrollArea>
   )
 }

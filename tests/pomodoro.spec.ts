@@ -1,9 +1,11 @@
 import { expect, test } from '@playwright/test'
 import { APP_ROUTES } from '../src/lib/routes'
+import { signIn } from './helpers/auth'
 
 test('keeps an active Pomodoro focus phase after a refresh', async ({
   page,
 }) => {
+  await signIn(page)
   await page.goto(APP_ROUTES.pomodoro)
 
   await expect(page.getByText('Ready when you are')).toBeVisible()
@@ -17,18 +19,24 @@ test('keeps an active Pomodoro focus phase after a refresh', async ({
 
   await page.reload()
   await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible()
-  await expect(page.getByText('Study chapter 4')).toBeVisible()
+  await expect(
+    page
+      .getByRole('region', { name: 'Focus timer' })
+      .getByText('Study chapter 4'),
+  ).toBeVisible()
 })
 
 test('skips a focus phase without counting it and records cancellation clearly', async ({
   page,
 }) => {
+  await signIn(page)
   await page.goto(APP_ROUTES.pomodoro)
   await page.getByRole('button', { name: 'Start focus' }).click()
 
   await page.getByRole('button', { name: 'Skip phase' }).click()
-  await expect(page.getByText('Short break')).toBeVisible()
-  await expect(page.getByText('Skipped')).toBeVisible()
+  const timerPanel = page.getByRole('tabpanel', { name: 'Timer' })
+  await expect(timerPanel.getByText('Short break')).toBeVisible()
+  await expect(timerPanel.getByText('Skipped')).toBeVisible()
 
   await page.getByRole('button', { name: 'Stop & cancel' }).click()
   await expect(page.getByText('Pomodoro session cancelled')).toBeVisible()

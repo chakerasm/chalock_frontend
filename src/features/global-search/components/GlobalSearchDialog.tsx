@@ -14,8 +14,6 @@ import { Search, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useFinanceSnapshot } from '@/features/finance/hooks/use-finance'
-import { useGoals } from '@/features/goals/hooks/use-goals'
-import { useHabits } from '@/features/habits/hooks/use-habits'
 import {
   createSearchResults,
   searchResults,
@@ -24,6 +22,8 @@ import type {
   SearchResult,
   SearchResultGroup,
 } from '@/features/global-search/types/global-search.types'
+import { useGoals } from '@/features/goals/hooks/use-goals'
+import { useHabits } from '@/features/habits/hooks/use-habits'
 import { useNotes } from '@/features/notes/hooks/use-notes'
 import { useAllTimeBlocks } from '@/features/planner/hooks/use-planner'
 import { useReminders } from '@/features/reminders/hooks/use-reminders'
@@ -189,12 +189,26 @@ export function GlobalSearchDialog() {
     <>
       <Button
         aria-label={t('globalSearch.open')}
+        justifyContent="flex-start"
         onClick={() => setIsOpen(true)}
         size="sm"
         variant="outline"
+        w="full"
       >
         <Search aria-hidden="true" size={16} />
-        {t('appShell.search')}
+        <Text color="fg.muted" flex="1" textAlign="left" truncate>
+          {t('globalSearch.placeholder')}
+        </Text>
+        <Text
+          borderWidth="1px"
+          borderColor="border.subtle"
+          color="fg.muted"
+          fontSize="xs"
+          px="1.5"
+          rounded="sm"
+        >
+          Ctrl K
+        </Text>
       </Button>
       <Dialog.Root
         onOpenChange={(details) => setIsOpen(details.open)}

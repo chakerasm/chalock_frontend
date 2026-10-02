@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { APP_ROUTES } from '../src/lib/routes'
+import { signIn } from './helpers/auth'
 
 test('creates an account and records an income transaction', async ({
   page,
@@ -7,6 +8,7 @@ test('creates an account and records an income transaction', async ({
   await page.addInitScript(() =>
     window.localStorage.removeItem('chalock.finance.v1'),
   )
+  await signIn(page)
   await page.goto(APP_ROUTES.finance)
 
   await expect(page.getByRole('heading', { name: 'Finances' })).toBeVisible()
@@ -21,6 +23,7 @@ test('creates an account and records an income transaction', async ({
   await accountDialog.getByRole('button', { name: 'Save' }).click()
   await expect(page.getByText('CIH Checking')).toBeVisible()
 
+  await page.getByRole('button', { name: 'Overview' }).click()
   await page.getByRole('button', { name: 'Add transaction' }).click()
   const transactionDialog = page.getByRole('dialog')
   await transactionDialog.getByLabel('Transaction type').selectOption('income')

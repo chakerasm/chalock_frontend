@@ -8,9 +8,20 @@ import {
   NativeSelect,
   SimpleGrid,
   Stack,
+  Table,
   Text,
 } from '@chakra-ui/react'
-import { ListFilter, Pencil, Plus, WalletCards } from 'lucide-react'
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  CalendarClock,
+  ChartNoAxesCombined,
+  CircleDollarSign,
+  ListFilter,
+  Pencil,
+  Plus,
+  WalletCards,
+} from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog/ConfirmDialog'
@@ -46,7 +57,6 @@ import {
   getCategorySummaries,
   getMonthlyRecurringCost,
   getMonthlySummaries,
-  getRecurringExpensesByCurrency,
   getSavingsGoalProgress,
   getTotalBalancesByCurrency,
   getUpcomingPayments,
@@ -59,6 +69,7 @@ import type {
   Transaction,
   TransactionListFilters,
 } from '@/features/finance/types/finance.types'
+import { useDefaultCurrency } from '@/features/settings/hooks/use-settings'
 import { useSubscriptions } from '@/features/subscriptions/hooks/use-subscriptions'
 
 const sections = [
@@ -108,26 +119,42 @@ function MoneyList({
 }
 
 function SummaryCard({
+  icon,
+  iconColor,
   label,
   totals,
 }: {
+  icon: React.ReactNode
+  iconColor: string
   label: string
   totals: { currency: string; value: number }[]
 }) {
   return (
-    <Box bg="bg.panel" borderWidth="1px" p="4" rounded="l2">
-      <Text color="fg.muted" fontSize="sm">
-        {label}
-      </Text>
-      <Box mt="2">
-        <MoneyList totals={totals} />
-      </Box>
+    <Box
+      bg="bg.panel"
+      borderWidth="1px"
+      minW="0"
+      p={{ base: '3', md: '4' }}
+      rounded="l2"
+    >
+      <HStack align="start" justify="space-between" gap="2">
+        <Stack gap="1" minW="0">
+          <Text color="fg.muted" fontSize="xs" lineClamp="1">
+            {label}
+          </Text>
+          <MoneyList totals={totals} />
+        </Stack>
+        <Box bg={iconColor} color="white" p="2" rounded="l1">
+          {icon}
+        </Box>
+      </HStack>
     </Box>
   )
 }
 
 export function FinancePage() {
   const { i18n, t } = useTranslation()
+  const defaultCurrency = useDefaultCurrency()
   const financeQuery = useFinanceSnapshot()
   const subscriptionsQuery = useSubscriptions()
   const createAccount = useCreateAccount()
@@ -186,10 +213,6 @@ export function FinancePage() {
   const accountBalances = getAccountBalances(accounts, transactions)
   const totalBalances = getTotalBalancesByCurrency(accounts, transactions)
   const monthlySummaries = getMonthlySummaries(transactions)
-  const recurringExpenses = getRecurringExpensesByCurrency(
-    recurringTransactions,
-    subscriptions,
-  )
   const upcomingPayments = getUpcomingPayments(
     recurringTransactions,
     subscriptions,
@@ -198,7 +221,29 @@ export function FinancePage() {
     transactions,
     transactionFilters,
   )
-  const overviewCurrency = monthlySummaries[0]?.currency
+  const overviewCurrency =
+    monthlySummaries[0]?.currency ?? totalBalances[0]?.currency
+  const monthFormatter = new Intl.DateTimeFormat(i18n.language, {
+    month: 'short',
+  })
+  const monthlyChart = Array.from({ length: 6 }, (_, index) => {
+    const date = new Date()
+    date.setDate(1)
+    date.setMonth(date.getMonth() - (5 - index))
+    const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+    const summary = getMonthlySummaries(transactions, month).find(
+      (item) => item.currency === overviewCurrency,
+    )
+    return {
+      expenses: summary?.expenses ?? 0,
+      income: summary?.income ?? 0,
+      label: monthFormatter.format(date),
+    }
+  })
+  const chartMaximum = Math.max(
+    1,
+    ...monthlyChart.flatMap((item) => [item.income, item.expenses]),
+  )
   const categorySummaries = getCategorySummaries(
     transactions,
     categories,
@@ -218,6 +263,25 @@ export function FinancePage() {
     setTransactionFormOpen(true)
   }
 
+  const categoryColors = [
+    'var(--chakra-colors-green-500)',
+    'var(--chakra-colors-orange-500)',
+    'var(--chakra-colors-cyan-500)',
+    'var(--chakra-colors-purple-500)',
+    'var(--chakra-colors-red-500)',
+    'var(--chakra-colors-blue-500)',
+  ]
+  let categoryOffset = 0
+  const categoryGradient = categorySummaries.length
+    ? categorySummaries
+        .map((category, index) => {
+          const start = categoryOffset
+          categoryOffset += category.percentage
+          return `${categoryColors[index % categoryColors.length]} ${start}% ${categoryOffset}%`
+        })
+        .join(', ')
+    : 'var(--chakra-colors-bg-muted) 0% 100%'
+
   function handleDeleteTransaction() {
     if (!transactionToDelete) return
     deleteTransaction.mutate(transactionToDelete.id, {
@@ -230,11 +294,24 @@ export function FinancePage() {
   }
 
   function renderOverview() {
+    const recentTransactions = filterTransactions(transactions, {}).slice(0, 5)
+    const categoryTotal = categorySummaries.reduce(
+      (total, category) => total + category.total,
+      0,
+    )
+
     return (
-      <Stack gap={{ base: '5', md: '6' }}>
+      <Stack gap="3">
         <SimpleGrid columns={{ base: 2, lg: 4 }} gap="3">
-          <SummaryCard label={totalBalanceLabel} totals={totalBalances} />
           <SummaryCard
+            icon={<WalletCards aria-hidden="true" size={17} />}
+            iconColor="green.600"
+            label={totalBalanceLabel}
+            totals={totalBalances}
+          />
+          <SummaryCard
+            icon={<ArrowUpRight aria-hidden="true" size={17} />}
+            iconColor="teal.600"
             label={t('finance.incomeThisMonth')}
             totals={monthlySummaries.map((item) => ({
               currency: item.currency,
@@ -242,6 +319,8 @@ export function FinancePage() {
             }))}
           />
           <SummaryCard
+            icon={<ArrowDownRight aria-hidden="true" size={17} />}
+            iconColor="red.600"
             label={t('finance.expensesThisMonth')}
             totals={monthlySummaries.map((item) => ({
               currency: item.currency,
@@ -249,6 +328,8 @@ export function FinancePage() {
             }))}
           />
           <SummaryCard
+            icon={<CircleDollarSign aria-hidden="true" size={17} />}
+            iconColor="purple.600"
             label={t('finance.netThisMonth')}
             totals={monthlySummaries.map((item) => ({
               currency: item.currency,
@@ -256,87 +337,250 @@ export function FinancePage() {
             }))}
           />
         </SimpleGrid>
-        <SimpleGrid columns={{ base: 1, lg: 2 }} gap="4">
+        <SimpleGrid columns={{ base: 1, xl: 12 }} gap="3">
           <Box
             bg="bg.panel"
             borderWidth="1px"
-            p={{ base: '4', md: '5' }}
+            gridColumn={{ base: 'span 1', xl: 'span 7' }}
+            minW="0"
+            p="4"
             rounded="l2"
           >
-            <Flex align="center" justify="space-between">
-              <Text fontWeight="semibold">
-                {t('finance.monthlySummary', { month: latestMonth })}
-              </Text>
-              <Button
-                onClick={() => setSection('transactions')}
-                size="sm"
-                variant="ghost"
-              >
-                {t('finance.viewTransactions')}
-              </Button>
-            </Flex>
-            {monthlySummaries.length ? (
-              <Stack gap="3" mt="4">
-                {monthlySummaries.map((summary) => (
-                  <Flex
-                    align="center"
-                    justify="space-between"
-                    key={summary.currency}
-                  >
-                    <Stack gap="0">
-                      <Text fontWeight="medium">{summary.currency}</Text>
-                      <Text color="fg.muted" fontSize="sm">
-                        {t('finance.incomeExpenseSummary', {
-                          expenses: money(summary.expenses, summary.currency),
-                          income: money(summary.income, summary.currency),
-                        })}
-                      </Text>
-                    </Stack>
-                    <Text
-                      color={summary.net >= 0 ? 'success.fg' : 'danger.fg'}
-                      fontWeight="semibold"
-                    >
-                      {summary.net >= 0 ? '+' : '−'}
-                      {money(Math.abs(summary.net), summary.currency)}
-                    </Text>
-                  </Flex>
-                ))}
+            <Flex align="center" justify="space-between" mb="4">
+              <Stack gap="0">
+                <Text fontSize="sm" fontWeight="semibold">
+                  {t('finance.incomeVsExpenses')}
+                </Text>
+                <Text color="fg.muted" fontSize="xs">
+                  {latestMonth} · {overviewCurrency ?? defaultCurrency}
+                </Text>
               </Stack>
+              <HStack gap="3">
+                <HStack gap="1.5">
+                  <Box bg="green.500" boxSize="2" rounded="full" />
+                  <Text color="fg.muted" fontSize="xs">
+                    {t('finance.types.income')}
+                  </Text>
+                </HStack>
+                <HStack gap="1.5">
+                  <Box bg="red.500" boxSize="2" rounded="full" />
+                  <Text color="fg.muted" fontSize="xs">
+                    {t('finance.types.expense')}
+                  </Text>
+                </HStack>
+              </HStack>
+            </Flex>
+            {monthlyChart.some((item) => item.income || item.expenses) ? (
+              <Flex
+                aria-label={t('finance.incomeVsExpenses')}
+                as="figure"
+                gap="2"
+                h="10rem"
+                justify="space-between"
+                m="0"
+                role="img"
+              >
+                {monthlyChart.map((month) => (
+                  <Stack
+                    align="center"
+                    flex="1"
+                    gap="2"
+                    h="full"
+                    key={month.label}
+                  >
+                    <HStack align="end" flex="1" gap="1" w="full">
+                      <Box
+                        aria-label={`${t('finance.types.income')}: ${money(month.income, overviewCurrency ?? 'MAD')}`}
+                        bg="green.500"
+                        h={`${Math.max(2, (month.income / chartMaximum) * 100)}%`}
+                        minH="1px"
+                        roundedTop="sm"
+                        title={`${t('finance.types.income')}: ${money(month.income, overviewCurrency ?? 'MAD')}`}
+                        w="50%"
+                      />
+                      <Box
+                        aria-label={`${t('finance.types.expense')}: ${money(month.expenses, overviewCurrency ?? 'MAD')}`}
+                        bg="red.500"
+                        h={`${Math.max(2, (month.expenses / chartMaximum) * 100)}%`}
+                        minH="1px"
+                        roundedTop="sm"
+                        title={`${t('finance.types.expense')}: ${money(month.expenses, overviewCurrency ?? 'MAD')}`}
+                        w="50%"
+                      />
+                    </HStack>
+                    <Text color="fg.muted" fontSize="2xs">
+                      {month.label}
+                    </Text>
+                  </Stack>
+                ))}
+              </Flex>
             ) : (
               <EmptyState
-                description={t('finance.noMonthlySummaryDescription')}
-                title={t('finance.noMonthlySummary')}
+                description={t('finance.noRecentMonthActivityDescription')}
+                title={t('finance.noRecentMonthActivity')}
               />
             )}
           </Box>
           <Box
             bg="bg.panel"
             borderWidth="1px"
-            p={{ base: '4', md: '5' }}
+            gridColumn={{ base: 'span 1', xl: 'span 5' }}
+            minW="0"
+            p="4"
             rounded="l2"
           >
-            <Flex align="center" justify="space-between">
-              <Text fontWeight="semibold">{t('finance.upcomingPayments')}</Text>
+            <Text fontSize="sm" fontWeight="semibold">
+              {t('finance.spendingByCategory')}
+            </Text>
+            {categorySummaries.length ? (
+              <Flex align="center" gap="4" mt="3" wrap="wrap">
+                <Box
+                  aria-label={t('finance.spendingByCategory')}
+                  aspectRatio="1"
+                  background={`conic-gradient(${categoryGradient})`}
+                  display="grid"
+                  flex="0 0 auto"
+                  placeItems="center"
+                  role="img"
+                  rounded="full"
+                  w={{ base: '7rem', md: '8rem' }}
+                >
+                  <Stack
+                    align="center"
+                    bg="bg.panel"
+                    boxSize={{ base: '5rem', md: '5.75rem' }}
+                    gap="0"
+                    justify="center"
+                    rounded="full"
+                  >
+                    <Text fontSize="xs" fontWeight="bold">
+                      {money(categoryTotal, overviewCurrency ?? 'MAD')}
+                    </Text>
+                    <Text color="fg.muted" fontSize="2xs">
+                      {t('finance.types.expense')}
+                    </Text>
+                  </Stack>
+                </Box>
+                <Stack flex="1" gap="2" minW="10rem">
+                  {categorySummaries.slice(0, 5).map((category, index) => (
+                    <Flex
+                      align="center"
+                      gap="2"
+                      justify="space-between"
+                      key={category.categoryId ?? 'uncategorized'}
+                    >
+                      <HStack gap="2" minW="0">
+                        <Box
+                          bg={categoryColors[index % categoryColors.length]}
+                          boxSize="2"
+                          flex="0 0 auto"
+                          rounded="full"
+                        />
+                        <Text fontSize="xs" lineClamp="1">
+                          {category.name}
+                        </Text>
+                      </HStack>
+                      <Text color="fg.muted" fontSize="xs">
+                        {category.percentage}%
+                      </Text>
+                    </Flex>
+                  ))}
+                </Stack>
+              </Flex>
+            ) : (
+              <EmptyState
+                description={t('finance.noCategorySummaryDescription')}
+                title={t('finance.noCategorySummary')}
+              />
+            )}
+          </Box>
+        </SimpleGrid>
+        <SimpleGrid columns={{ base: 1, xl: 12 }} gap="3">
+          <Box
+            bg="bg.panel"
+            borderWidth="1px"
+            gridColumn={{ base: 'span 1', xl: 'span 7' }}
+            minW="0"
+            p="4"
+            rounded="l2"
+          >
+            <Flex align="center" justify="space-between" mb="3">
+              <Text fontSize="sm" fontWeight="semibold">
+                {t('finance.recentTransactions')}
+              </Text>
+              <Button
+                onClick={() => setSection('transactions')}
+                size="xs"
+                variant="ghost"
+              >
+                {t('finance.viewTransactions')}
+              </Button>
+            </Flex>
+            {recentTransactions.length ? (
+              <TransactionList
+                accounts={accounts}
+                categories={categories}
+                onDelete={setTransactionToDelete}
+                onEdit={(transaction) => {
+                  setTransactionToEdit(transaction)
+                  setTransactionFormOpen(true)
+                }}
+                transactions={recentTransactions}
+              />
+            ) : (
+              <EmptyState
+                description={t('finance.noTransactionsDescription')}
+                title={t('finance.noTransactions')}
+              />
+            )}
+          </Box>
+          <Box
+            bg="bg.panel"
+            borderWidth="1px"
+            gridColumn={{ base: 'span 1', xl: 'span 5' }}
+            minW="0"
+            p="4"
+            rounded="l2"
+          >
+            <Flex align="center" justify="space-between" mb="3">
+              <HStack gap="2">
+                <CalendarClock aria-hidden="true" size={16} />
+                <Text fontSize="sm" fontWeight="semibold">
+                  {t('finance.upcomingPayments')}
+                </Text>
+              </HStack>
               <Button
                 onClick={() => setSection('recurring')}
-                size="sm"
+                size="xs"
                 variant="ghost"
               >
                 {t('finance.viewRecurring')}
               </Button>
             </Flex>
             {upcomingPayments.length ? (
-              <Stack gap="3" mt="4">
+              <Stack divideY="1px" gap="0">
                 {upcomingPayments.slice(0, 5).map((payment) => (
-                  <Flex align="center" justify="space-between" key={payment.id}>
-                    <Stack gap="0">
-                      <Text fontWeight="medium">{payment.title}</Text>
-                      <Text color="fg.muted" fontSize="sm">
+                  <Flex
+                    align="center"
+                    gap="3"
+                    justify="space-between"
+                    key={payment.id}
+                    py="2.5"
+                  >
+                    <Stack gap="0" minW="0">
+                      <Text fontSize="sm" fontWeight="medium" lineClamp="1">
+                        {payment.title}
+                      </Text>
+                      <Text color="fg.muted" fontSize="xs">
                         {dateLabel(payment.date, i18n.language)} ·{' '}
                         {t(`finance.paymentSources.${payment.source}`)}
                       </Text>
                     </Stack>
-                    <Text fontWeight="semibold">
+                    <Text
+                      fontSize="sm"
+                      fontWeight="semibold"
+                      whiteSpace="nowrap"
+                    >
                       {money(payment.amount, payment.currency)}
                     </Text>
                   </Flex>
@@ -350,115 +594,6 @@ export function FinancePage() {
             )}
           </Box>
         </SimpleGrid>
-        <SimpleGrid columns={{ base: 1, lg: 2 }} gap="4">
-          <Box
-            bg="bg.panel"
-            borderWidth="1px"
-            p={{ base: '4', md: '5' }}
-            rounded="l2"
-          >
-            <Text fontWeight="semibold">{t('finance.spendingByCategory')}</Text>
-            {categorySummaries.length ? (
-              <Stack gap="3" mt="4">
-                {categorySummaries.slice(0, 5).map((category) => (
-                  <Stack gap="1" key={category.categoryId ?? 'uncategorized'}>
-                    <Flex fontSize="sm" justify="space-between">
-                      <Text>{category.name}</Text>
-                      <Text color="fg.muted">
-                        {money(category.total, overviewCurrency ?? 'MAD')} ·{' '}
-                        {category.percentage}%
-                      </Text>
-                    </Flex>
-                    <Box bg="bg.subtle" h="2" overflow="hidden" rounded="full">
-                      <Box
-                        bg="brand.solid"
-                        h="full"
-                        w={`${category.percentage}%`}
-                      />
-                    </Box>
-                  </Stack>
-                ))}
-              </Stack>
-            ) : (
-              <EmptyState
-                description={t('finance.noCategorySummaryDescription')}
-                title={t('finance.noCategorySummary')}
-              />
-            )}
-          </Box>
-          <Box
-            bg="bg.panel"
-            borderWidth="1px"
-            p={{ base: '4', md: '5' }}
-            rounded="l2"
-          >
-            <Flex align="center" justify="space-between">
-              <Text fontWeight="semibold">{t('finance.savingsProgress')}</Text>
-              <Button
-                onClick={() => setSection('savings')}
-                size="sm"
-                variant="ghost"
-              >
-                {t('finance.viewSavings')}
-              </Button>
-            </Flex>
-            {savingsGoals.length ? (
-              <Stack gap="3" mt="4">
-                {savingsGoals.slice(0, 4).map((goal) => {
-                  const progress = getSavingsGoalProgress(goal)
-                  return (
-                    <Stack gap="1" key={goal.id}>
-                      <Flex fontSize="sm" justify="space-between">
-                        <Text>{goal.name}</Text>
-                        <Text color="fg.muted">{progress.percentage}%</Text>
-                      </Flex>
-                      <Box
-                        aria-label={t('finance.savingsProgressLabel', {
-                          name: goal.name,
-                          percentage: progress.percentage,
-                        })}
-                        bg="bg.subtle"
-                        h="2"
-                        role="progressbar"
-                        rounded="full"
-                      >
-                        <Box
-                          bg={
-                            progress.isComplete
-                              ? 'success.solid'
-                              : 'brand.solid'
-                          }
-                          h="full"
-                          w={`${progress.percentage}%`}
-                        />
-                      </Box>
-                      <Text color="fg.muted" fontSize="xs">
-                        {money(goal.currentAmount, goal.currency)} /{' '}
-                        {money(goal.targetAmount, goal.currency)}
-                      </Text>
-                    </Stack>
-                  )
-                })}
-              </Stack>
-            ) : (
-              <EmptyState
-                description={t('finance.noSavingsDescription')}
-                title={t('finance.noSavings')}
-              />
-            )}
-          </Box>
-        </SimpleGrid>
-        <Box bg="bg.subtle" borderWidth="1px" p="4" rounded="l2">
-          <Text color="fg.muted" fontSize="sm">
-            {recurringExpenses.length
-              ? t('finance.recurringInsight', {
-                  amount: recurringExpenses
-                    .map((item) => money(item.value, item.currency))
-                    .join(' · '),
-                })
-              : t('finance.noRecurringInsight')}
-          </Text>
-        </Box>
       </Stack>
     )
   }
@@ -617,80 +752,140 @@ export function FinancePage() {
               {t('finance.subscriptionsIncluded')}
             </Text>
           </Stack>
-          <Button
-            colorPalette="brand"
-            onClick={() => {
-              setRecurringToEdit(undefined)
-              setRecurringFormOpen(true)
-            }}
-            size="sm"
-          >
-            <Plus aria-hidden="true" size={16} />
-            {t('finance.addRecurring')}
-          </Button>
         </Flex>
         {recurringTransactions.length || subscriptions.length ? (
-          <Stack bg="bg.panel" borderWidth="1px" divideY="1px" rounded="l2">
-            {recurringTransactions.map((item) => (
-              <Flex align="center" gap="3" key={item.id} p="4">
-                <Stack flex="1" gap="0">
-                  <Text fontWeight="medium">{item.title}</Text>
-                  <Text color="fg.muted" fontSize="sm">
-                    {t(`finance.types.${item.type}`)} ·{' '}
-                    {t(`finance.frequencies.${item.frequency}`)} ·{' '}
-                    {t('finance.nextOn', {
-                      date: dateLabel(item.nextOccurrenceDate, i18n.language),
-                    })}
-                  </Text>
-                </Stack>
-                <Stack align="end" gap="0">
-                  <Text fontWeight="semibold">
-                    {money(item.amount, item.currency)}
-                  </Text>
-                  <Text color="fg.muted" fontSize="xs">
-                    {t('finance.monthlyEstimate', {
-                      amount: money(
-                        getMonthlyRecurringCost(item),
-                        item.currency,
-                      ),
-                    })}
-                  </Text>
-                </Stack>
-                <Button
-                  aria-label={t('finance.editRecurring')}
-                  onClick={() => {
-                    setRecurringToEdit(item)
-                    setRecurringFormOpen(true)
-                  }}
-                  size="sm"
-                  variant="ghost"
-                >
-                  <Pencil aria-hidden="true" size={16} />
-                </Button>
-              </Flex>
-            ))}
-            {subscriptions.map((item) => (
-              <Flex align="center" gap="3" key={item.id} p="4">
-                <Stack flex="1" gap="0">
-                  <Text fontWeight="medium">{item.name}</Text>
-                  <Text color="fg.muted" fontSize="sm">
-                    {t('finance.paymentSources.subscription')} ·{' '}
-                    {t('finance.nextOn', {
-                      date: dateLabel(item.nextBillingDate, i18n.language),
-                    })}
-                  </Text>
-                </Stack>
-                <Stack align="end" gap="0">
-                  <Text fontWeight="semibold">
-                    {money(item.amount, item.currency)}
-                  </Text>
-                  <Text color="fg.muted" fontSize="xs">
-                    {t('finance.subscriptionManaged')}
-                  </Text>
-                </Stack>
-              </Flex>
-            ))}
-          </Stack>
+          <Table.ScrollArea
+            borderColor="border.subtle"
+            borderWidth="1px"
+            rounded="l2"
+          >
+            <Table.Root minW="54rem" size="sm">
+              <Table.Header>
+                <Table.Row bg="bg.subtle">
+                  <Table.ColumnHeader>
+                    {t('finance.titleLabel')}
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader>
+                    {t('finance.category')}
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader>
+                    {t('finance.frequency')}
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader>
+                    {t('finance.nextOccurrence')}
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader textAlign="end">
+                    {t('finance.amount')}
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader>{t('finance.status')}</Table.ColumnHeader>
+                  <Table.ColumnHeader aria-label={t('finance.actions')} />
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {recurringTransactions.map((item) => (
+                  <Table.Row key={item.id}>
+                    <Table.Cell fontWeight="medium">{item.title}</Table.Cell>
+                    <Table.Cell color="fg.muted">
+                      {t(`finance.types.${item.type}`)} ·{' '}
+                      {t('finance.paymentSources.recurring')}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {t(`finance.frequencies.${item.frequency}`)}
+                    </Table.Cell>
+                    <Table.Cell whiteSpace="nowrap">
+                      {dateLabel(item.nextOccurrenceDate, i18n.language)}
+                    </Table.Cell>
+                    <Table.Cell textAlign="end" whiteSpace="nowrap">
+                      <Stack align="end" gap="0">
+                        <Text fontWeight="semibold">
+                          {money(item.amount, item.currency)}
+                        </Text>
+                        <Text color="fg.muted" fontSize="2xs">
+                          {t('finance.monthlyEstimate', {
+                            amount: money(
+                              getMonthlyRecurringCost(item),
+                              item.currency,
+                            ),
+                          })}
+                        </Text>
+                      </Stack>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Text
+                        color={item.isActive ? 'success.fg' : 'fg.muted'}
+                        fontSize="xs"
+                      >
+                        {item.isActive
+                          ? t('finance.recurringActive')
+                          : t('finance.paused')}
+                      </Text>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <HStack justify="end" gap="1">
+                        <Button
+                          aria-label={t('finance.editRecurring')}
+                          onClick={() => {
+                            setRecurringToEdit(item)
+                            setRecurringFormOpen(true)
+                          }}
+                          size="xs"
+                          variant="ghost"
+                        >
+                          <Pencil aria-hidden="true" size={14} />
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            updateRecurring.mutate({
+                              isActive: !item.isActive,
+                              recurringTransactionId: item.id,
+                            })
+                          }
+                          size="xs"
+                          variant="outline"
+                        >
+                          {item.isActive
+                            ? t('finance.pause')
+                            : t('finance.resume')}
+                        </Button>
+                      </HStack>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+                {subscriptions.map((item) => (
+                  <Table.Row key={`subscription-${item.id}`}>
+                    <Table.Cell fontWeight="medium">{item.name}</Table.Cell>
+                    <Table.Cell color="fg.muted">
+                      {t('finance.paymentSources.subscription')}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {t(`finance.frequencies.${item.billingCycle}`)}
+                    </Table.Cell>
+                    <Table.Cell whiteSpace="nowrap">
+                      {dateLabel(item.nextBillingDate, i18n.language)}
+                    </Table.Cell>
+                    <Table.Cell textAlign="end" whiteSpace="nowrap">
+                      {money(item.amount, item.currency)}
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Text
+                        color={
+                          item.status === 'active' ? 'success.fg' : 'fg.muted'
+                        }
+                        fontSize="xs"
+                      >
+                        {t(`subscriptions.statuses.${item.status}`, {
+                          defaultValue: item.status,
+                        })}
+                      </Text>
+                    </Table.Cell>
+                    <Table.Cell color="fg.muted" fontSize="xs" textAlign="end">
+                      {t('finance.subscriptionManaged')}
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table.Root>
+          </Table.ScrollArea>
         ) : (
           <Box bg="bg.panel" borderWidth="1px" rounded="l2">
             <EmptyState
@@ -704,21 +899,68 @@ export function FinancePage() {
   }
 
   function renderSavings() {
+    const savingsByCurrency = new Map<
+      string,
+      { current: number; target: number }
+    >()
+    for (const goal of savingsGoals) {
+      if (goal.status === 'archived') continue
+      const totals = savingsByCurrency.get(goal.currency) ?? {
+        current: 0,
+        target: 0,
+      }
+      totals.current += goal.currentAmount
+      totals.target += goal.targetAmount
+      savingsByCurrency.set(goal.currency, totals)
+    }
+    const currentSavings = [...savingsByCurrency.entries()].map(
+      ([currency, totals]) => ({ currency, value: totals.current }),
+    )
+    const targetSavings = [...savingsByCurrency.entries()].map(
+      ([currency, totals]) => ({ currency, value: totals.target }),
+    )
+    const activeGoalCount = savingsGoals.filter(
+      (goal) => goal.status === 'active',
+    ).length
+
     return (
       <Stack gap="4">
+        <SimpleGrid columns={{ base: 1, md: 3 }} gap="3">
+          <SummaryCard
+            icon={<CircleDollarSign aria-hidden="true" size={17} />}
+            iconColor="green.600"
+            label={t('finance.totalSaved')}
+            totals={currentSavings}
+          />
+          <SummaryCard
+            icon={<ChartNoAxesCombined aria-hidden="true" size={17} />}
+            iconColor="cyan.700"
+            label={t('finance.targetTotal')}
+            totals={targetSavings}
+          />
+          <Box
+            bg="bg.panel"
+            borderWidth="1px"
+            p={{ base: '3', md: '4' }}
+            rounded="l2"
+          >
+            <HStack align="start" justify="space-between" gap="2">
+              <Stack gap="1">
+                <Text color="fg.muted" fontSize="xs">
+                  {t('finance.activeGoals')}
+                </Text>
+                <Text fontSize="lg" fontWeight="semibold">
+                  {activeGoalCount}
+                </Text>
+              </Stack>
+              <Box bg="purple.600" color="white" p="2" rounded="l1">
+                <WalletCards aria-hidden="true" size={17} />
+              </Box>
+            </HStack>
+          </Box>
+        </SimpleGrid>
         <Flex align="center" justify="space-between">
           <Text fontWeight="semibold">{t('finance.savingsGoals')}</Text>
-          <Button
-            colorPalette="brand"
-            onClick={() => {
-              setSavingsGoalToEdit(undefined)
-              setSavingsGoalFormOpen(true)
-            }}
-            size="sm"
-          >
-            <Plus aria-hidden="true" size={16} />
-            {t('finance.addSavingsGoal')}
-          </Button>
         </Flex>
         {savingsGoals.length ? (
           <SimpleGrid columns={{ base: 1, md: 2 }} gap="4">
@@ -813,70 +1055,111 @@ export function FinancePage() {
       <Stack gap="6">
         <Flex align="center" justify="space-between">
           <Text fontWeight="semibold">{t('finance.accounts')}</Text>
-          <Button
-            colorPalette="brand"
-            onClick={() => {
-              setAccountToEdit(undefined)
-              setAccountFormOpen(true)
-            }}
-            size="sm"
-          >
-            <Plus aria-hidden="true" size={16} />
-            {t('finance.addAccount')}
-          </Button>
         </Flex>
         {accountBalances.length ? (
-          <Stack bg="bg.panel" borderWidth="1px" divideY="1px" rounded="l2">
-            {accountBalances.map((account) => (
-              <Flex align="center" gap="3" key={account.id} p="4">
-                <Box bg="bg.subtle" color="fg.muted" p="2" rounded="l1">
-                  <WalletCards aria-hidden="true" size={18} />
-                </Box>
-                <Stack flex="1" gap="0">
-                  <Text fontWeight="medium">{account.name}</Text>
-                  <Text color="fg.muted" fontSize="sm">
-                    {t(`finance.accountTypes.${account.type}`)} ·{' '}
-                    {account.currency}
-                    {account.isArchived ? ` · ${t('finance.archived')}` : ''}
-                  </Text>
-                </Stack>
-                <Text fontWeight="semibold">
-                  {money(account.currentBalance, account.currency)}
-                </Text>
-                <Button
-                  aria-label={t('finance.editAccount')}
-                  onClick={() => {
-                    setAccountToEdit(account)
-                    setAccountFormOpen(true)
-                  }}
-                  size="sm"
-                  variant="ghost"
-                >
-                  <Pencil aria-hidden="true" size={16} />
-                </Button>
-                <Button
-                  onClick={() =>
-                    updateAccount.mutate(
-                      {
-                        accountId: account.id,
-                        isArchived: !account.isArchived,
-                      },
-                      {
-                        onError: () =>
-                          toast.error({ title: t('finance.updateError') }),
-                      },
-                    )
-                  }
-                  size="sm"
-                  variant="outline"
-                >
-                  {account.isArchived
-                    ? t('finance.restore')
-                    : t('finance.archive')}
-                </Button>
-              </Flex>
-            ))}
-          </Stack>
+          <Table.ScrollArea
+            borderColor="border.subtle"
+            borderWidth="1px"
+            rounded="l2"
+          >
+            <Table.Root minW="42rem" size="sm">
+              <Table.Header>
+                <Table.Row bg="bg.subtle">
+                  <Table.ColumnHeader>
+                    {t('finance.accountName')}
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader>
+                    {t('finance.accountType')}
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader>
+                    {t('finance.currency')}
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader textAlign="end">
+                    {t('finance.totalBalance')}
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader>{t('finance.status')}</Table.ColumnHeader>
+                  <Table.ColumnHeader aria-label={t('finance.actions')} />
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {accountBalances.map((account) => (
+                  <Table.Row key={account.id}>
+                    <Table.Cell>
+                      <HStack gap="2">
+                        <Box
+                          bg="bg.subtle"
+                          color="brand.fg"
+                          p="1.5"
+                          rounded="l1"
+                        >
+                          <WalletCards aria-hidden="true" size={15} />
+                        </Box>
+                        <Text fontWeight="medium">{account.name}</Text>
+                      </HStack>
+                    </Table.Cell>
+                    <Table.Cell>
+                      {t(`finance.accountTypes.${account.type}`)}
+                    </Table.Cell>
+                    <Table.Cell color="fg.muted">{account.currency}</Table.Cell>
+                    <Table.Cell
+                      fontWeight="semibold"
+                      textAlign="end"
+                      whiteSpace="nowrap"
+                    >
+                      {money(account.currentBalance, account.currency)}
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Text
+                        color={account.isArchived ? 'fg.muted' : 'success.fg'}
+                        fontSize="xs"
+                      >
+                        {account.isArchived
+                          ? t('finance.archived')
+                          : t('finance.active')}
+                      </Text>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <HStack justify="end" gap="1">
+                        <Button
+                          aria-label={t('finance.editAccount')}
+                          onClick={() => {
+                            setAccountToEdit(account)
+                            setAccountFormOpen(true)
+                          }}
+                          size="xs"
+                          variant="ghost"
+                        >
+                          <Pencil aria-hidden="true" size={14} />
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            updateAccount.mutate(
+                              {
+                                accountId: account.id,
+                                isArchived: !account.isArchived,
+                              },
+                              {
+                                onError: () =>
+                                  toast.error({
+                                    title: t('finance.updateError'),
+                                  }),
+                              },
+                            )
+                          }
+                          size="xs"
+                          variant="outline"
+                        >
+                          {account.isArchived
+                            ? t('finance.restore')
+                            : t('finance.archive')}
+                        </Button>
+                      </HStack>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table.Root>
+          </Table.ScrollArea>
         ) : (
           <Box bg="bg.panel" borderWidth="1px" rounded="l2">
             <EmptyState
@@ -950,32 +1233,94 @@ export function FinancePage() {
     )
   }
 
+  function openRecurringForm() {
+    setRecurringToEdit(undefined)
+    setRecurringFormOpen(true)
+  }
+
+  function openSavingsGoalForm() {
+    setSavingsGoalToEdit(undefined)
+    setSavingsGoalFormOpen(true)
+  }
+
+  function openAccountForm() {
+    setAccountToEdit(undefined)
+    setAccountFormOpen(true)
+  }
+
+  function renderPrimaryAction() {
+    if (section === 'overview' || section === 'transactions') {
+      return (
+        <Button
+          colorPalette="brand"
+          disabled={!accounts.some((account) => !account.isArchived)}
+          onClick={openTransactionForm}
+        >
+          <Plus aria-hidden="true" size={17} />
+          {t('finance.addTransaction')}
+        </Button>
+      )
+    }
+    if (section === 'recurring') {
+      return (
+        <Button colorPalette="brand" onClick={openRecurringForm}>
+          <Plus aria-hidden="true" size={17} />
+          {t('finance.addRecurring')}
+        </Button>
+      )
+    }
+    if (section === 'savings') {
+      return (
+        <Button colorPalette="brand" onClick={openSavingsGoalForm}>
+          <Plus aria-hidden="true" size={17} />
+          {t('finance.addSavingsGoal')}
+        </Button>
+      )
+    }
+    return (
+      <Button colorPalette="brand" onClick={openAccountForm}>
+        <Plus aria-hidden="true" size={17} />
+        {t('finance.addAccount')}
+      </Button>
+    )
+  }
+
   return (
-    <Container maxW="6xl" py={{ base: '6', md: '10' }}>
-      <Stack gap={{ base: '5', md: '7' }}>
+    <Container maxW="7xl" py={{ base: '5', md: '7' }}>
+      <Stack gap="5">
         <PageHeader
-          actions={
-            <Button
-              colorPalette="brand"
-              disabled={!accounts.some((account) => !account.isArchived)}
-              onClick={openTransactionForm}
-            >
-              <Plus aria-hidden="true" size={18} />
-              {t('finance.addTransaction')}
-            </Button>
+          actions={renderPrimaryAction()}
+          description={
+            section === 'overview'
+              ? t('finance.description')
+              : t(`finance.sectionDescriptions.${section}`)
           }
-          description={t('finance.description')}
           eyebrow={t('finance.eyebrow')}
-          title={t('finance.title')}
+          title={
+            section === 'overview'
+              ? t('finance.title')
+              : t(`finance.sections.${section}`)
+          }
         />
-        <HStack gap="1" overflowX="auto" pb="1">
+        <HStack
+          bg="bg.subtle"
+          borderColor="border.subtle"
+          borderWidth="1px"
+          gap="1"
+          overflowX="auto"
+          p="1"
+          rounded="l2"
+          role="group"
+          aria-label={t('finance.sectionsLabel')}
+        >
           {sections.map((item) => (
             <Button
+              aria-pressed={section === item}
               colorPalette={section === item ? 'brand' : undefined}
               key={item}
               onClick={() => setSection(item)}
               size="sm"
-              variant={section === item ? 'subtle' : 'ghost'}
+              variant={section === item ? 'solid' : 'ghost'}
             >
               {t(`finance.sections.${item}`)}
             </Button>

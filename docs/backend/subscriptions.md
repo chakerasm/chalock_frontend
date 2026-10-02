@@ -60,5 +60,9 @@ Use the common API error envelope with codes:
 Automatic renewal calculation, reminders, notifications, price history,
 currency conversion, bank reconciliation, and receipt detection are out of
 scope. Trial subscriptions are excluded from current recurring totals until
-they become active. Normalized costs use 52 weeks/year and 365 days/year;
-calendar renewal mutation is intentionally not automatic.
+they become active. Normalized costs use 52 weeks/year and 365 days/year.
+Monthly and annual totals must be grouped by currency; amounts with different
+currency codes must never be added together because conversion is out of scope.
+Calendar renewal mutation is intentionally not automatic. Historical spending
+charts require a separate transaction or price-history source and cannot be
+derived from the current subscription records alone.
