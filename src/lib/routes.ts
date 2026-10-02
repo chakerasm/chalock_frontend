@@ -1,4 +1,4 @@
-﻿export const APP_ROUTES = {
+export const APP_ROUTES = {
   home: '/',
   activity: '/activity',
   login: '/login',
@@ -15,6 +15,7 @@
   review: '/review',
   subscriptions: '/subscriptions',
   finance: '/finance',
+  templates: '/templates',
 } as const
 
 export type AppRoute = (typeof APP_ROUTES)[keyof typeof APP_ROUTES]

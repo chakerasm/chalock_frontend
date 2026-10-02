@@ -25,6 +25,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StatisticsRouteImport } from './routes/statistics'
 import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
 import { Route as TasksRouteImport } from './routes/tasks'
+import { Route as TemplatesRouteImport } from './routes/templates'
 import { Route as FocusIndexRouteImport } from './routes/focus/index'
 import { Route as FocusPomodoroRouteImport } from './routes/focus/pomodoro'
 
@@ -108,6 +109,11 @@ const TasksRoute = TasksRouteImport.update({
   path: '/tasks',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TemplatesRoute = TemplatesRouteImport.update({
+  id: '/templates',
+  path: '/templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FocusIndexRoute = FocusIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/statistics': typeof StatisticsRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
+  '/templates': typeof TemplatesRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
   '/focus/': typeof FocusIndexRoute
 }
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/statistics': typeof StatisticsRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
+  '/templates': typeof TemplatesRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
   '/focus': typeof FocusIndexRoute
 }
@@ -176,6 +184,7 @@ export interface FileRoutesById {
   '/statistics': typeof StatisticsRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
+  '/templates': typeof TemplatesRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
   '/focus/': typeof FocusIndexRoute
 }
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '/statistics'
     | '/subscriptions'
     | '/tasks'
+    | '/templates'
     | '/focus/pomodoro'
     | '/focus/'
   fileRoutesByTo: FileRoutesByTo
@@ -217,6 +227,7 @@ export interface FileRouteTypes {
     | '/statistics'
     | '/subscriptions'
     | '/tasks'
+    | '/templates'
     | '/focus/pomodoro'
     | '/focus'
   id:
@@ -237,6 +248,7 @@ export interface FileRouteTypes {
     | '/statistics'
     | '/subscriptions'
     | '/tasks'
+    | '/templates'
     | '/focus/pomodoro'
     | '/focus/'
   fileRoutesById: FileRoutesById
@@ -258,6 +270,7 @@ export interface RootRouteChildren {
   StatisticsRoute: typeof StatisticsRoute
   SubscriptionsRoute: typeof SubscriptionsRoute
   TasksRoute: typeof TasksRoute
+  TemplatesRoute: typeof TemplatesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -374,6 +387,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TasksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/templates': {
+      id: '/templates'
+      path: '/templates'
+      fullPath: '/templates'
+      preLoaderRoute: typeof TemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/focus/': {
       id: '/focus/'
       path: '/'
@@ -420,6 +440,7 @@ const rootRouteChildren: RootRouteChildren = {
   StatisticsRoute: StatisticsRoute,
   SubscriptionsRoute: SubscriptionsRoute,
   TasksRoute: TasksRoute,
+  TemplatesRoute: TemplatesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

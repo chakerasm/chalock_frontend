@@ -13,6 +13,7 @@ import {
   Goal,
   History,
   ListTodo,
+  LayoutTemplate,
   NotebookPen,
   Repeat,
   WalletCards,
@@ -42,6 +43,7 @@ const navigationItems: NavigationItem[] = [
   { icon: NotebookPen, label: 'notes.title', to: APP_ROUTES.notes },
   { icon: WalletCards, label: 'finance.title', to: APP_ROUTES.finance },
   { icon: Repeat, label: 'subscriptions.title', to: APP_ROUTES.subscriptions },
+  { icon: LayoutTemplate, label: 'Templates', to: APP_ROUTES.templates },
 ]
 
 export function AppSidebar({ onNavigate }: AppSidebarProps) {
