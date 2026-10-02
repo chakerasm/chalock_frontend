@@ -32,6 +32,7 @@ import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
 import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
 import { PageHeader } from '@/components/shared/PageHeader/PageHeader'
 import { toast } from '@/components/ui/Toaster/Toaster'
+import { SubscriptionAvatar } from '@/features/subscriptions/components/SubscriptionAvatar'
 import { SubscriptionDetailSkeleton } from '@/features/subscriptions/components/SubscriptionDetailSkeleton'
 import { SubscriptionFormDialog } from '@/features/subscriptions/components/SubscriptionFormDialog'
 import { SubscriptionsListSkeleton } from '@/features/subscriptions/components/SubscriptionsListSkeleton'
@@ -391,24 +392,14 @@ function SubscriptionsList() {
                           >
                             <Table.Cell>
                               <HStack gap="2.5" minW="10rem">
-                                <Flex
-                                  align="center"
-                                  bg={
+                                <SubscriptionAvatar
+                                  background={
                                     categoryColors[
                                       index % categoryColors.length
                                     ]
                                   }
-                                  color="white"
-                                  flexShrink="0"
-                                  h="8"
-                                  justify="center"
-                                  rounded="control"
-                                  w="8"
-                                  fontSize="sm"
-                                  fontWeight="bold"
-                                >
-                                  {item.name.slice(0, 1).toUpperCase()}
-                                </Flex>
+                                  subscription={item}
+                                />
                                 <Stack gap="0" minW="0">
                                   <Text fontWeight="semibold" lineClamp={1}>
                                     {item.name}
@@ -756,9 +747,7 @@ function RenewalSummary({ subscriptions }: { subscriptions: Subscription[] }) {
           {upcoming.map((item) => (
             <Flex align="center" gap="3" justify="space-between" key={item.id}>
               <HStack gap="2" minW="0">
-                <Box bg="bg.subtle" color="brand.fg" p="1.5" rounded="control">
-                  <CalendarClock aria-hidden="true" size={14} />
-                </Box>
+                <SubscriptionAvatar subscription={item} />
                 <Text fontSize="xs" fontWeight="medium" lineClamp={1}>
                   {item.name}
                 </Text>
@@ -809,20 +798,7 @@ function SubscriptionOverview({
     >
       <Flex align="center" gap="3" justify="space-between" p="4">
         <HStack gap="3" minW="0">
-          <Flex
-            align="center"
-            bg="brand.subtle"
-            color="brand.fg"
-            flexShrink="0"
-            h="10"
-            justify="center"
-            rounded="control"
-            w="10"
-            fontSize="md"
-            fontWeight="bold"
-          >
-            {item.name.slice(0, 1).toUpperCase()}
-          </Flex>
+          <SubscriptionAvatar size="md" subscription={item} />
           <Stack gap="0" minW="0">
             <Text fontWeight="semibold" lineClamp={1}>
               {item.name}
