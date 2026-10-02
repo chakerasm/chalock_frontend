@@ -43,6 +43,7 @@ const en = {
       'Keep recurring expenses and renewals in one calm, useful view.',
     descriptionPage:
       'See what renews next, what it costs, and what can be paused.',
+    hiddenAmount: 'Amount hidden',
     editTitle: 'Edit subscription',
     emptyDescription:
       'Add your first subscription to see upcoming renewals and recurring costs.',
@@ -126,6 +127,7 @@ const fr: typeof en = {
     categoryFilter: 'Filtrer par categorie',
     createTitle: 'Nouvel abonnement',
     description: 'Gardez vos depenses recurrentes et renouvellements en vue.',
+    hiddenAmount: 'Montant masque',
     editTitle: 'Modifier l abonnement',
     monthlyCost: 'Cout mensuel estime',
     noCategoryData: 'Aucune categorie pour le moment.',

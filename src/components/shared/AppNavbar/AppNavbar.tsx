@@ -5,6 +5,7 @@ import { CommandMenu } from '@/components/shared/CommandMenu/CommandMenu'
 import { ProfileMenu } from '@/components/shared/ProfileMenu/ProfileMenu'
 import { ColorModeToggle } from '@/components/ui/ColorModeToggle/ColorModeToggle'
 import { LanguageSelect } from '@/components/ui/LanguageSelect/LanguageSelect'
+import { PrivacyModeToggle } from '@/components/ui/PrivacyModeToggle/PrivacyModeToggle'
 
 type AppNavbarProps = {
   onOpenNavigation: () => void
@@ -50,6 +51,7 @@ export function AppNavbar({ onOpenNavigation, onLogout }: AppNavbarProps) {
           <Box display={{ base: 'none', sm: 'block' }}>
             <LanguageSelect />
           </Box>
+          <PrivacyModeToggle />
           <ColorModeToggle />
           <ProfileMenu onLogout={onLogout} />
         </HStack>

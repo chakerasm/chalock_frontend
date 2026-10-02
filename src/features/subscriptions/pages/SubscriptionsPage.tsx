@@ -26,8 +26,9 @@ import {
   Search,
   X,
 } from 'lucide-react'
-import { useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { usePrivacyMode } from '@/app/privacy-mode'
 import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
 import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
 import { PageHeader } from '@/components/shared/PageHeader/PageHeader'
@@ -110,6 +111,7 @@ export function SubscriptionsPage() {
 
 function SubscriptionsList() {
   const { i18n, t } = useTranslation()
+  const { isPrivacyMode } = usePrivacyMode()
   const [status, setStatus] = useState<SubscriptionStatus | 'all'>('all')
   const [category, setCategory] = useState<SubscriptionCategory | 'all'>('all')
   const [search, setSearch] = useState('')
@@ -224,11 +226,13 @@ function SubscriptionsList() {
           />
           <Summary
             icon={CircleDollarSign}
+            isPrivacyMode={isPrivacyMode}
             label={t('subscriptions.monthlyCost')}
             values={monthlyByCurrency}
           />
           <Summary
             icon={CalendarClock}
+            isPrivacyMode={isPrivacyMode}
             label={t('subscriptions.annualCost')}
             values={annualByCurrency}
           />
@@ -417,7 +421,9 @@ function SubscriptionsList() {
                               </HStack>
                             </Table.Cell>
                             <Table.Cell whiteSpace="nowrap">
-                              {money(item)}
+                              <PrivateAmount isPrivate={isPrivacyMode}>
+                                {money(item)}
+                              </PrivateAmount>
                             </Table.Cell>
                             <Table.Cell color="fg.muted" whiteSpace="nowrap">
                               {t(`subscriptions.cycles.${item.billingCycle}`)}
@@ -548,12 +554,14 @@ function createDonutGradient(
 function Summary({
   detail,
   icon: Icon,
+  isPrivacyMode = false,
   label,
   value,
   values,
 }: {
   detail?: string
   icon: typeof Layers3
+  isPrivacyMode?: boolean
   label: string
   value?: string
   values?: string[]
@@ -584,7 +592,9 @@ function Summary({
                   key={amount}
                   lineClamp={1}
                 >
-                  {amount}
+                  <PrivateAmount isPrivate={isPrivacyMode}>
+                    {amount}
+                  </PrivateAmount>
                 </Text>
               ))
             ) : (
@@ -785,6 +795,7 @@ function SubscriptionOverview({
   onSelectTab: (tab: 'overview' | 'timeline' | 'notes') => void
 }) {
   const { t } = useTranslation()
+  const { isPrivacyMode } = usePrivacyMode()
   const monthlyTotal = getRecurringCostSummary([item]).monthly
   const tabLabels = ['overview', 'timeline', 'notes'] as const
   return (
@@ -840,7 +851,11 @@ function SubscriptionOverview({
             <SimpleGrid columns={2} gap="3">
               <DetailValue
                 label={t('subscriptions.amount')}
-                value={money(item)}
+                value={
+                  <PrivateAmount isPrivate={isPrivacyMode}>
+                    {money(item)}
+                  </PrivateAmount>
+                }
               />
               <DetailValue
                 label={t('subscriptions.billingCycle')}
@@ -852,7 +867,11 @@ function SubscriptionOverview({
               />
               <DetailValue
                 label={t('subscriptions.annualCost')}
-                value={money(item, getRecurringCostSummary([item]).annual)}
+                value={
+                  <PrivateAmount isPrivate={isPrivacyMode}>
+                    {money(item, getRecurringCostSummary([item]).annual)}
+                  </PrivateAmount>
+                }
               />
             </SimpleGrid>
             <Box bg="bg.subtle" p="3" rounded="control">
@@ -861,7 +880,9 @@ function SubscriptionOverview({
                   {t('subscriptions.monthlyCost')}
                 </Text>
                 <Text fontSize="sm" fontWeight="semibold">
-                  {money(item, monthlyTotal)}
+                  <PrivateAmount isPrivate={isPrivacyMode}>
+                    {money(item, monthlyTotal)}
+                  </PrivateAmount>
                 </Text>
               </HStack>
             </Box>
@@ -948,7 +969,7 @@ function SubscriptionOverview({
   )
 }
 
-function DetailValue({ label, value }: { label: string; value: string }) {
+function DetailValue({ label, value }: { label: string; value: ReactNode }) {
   return (
     <Stack gap="1" minW="0">
       <Text color="fg.muted" fontSize="xs">
@@ -961,8 +982,24 @@ function DetailValue({ label, value }: { label: string; value: string }) {
   )
 }
 
+function PrivateAmount({
+  children,
+  isPrivate,
+}: {
+  children: string
+  isPrivate: boolean
+}) {
+  const { t } = useTranslation()
+  return isPrivate ? (
+    <span aria-label={t('subscriptions.hiddenAmount')}>••••</span>
+  ) : (
+    children
+  )
+}
+
 function SubscriptionDetail({ subscriptionId }: { subscriptionId: string }) {
   const { i18n, t } = useTranslation()
+  const { isPrivacyMode } = usePrivacyMode()
   const navigate = useNavigate()
   const query = useSubscription(subscriptionId)
   const update = useUpdateSubscription()
@@ -1026,7 +1063,10 @@ function SubscriptionDetail({ subscriptionId }: { subscriptionId: string }) {
         />
         <Stack bg="bg.panel" borderWidth="1px" gap="4" p="5" rounded="l2">
           <Text fontSize="2xl" fontWeight="bold">
-            {money(item)} / {t(`subscriptions.cycles.${item.billingCycle}`)}
+            <PrivateAmount isPrivate={isPrivacyMode}>
+              {money(item)}
+            </PrivateAmount>{' '}
+            / {t(`subscriptions.cycles.${item.billingCycle}`)}
           </Text>
           <Text>
             {t('subscriptions.renewsOn', {
@@ -1044,11 +1084,19 @@ function SubscriptionDetail({ subscriptionId }: { subscriptionId: string }) {
           ) : null}
           <HStack>
             <Text color="fg.muted">{t('subscriptions.monthlyCost')}</Text>
-            <Text>{money(item, getRecurringCostSummary([item]).monthly)}</Text>
+            <Text>
+              <PrivateAmount isPrivate={isPrivacyMode}>
+                {money(item, getRecurringCostSummary([item]).monthly)}
+              </PrivateAmount>
+            </Text>
           </HStack>
           <HStack>
             <Text color="fg.muted">{t('subscriptions.annualCost')}</Text>
-            <Text>{money(item, getRecurringCostSummary([item]).annual)}</Text>
+            <Text>
+              <PrivateAmount isPrivate={isPrivacyMode}>
+                {money(item, getRecurringCostSummary([item]).annual)}
+              </PrivateAmount>
+            </Text>
           </HStack>
         </Stack>
       </Stack>

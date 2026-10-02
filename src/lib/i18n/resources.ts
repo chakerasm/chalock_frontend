@@ -61,6 +61,10 @@ const en = {
       switchToDark: 'Switch to dark theme',
       switchToLight: 'Switch to light theme',
     },
+    privacyMode: {
+      hideAmounts: 'Hide amounts',
+      showAmounts: 'Show amounts',
+    },
   },
   common: {
     close: 'Close',
@@ -154,6 +158,10 @@ const fr: typeof en = {
     colorMode: {
       switchToDark: 'Passer au theme sombre',
       switchToLight: 'Passer au theme clair',
+    },
+    privacyMode: {
+      hideAmounts: 'Masquer les montants',
+      showAmounts: 'Afficher les montants',
     },
   },
   common: {
