@@ -1,11 +1,13 @@
 import { Button, HStack, Table, Text } from '@chakra-ui/react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { PrivateAmount } from '@/components/ui/PrivateAmount/PrivateAmount'
 import type {
   Account,
   FinanceCategory,
   Transaction,
 } from '@/features/finance/types/finance.types'
+import { formatCurrency } from '@/lib/formatters/currency'
 
 type Props = {
   accounts: Account[]
@@ -16,11 +18,7 @@ type Props = {
 }
 
 function money(value: number, currency: string) {
-  return new Intl.NumberFormat(undefined, {
-    currency,
-    maximumFractionDigits: 2,
-    style: 'currency',
-  }).format(value)
+  return formatCurrency(value, currency)
 }
 function dateLabel(date: string, locale: string) {
   return new Intl.DateTimeFormat(locale, {
@@ -107,8 +105,10 @@ export function TransactionList({
                   textAlign="end"
                   whiteSpace="nowrap"
                 >
-                  {amountPrefix}
-                  {money(transaction.amount, transaction.currency)}
+                  <PrivateAmount>
+                    {amountPrefix}
+                    {money(transaction.amount, transaction.currency)}
+                  </PrivateAmount>
                 </Table.Cell>
                 <Table.Cell>
                   <HStack justify="end" gap="1">

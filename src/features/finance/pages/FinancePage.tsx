@@ -25,6 +25,8 @@ import {
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { usePrivacyMode } from '@/app/privacy-mode'
+import { PrivateAmount } from '@/components/ui/PrivateAmount/PrivateAmount'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog/ConfirmDialog'
 import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
 import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
@@ -70,6 +72,7 @@ import type {
   TransactionListFilters,
 } from '@/features/finance/types/finance.types'
 import { useSubscriptions } from '@/features/subscriptions/hooks/use-subscriptions'
+import { formatCurrency } from '@/lib/formatters/currency'
 
 const sections = [
   'overview',
@@ -80,14 +83,23 @@ const sections = [
 ] as const
 type FinanceSection = (typeof sections)[number]
 
-const financeSectionRoutes: Record<FinanceSection, '/finance' | '/finance/transactions' | '/finance/recurring' | '/finance/savings' | '/finance/account'> = { overview: '/finance', transactions: '/finance/transactions', recurring: '/finance/recurring', savings: '/finance/savings', accounts: '/finance/account' }
+const financeSectionRoutes: Record<
+  FinanceSection,
+  | '/finance'
+  | '/finance/transactions'
+  | '/finance/recurring'
+  | '/finance/savings'
+  | '/finance/account'
+> = {
+  overview: '/finance',
+  transactions: '/finance/transactions',
+  recurring: '/finance/recurring',
+  savings: '/finance/savings',
+  accounts: '/finance/account',
+}
 
 function money(value: number, currency: string) {
-  return new Intl.NumberFormat(undefined, {
-    currency,
-    maximumFractionDigits: 2,
-    style: 'currency',
-  }).format(value)
+  return formatCurrency(value, currency)
 }
 
 function dateLabel(value: string, locale: string) {
@@ -105,6 +117,12 @@ function MoneyList({
   if (!totals.length)
     return (
       <Text fontSize="lg" fontWeight="semibold">
+        —
+      </Text>
+    )
+  if (totals.length === 0)
+    return (
+      <Text fontSize="lg" fontWeight="semibold">
         ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â
       </Text>
     )
@@ -112,7 +130,7 @@ function MoneyList({
     <Stack align="start" gap="0">
       {totals.map((total) => (
         <Text fontSize="lg" fontWeight="semibold" key={total.currency}>
-          {money(total.value, total.currency)}
+          <PrivateAmount>{money(total.value, total.currency)}</PrivateAmount>
         </Text>
       ))}
     </Stack>
@@ -157,7 +175,10 @@ type FinancePageProps = { initialSection?: FinanceSection }
 
 export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
   const { i18n, t } = useTranslation()
+  const { isPrivacyMode } = usePrivacyMode()
   const defaultCurrency = 'MAD'
+  const privateAmount = (value: number, currency: string) =>
+    isPrivacyMode ? t('app.privacyMode.hiddenAmount') : money(value, currency)
   const navigate = useNavigate()
   const [section, setSection] = useState<FinanceSection>(initialSection)
   function selectSection(nextSection: FinanceSection) {
@@ -446,21 +467,21 @@ export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
                   >
                     <HStack align="end" flex="1" gap="1" w="full">
                       <Box
-                        aria-label={`${t('finance.types.income')}: ${money(month.income, overviewCurrency ?? 'MAD')}`}
+                        aria-label={`${t('finance.types.income')}: ${privateAmount(month.income, overviewCurrency ?? 'MAD')}`}
                         bg="green.500"
                         h={`${Math.max(2, (month.income / chartMaximum) * 100)}%`}
                         minH="1px"
                         roundedTop="sm"
-                        title={`${t('finance.types.income')}: ${money(month.income, overviewCurrency ?? 'MAD')}`}
+                        title={`${t('finance.types.income')}: ${privateAmount(month.income, overviewCurrency ?? 'MAD')}`}
                         w="50%"
                       />
                       <Box
-                        aria-label={`${t('finance.types.expense')}: ${money(month.expenses, overviewCurrency ?? 'MAD')}`}
+                        aria-label={`${t('finance.types.expense')}: ${privateAmount(month.expenses, overviewCurrency ?? 'MAD')}`}
                         bg="red.500"
                         h={`${Math.max(2, (month.expenses / chartMaximum) * 100)}%`}
                         minH="1px"
                         roundedTop="sm"
-                        title={`${t('finance.types.expense')}: ${money(month.expenses, overviewCurrency ?? 'MAD')}`}
+                        title={`${t('finance.types.expense')}: ${privateAmount(month.expenses, overviewCurrency ?? 'MAD')}`}
                         w="50%"
                       />
                     </HStack>
@@ -510,7 +531,9 @@ export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
                     rounded="full"
                   >
                     <Text fontSize="xs" fontWeight="bold">
-                      {money(categoryTotal, overviewCurrency ?? 'MAD')}
+                      <PrivateAmount>
+                        {money(categoryTotal, overviewCurrency ?? 'MAD')}
+                      </PrivateAmount>
                     </Text>
                     <Text color="fg.muted" fontSize="2xs">
                       {t('finance.types.expense')}
@@ -637,7 +660,9 @@ export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
                       fontWeight="semibold"
                       whiteSpace="nowrap"
                     >
-                      {money(payment.amount, payment.currency)}
+                      <PrivateAmount>
+                        {money(payment.amount, payment.currency)}
+                      </PrivateAmount>
                     </Text>
                   </Flex>
                 ))}
@@ -854,11 +879,13 @@ export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
                     <Table.Cell textAlign="end" whiteSpace="nowrap">
                       <Stack align="end" gap="0">
                         <Text fontWeight="semibold">
-                          {money(item.amount, item.currency)}
+                          <PrivateAmount>
+                            {money(item.amount, item.currency)}
+                          </PrivateAmount>
                         </Text>
                         <Text color="fg.muted" fontSize="2xs">
                           {t('finance.monthlyEstimate', {
-                            amount: money(
+                            amount: privateAmount(
                               getMonthlyRecurringCost(item),
                               item.currency,
                             ),
@@ -920,7 +947,9 @@ export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
                       {dateLabel(item.nextBillingDate, i18n.language)}
                     </Table.Cell>
                     <Table.Cell textAlign="end" whiteSpace="nowrap">
-                      {money(item.amount, item.currency)}
+                      <PrivateAmount>
+                        {money(item.amount, item.currency)}
+                      </PrivateAmount>
                     </Table.Cell>
                     <Table.Cell>
                       <Text
@@ -1070,8 +1099,10 @@ export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
                   </Box>
                   <Flex mt="2" justify="space-between">
                     <Text color="fg.muted" fontSize="sm">
-                      {money(goal.currentAmount, goal.currency)} /{' '}
-                      {money(goal.targetAmount, goal.currency)}
+                      <PrivateAmount>
+                        {money(goal.currentAmount, goal.currency)} /{' '}
+                        {money(goal.targetAmount, goal.currency)}
+                      </PrivateAmount>
                     </Text>
                     <Text fontSize="sm" fontWeight="semibold">
                       {progress.percentage}%
@@ -1162,7 +1193,9 @@ export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
                       textAlign="end"
                       whiteSpace="nowrap"
                     >
-                      {money(account.currentBalance, account.currency)}
+                      <PrivateAmount>
+                        {money(account.currentBalance, account.currency)}
+                      </PrivateAmount>
                     </Table.Cell>
                     <Table.Cell>
                       <Text

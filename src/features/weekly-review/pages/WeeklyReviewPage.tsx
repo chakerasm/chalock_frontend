@@ -15,6 +15,8 @@ import { ChevronLeft, ChevronRight, Goal, Plus, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { formatCurrency } from '@/lib/formatters/currency'
+import { PrivateAmount } from '@/components/ui/PrivateAmount/PrivateAmount'
 import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
 import { PageHeader } from '@/components/shared/PageHeader/PageHeader'
 import { FieldTextarea } from '@/components/ui/FieldTextarea/FieldTextarea'
@@ -49,11 +51,7 @@ function formatDuration(totalSeconds: number) {
 }
 
 function formatMoney(value: number, currency: string, locale: string) {
-  return new Intl.NumberFormat(locale, {
-    currency,
-    maximumFractionDigits: 2,
-    style: 'currency',
-  }).format(value)
+  return formatCurrency(value, currency, locale)
 }
 
 export function WeeklyReviewPage() {
@@ -341,11 +339,13 @@ export function WeeklyReviewPage() {
                         >
                           <Text>{category.name}</Text>
                           <Text color="fg.muted">
-                            {formatMoney(
-                              category.value,
-                              category.currency,
-                              i18n.language,
-                            )}
+                            <PrivateAmount>
+                              {formatMoney(
+                                category.value,
+                                category.currency,
+                                i18n.language,
+                              )}
+                            </PrivateAmount>
                           </Text>
                         </Flex>
                       ))}
@@ -511,7 +511,9 @@ function MoneyRows({
       </Text>
       {values.map((value) => (
         <Text fontSize="sm" key={value.currency}>
-          {formatMoney(value.value, value.currency, locale)}
+          <PrivateAmount>
+            {formatMoney(value.value, value.currency, locale)}
+          </PrivateAmount>
         </Text>
       ))}
     </Stack>

@@ -32,6 +32,7 @@ import { usePrivacyMode } from '@/app/privacy-mode'
 import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
 import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
 import { PageHeader } from '@/components/shared/PageHeader/PageHeader'
+import { PrivateAmount } from '@/components/ui/PrivateAmount/PrivateAmount'
 import { toast } from '@/components/ui/Toaster/Toaster'
 import { SubscriptionAvatar } from '@/features/subscriptions/components/SubscriptionAvatar'
 import { SubscriptionDetailSkeleton } from '@/features/subscriptions/components/SubscriptionDetailSkeleton'
@@ -57,6 +58,7 @@ import type {
   SubscriptionStatus,
 } from '@/features/subscriptions/types/subscriptions.types'
 import { APP_ROUTES } from '@/lib/routes'
+import { formatCurrency } from '@/lib/formatters/currency'
 
 function formatDate(value: string, locale: string) {
   const [year, month, day] = value.split('-').map(Number)
@@ -67,11 +69,7 @@ function formatDate(value: string, locale: string) {
 }
 
 function money(subscription: Subscription, value = subscription.amount) {
-  return new Intl.NumberFormat(undefined, {
-    currency: subscription.currency,
-    maximumFractionDigits: 2,
-    style: 'currency',
-  }).format(value)
+  return formatCurrency(value, subscription.currency)
 }
 
 const categoryKeys: SubscriptionCategory[] = [
@@ -529,11 +527,7 @@ function totalsByCurrency(subscriptions: Subscription[], annual: boolean) {
     )
   }
   return [...totals.entries()].map(([currency, amount]) =>
-    new Intl.NumberFormat(undefined, {
-      currency,
-      maximumFractionDigits: 2,
-      style: 'currency',
-    }).format(amount),
+    formatCurrency(amount, currency),
   )
 }
 
@@ -979,21 +973,6 @@ function DetailValue({ label, value }: { label: string; value: ReactNode }) {
         {value}
       </Text>
     </Stack>
-  )
-}
-
-function PrivateAmount({
-  children,
-  isPrivate,
-}: {
-  children: string
-  isPrivate: boolean
-}) {
-  const { t } = useTranslation()
-  return isPrivate ? (
-    <span aria-label={t('subscriptions.hiddenAmount')}>••••</span>
-  ) : (
-    children
   )
 }
 

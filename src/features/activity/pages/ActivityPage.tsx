@@ -34,6 +34,7 @@ import type {
   ActivityCategory,
   ActivityType,
 } from '@/features/activity/types/activity.types'
+import { formatCurrency } from '@/lib/formatters/currency'
 
 const pageSize = 25
 
@@ -137,7 +138,9 @@ export function ActivityPage() {
             <Text color="fg.muted">
               {filter === 'all'
                 ? t('activity.empty')
-                : t('activity.emptyFiltered', { filter: t(`activity.${filter}`) })}
+                : t('activity.emptyFiltered', {
+                    filter: t(`activity.${filter}`),
+                  })}
             </Text>
           </Box>
         )}
@@ -172,14 +175,7 @@ function ActivityItem({
       : undefined,
   ].filter(Boolean)
   const item = (
-    <Flex
-      align="center"
-      gap="3"
-      minW="0"
-      py="1"
-      textAlign="start"
-      w="full"
-    >
+    <Flex align="center" gap="3" minW="0" py="1" textAlign="start" w="full">
       <Flex
         align="center"
         bg="bg.subtle"
@@ -287,9 +283,5 @@ function formatDuration(totalSeconds: number) {
 }
 
 function formatMoney(value: number, currency: string, locale: string) {
-  return new Intl.NumberFormat(locale, {
-    currency,
-    maximumFractionDigits: 2,
-    style: 'currency',
-  }).format(value)
+  return formatCurrency(value, currency, locale)
 }
