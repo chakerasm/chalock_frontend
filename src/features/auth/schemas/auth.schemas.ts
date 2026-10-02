@@ -1,17 +1,21 @@
 import { z } from 'zod'
 
 export const loginInputSchema = z.object({
-  email: z.string().trim().email(),
-  password: z.string().min(8).max(256),
+  email: z.string().trim().toLowerCase().email().max(320),
+  password: z.string().min(8).max(128),
 })
+
+export const registerInputSchema = loginInputSchema
 
 export const authUserSchema = z.object({
-  displayName: z.string().trim().min(1).max(80),
   email: z.string().email(),
   id: z.string().min(1),
+  createdAt: z.string().datetime(),
 })
 
-export const authSessionSchema = z.object({
-  expiresAt: z.string().datetime(),
+export const authenticationResponseSchema = z.object({
+  accessToken: z.string().min(1),
+  expiresIn: z.string().min(1),
+  tokenType: z.literal('Bearer'),
   user: authUserSchema,
 })

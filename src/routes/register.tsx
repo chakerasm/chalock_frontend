@@ -11,22 +11,23 @@ function sanitizeRedirect(value: unknown) {
     : '/'
 }
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute('/register')({
   beforeLoad: ({ context, search }) => {
     if (context.auth.status === 'authenticated')
       throw redirect({ to: sanitizeRedirect(search.redirect) })
   },
-  component: LoginRoute,
+  component: RegisterRoute,
   errorComponent: RouteError,
   validateSearch: z.object({ redirect: z.string().optional() }),
 })
 
-function LoginRoute() {
-  const navigate = useNavigate({ from: '/login' })
+function RegisterRoute() {
+  const navigate = useNavigate({ from: '/register' })
   const { redirect: returnTo } = Route.useSearch()
 
   return (
     <LoginPage
+      mode="register"
       onSuccess={() =>
         navigate({ to: sanitizeRedirect(returnTo), replace: true })
       }

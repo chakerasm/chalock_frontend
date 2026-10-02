@@ -1,4 +1,4 @@
-﻿import { useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
 import {
   createContext,
@@ -8,21 +8,24 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { subscribeToUnauthorized } from '@/lib/api/client'
 import {
   restoreSession,
   signIn as signInWithSession,
   signOut as signOutSession,
+  signUp as signUpWithSession,
 } from '@/features/auth/services/auth.service'
 import type {
   AuthState,
   AuthUser,
   LoginInput,
+  RegisterInput,
 } from '@/features/auth/types/auth.types'
+import { subscribeToUnauthorized } from '@/lib/api/client'
 
 export type AuthContextValue = AuthState & {
   signIn: (input: LoginInput) => Promise<AuthUser>
   signOut: () => Promise<void>
+  signUp: (input: RegisterInput) => Promise<AuthUser>
 }
 
 const unavailableAuth: AuthContextValue = {
@@ -30,6 +33,9 @@ const unavailableAuth: AuthContextValue = {
     throw new Error('Authentication is unavailable outside AuthProvider.')
   },
   signOut: async () => undefined,
+  signUp: async () => {
+    throw new Error('Authentication is unavailable outside AuthProvider.')
+  },
   status: 'loading',
 }
 
@@ -73,6 +79,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return user
       },
       signOut,
+      signUp: async (input) => {
+        const user = await signUpWithSession(input)
+        setState({ status: 'authenticated', user })
+        return user
+      },
     }),
     [signOut, state],
   )

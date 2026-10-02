@@ -1,4 +1,7 @@
-﻿const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
+const apiVersionPrefix = '/api/v1'
+
+let accessToken: string | undefined
 
 const unauthorizedListeners = new Set<() => void>()
 
@@ -7,6 +10,11 @@ export function subscribeToUnauthorized(listener: () => void) {
   return () => {
     unauthorizedListeners.delete(listener)
   }
+}
+
+/** Sets the bearer token used for subsequent authenticated API requests. */
+export function setApiAccessToken(token: string | undefined) {
+  accessToken = token?.trim() || undefined
 }
 
 function notifyUnauthorized() {
@@ -25,16 +33,38 @@ export class ApiError extends Error {
   }
 }
 
-export function apiFetch(path: string, init?: RequestInit) {
-  return fetch(`${apiBaseUrl}${path}`, {
-    ...init,
-    headers: {
-      Accept: 'application/json',
-      ...init?.headers,
-    },
+export type ApiFetchInit = RequestInit & {
+  /** Auth endpoints handle their own 401 responses and must not end a session. */
+  skipUnauthorizedHandler?: boolean
+}
+
+function getApiPath(path: string) {
+  if (path === '/api') return apiVersionPrefix
+  if (path.startsWith('/api/v1/')) return path
+  if (path.startsWith('/api/')) return `${apiVersionPrefix}${path.slice(4)}`
+  return `${apiVersionPrefix}${path.startsWith('/') ? path : `/${path}`}`
+}
+
+export function apiFetch(path: string, init?: ApiFetchInit) {
+  const { skipUnauthorizedHandler = false, ...requestInit } = init ?? {}
+  const headers = new Headers(requestInit.headers)
+  headers.set('Accept', 'application/json')
+  if (accessToken && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${accessToken}`)
+  }
+
+  const apiPath = getApiPath(path)
+  const requestPath = apiBaseUrl.endsWith(apiVersionPrefix)
+    ? apiPath.slice(apiVersionPrefix.length)
+    : apiPath
+
+  return fetch(`${apiBaseUrl}${requestPath}`, {
+    ...requestInit,
+    headers,
   }).then(async (response) => {
     if (response.ok) return response
-    if (response.status === 401) notifyUnauthorized()
+    if (response.status === 401 && !skipUnauthorizedHandler)
+      notifyUnauthorized()
 
     let message = `Request failed with status ${response.status}.`
     try {

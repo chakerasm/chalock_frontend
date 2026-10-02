@@ -1,4 +1,4 @@
-﻿import { RouterProvider } from '@tanstack/react-router'
+import { RouterProvider } from '@tanstack/react-router'
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { AppProviders } from '@/app/providers'
@@ -21,6 +21,11 @@ function AuthenticatedRouter({
   router: ReturnType<typeof getRouter>
 }) {
   const auth = useAuth()
+
+  useEffect(() => {
+    if (auth.status !== 'loading') void router.invalidate()
+  }, [auth.status, router])
+
   if (auth.status === 'loading') return <LoadingState fullScreen />
   return <RouterProvider context={{ auth }} router={router} />
 }

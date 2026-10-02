@@ -1,42 +1,28 @@
 # Authentication API contract
 
-## Session model
+All API routes are served beneath `/api/v1`. Authenticate requests with a signed JWT in the `Authorization: Bearer <accessToken>` header. Access tokens expire according to `JWT_EXPIRES_IN`; this MVP has no refresh-token or logout/revocation endpoint.
 
-Production authentication should use a server-managed session with a `Secure`, `HttpOnly`, `SameSite=Lax` cookie. The frontend must not persist access or refresh tokens in local storage. Its temporary local session is an MVP-only adapter and must be replaced when these endpoints are available.
+## Shared types
 
-Cookie-authenticated state-changing requests need CSRF protection, such as a synchronizer token or a double-submit token. Return `401` for missing, expired, or invalid sessions; the frontend clears its session state and returns to `/login` in one centralized path.
+```ts
+interface PublicUser {
+  id: string
+  email: string
+  createdAt: string // UTC ISO-8601 instant
+}
+
+interface AuthenticationResponse {
+  accessToken: string
+  tokenType: 'Bearer'
+  expiresIn: string
+  user: PublicUser
+}
+```
 
 ## Endpoints
 
-### `POST /api/auth/login`
+- `POST /api/v1/auth/register` accepts `{ email, password }`, returns `201` with `AuthenticationResponse`, and returns `400` for invalid input or `409` for an existing email.
+- `POST /api/v1/auth/login` accepts `{ email, password }`, returns `200` with `AuthenticationResponse`, and returns `400` for malformed input or `401` with a generic invalid-credentials message.
+- `GET /api/v1/auth/me` requires the bearer token and returns `200` with `PublicUser`. It returns `401` for a missing, malformed, expired, or invalid token.
 
-```json
-{ "email": "user@example.com", "password": "password" }
-```
-
-On success, set the session cookie and return the authenticated user:
-
-```json
-{ "user": { "id": "usr_123", "email": "user@example.com", "displayName": "User" } }
-```
-
-Return `401 INVALID_CREDENTIALS` for invalid credentials. Do not reveal whether an email exists.
-
-### `POST /api/auth/logout`
-
-Invalidate the server session and expire the session cookie. It should be idempotent and return `204`.
-
-### `GET /api/auth/me`
-
-Return the authenticated user when the session is valid. Return `401 SESSION_EXPIRED` otherwise.
-
-### `POST /api/auth/refresh` (future)
-
-If refresh sessions are introduced, rotate the refresh token/session on every successful use, detect reuse, and issue a replacement access/session cookie. The frontend should not need access to the refresh secret.
-
-## Validation and expiration
-
-- Email is normalized and validated server-side.
-- Password requirements and rate limits are enforced server-side.
-- Session expiration and revocation are authoritative on the server.
-- All authenticated API responses may return `401`; the frontend must treat that as a session expiration, clear sensitive cached data, and route to sign-in without feature-specific handling.
+Emails are trimmed, normalized to lowercase, and limited to 320 characters. Passwords must be 8–128 characters. API errors use the repository-wide envelope; passwords and password hashes are never returned.

@@ -1,18 +1,22 @@
 export type AuthUserFromAPI = {
-  displayName: string
   email: string
   id: string
+  createdAt: string
 }
 
 export type AuthUser = AuthUserFromAPI
 
-export type AuthSessionFromAPI = {
-  expiresAt: string
+export type AuthenticationResponseFromAPI = {
+  accessToken: string
+  expiresIn: string
+  tokenType: 'Bearer'
   user: AuthUserFromAPI
 }
 
-export type AuthSession = {
-  expiresAt: string
+export type AuthenticationResponse = {
+  accessToken: string
+  expiresIn: string
+  tokenType: 'Bearer'
   user: AuthUser
 }
 
@@ -20,6 +24,8 @@ export type LoginInput = {
   email: string
   password: string
 }
+
+export type RegisterInput = LoginInput
 
 export type AuthState =
   | { status: 'loading' }

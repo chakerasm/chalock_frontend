@@ -1,6 +1,6 @@
 import type {
-  AuthSession,
-  AuthSessionFromAPI,
+  AuthenticationResponse,
+  AuthenticationResponseFromAPI,
   AuthUser,
   AuthUserFromAPI,
 } from '@/features/auth/types/auth.types'
@@ -13,12 +13,14 @@ export function mapAuthUserToAPI(user: AuthUser): AuthUserFromAPI {
   return { ...user }
 }
 
-export function mapAuthSessionFromAPI(
-  session: AuthSessionFromAPI,
-): AuthSession {
-  return { ...session, user: mapAuthUserFromAPI(session.user) }
+export function mapAuthenticationResponseFromAPI(
+  response: AuthenticationResponseFromAPI,
+): AuthenticationResponse {
+  return { ...response, user: mapAuthUserFromAPI(response.user) }
 }
 
-export function mapAuthSessionToAPI(session: AuthSession): AuthSessionFromAPI {
-  return { ...session, user: mapAuthUserToAPI(session.user) }
+export function mapAuthenticationResponseToAPI(
+  response: AuthenticationResponse,
+): AuthenticationResponseFromAPI {
+  return { ...response, user: mapAuthUserToAPI(response.user) }
 }

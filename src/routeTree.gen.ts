@@ -18,6 +18,7 @@ import { Route as HabitsRouteImport } from './routes/habits'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NotesRouteImport } from './routes/notes'
 import { Route as PlannerRouteImport } from './routes/planner'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -72,6 +73,11 @@ const PlannerRoute = PlannerRouteImport.update({
   path: '/planner',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RemindersRoute = RemindersRouteImport.update({
   id: '/reminders',
   path: '/reminders',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/notes': typeof NotesRoute
   '/planner': typeof PlannerRoute
+  '/register': typeof RegisterRoute
   '/reminders': typeof RemindersRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/notes': typeof NotesRoute
   '/planner': typeof PlannerRoute
+  '/register': typeof RegisterRoute
   '/reminders': typeof RemindersRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/notes': typeof NotesRoute
   '/planner': typeof PlannerRoute
+  '/register': typeof RegisterRoute
   '/reminders': typeof RemindersRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/notes'
     | '/planner'
+    | '/register'
     | '/reminders'
     | '/review'
     | '/settings'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/notes'
     | '/planner'
+    | '/register'
     | '/reminders'
     | '/review'
     | '/settings'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/notes'
     | '/planner'
+    | '/register'
     | '/reminders'
     | '/review'
     | '/settings'
@@ -239,6 +251,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   NotesRoute: typeof NotesRoute
   PlannerRoute: typeof PlannerRoute
+  RegisterRoute: typeof RegisterRoute
   RemindersRoute: typeof RemindersRoute
   ReviewRoute: typeof ReviewRoute
   SettingsRoute: typeof SettingsRoute
@@ -310,6 +323,13 @@ declare module '@tanstack/react-router' {
       path: '/planner'
       fullPath: '/planner'
       preLoaderRoute: typeof PlannerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reminders': {
@@ -393,6 +413,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   NotesRoute: NotesRoute,
   PlannerRoute: PlannerRoute,
+  RegisterRoute: RegisterRoute,
   RemindersRoute: RemindersRoute,
   ReviewRoute: ReviewRoute,
   SettingsRoute: SettingsRoute,
