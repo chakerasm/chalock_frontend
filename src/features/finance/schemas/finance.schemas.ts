@@ -134,3 +134,53 @@ export const savingsGoalInputSchema = z.object({
 export const updateAccountInputSchema = accountInputSchema.partial()
 export const updateCategoryInputSchema = categoryInputSchema.partial()
 export const updateSavingsGoalInputSchema = savingsGoalInputSchema.partial()
+
+const timestampSchema = z.string().datetime()
+
+export const accountFromAPISchema = accountInputSchema.extend({
+  createdAt: timestampSchema,
+  id: identifierSchema,
+  isArchived: z.boolean(),
+  updatedAt: timestampSchema,
+})
+export const transactionFromAPISchema = transactionInputSchema.extend({
+  createdAt: timestampSchema,
+  id: identifierSchema,
+  updatedAt: timestampSchema,
+})
+export const financeCategoryFromAPISchema = categoryInputSchema.extend({
+  id: identifierSchema,
+  isSystem: z.boolean(),
+})
+export const recurringTransactionFromAPISchema =
+  recurringTransactionInputSchema.extend({
+    createdAt: timestampSchema,
+    id: identifierSchema,
+    updatedAt: timestampSchema,
+  })
+export const savingsGoalFromAPISchema = savingsGoalInputSchema.extend({
+  createdAt: timestampSchema,
+  id: identifierSchema,
+  updatedAt: timestampSchema,
+})
+
+export const accountsListResponseSchema = z.object({
+  data: z.array(accountFromAPISchema),
+  nextCursor: z.string().nullable().optional(),
+})
+export const transactionsListResponseSchema = z.object({
+  data: z.array(transactionFromAPISchema),
+  nextCursor: z.string().nullable().optional(),
+})
+export const financeCategoriesListResponseSchema = z.object({
+  data: z.array(financeCategoryFromAPISchema),
+  nextCursor: z.string().nullable().optional(),
+})
+export const recurringTransactionsListResponseSchema = z.object({
+  data: z.array(recurringTransactionFromAPISchema),
+  nextCursor: z.string().nullable().optional(),
+})
+export const savingsGoalsListResponseSchema = z.object({
+  data: z.array(savingsGoalFromAPISchema),
+  nextCursor: z.string().nullable().optional(),
+})

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+﻿import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createAccount,
   createCategory,
@@ -7,6 +7,7 @@ import {
   createTransaction,
   deleteTransaction,
   getFinanceSnapshot,
+  getFinanceSummary,
   updateAccount,
   updateCategory,
   updateRecurringTransaction,
@@ -29,12 +30,21 @@ import type {
 export const financeQueryKeys = {
   all: ['finance'] as const,
   snapshot: ['finance', 'snapshot'] as const,
+  summary: (from: string, to: string) =>
+    ['finance', 'summary', from, to] as const,
 }
 
 export function useFinanceSnapshot() {
   return useQuery({
     queryFn: getFinanceSnapshot,
     queryKey: financeQueryKeys.snapshot,
+  })
+}
+
+export function useFinanceSummary(from: string, to: string) {
+  return useQuery({
+    queryKey: financeQueryKeys.summary(from, to),
+    queryFn: () => getFinanceSummary(from, to),
   })
 }
 

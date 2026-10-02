@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   FinanceSnapshot,
   Transaction,
 } from '@/features/finance/types/finance.types'
@@ -107,7 +107,7 @@ export function createSearchResults(sources: SearchSources): SearchResult[] {
     ...(sources.plannerBlocks ?? []).map<SearchResult>((block) => ({
       href: APP_ROUTES.planner,
       id: block.id,
-      metadata: `${block.date} · ${block.startTime}–${block.endTime}`,
+      metadata: `${block.date} Â· ${block.startTime}â€“${block.endTime}`,
       subtitle: compactText(block.description),
       title: block.title,
       type: 'planner',
@@ -150,5 +150,14 @@ export function searchResults(
       )
       .slice(0, maximumPerType)
     return matchesForType.length ? [{ results: matchesForType, type }] : []
+  })
+}
+
+export function groupSearchResults(
+  results: SearchResult[],
+): SearchResultGroup[] {
+  return searchTypeOrder.flatMap((type) => {
+    const matches = results.filter((result) => result.type === type)
+    return matches.length ? [{ type, results: matches }] : []
   })
 }

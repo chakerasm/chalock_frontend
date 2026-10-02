@@ -1,4 +1,4 @@
-import {
+﻿import {
   Box,
   Button,
   Container,
@@ -45,6 +45,7 @@ import {
   useCreateTransaction,
   useDeleteTransaction,
   useFinanceSnapshot,
+  useFinanceSummary,
   useUpdateAccount,
   useUpdateCategory,
   useUpdateRecurringTransaction,
@@ -54,12 +55,10 @@ import {
 import {
   filterTransactions,
   getAccountBalances,
-  getCategorySummaries,
   getMonthlyRecurringCost,
   getMonthlySummaries,
   getSavingsGoalProgress,
   getTotalBalancesByCurrency,
-  getUpcomingPayments,
 } from '@/features/finance/services/finance-calculations'
 import type {
   Account,
@@ -104,7 +103,7 @@ function MoneyList({
   if (!totals.length)
     return (
       <Text fontSize="lg" fontWeight="semibold">
-        —
+        â€”
       </Text>
     )
   return (
@@ -156,6 +155,19 @@ export function FinancePage() {
   const { i18n, t } = useTranslation()
   const defaultCurrency = useDefaultCurrency()
   const financeQuery = useFinanceSnapshot()
+  const summaryDate = new Date()
+  const summaryYear = String(summaryDate.getFullYear())
+  const summaryMonth = String(summaryDate.getMonth() + 1).padStart(2, '0')
+  const summaryFrom = `${summaryYear}-${summaryMonth}-01`
+  const summaryLastDay = String(
+    new Date(
+      summaryDate.getFullYear(),
+      summaryDate.getMonth() + 1,
+      0,
+    ).getDate(),
+  ).padStart(2, '0')
+  const summaryTo = `${summaryYear}-${summaryMonth}-${summaryLastDay}`
+  const financeSummaryQuery = useFinanceSummary(summaryFrom, summaryTo)
   const subscriptionsQuery = useSubscriptions()
   const createAccount = useCreateAccount()
   const updateAccount = useUpdateAccount()
@@ -183,12 +195,18 @@ export function FinancePage() {
   const [recurringToEdit, setRecurringToEdit] = useState<RecurringTransaction>()
   const [savingsGoalToEdit, setSavingsGoalToEdit] = useState<SavingsGoal>()
 
-  if (financeQuery.isPending || subscriptionsQuery.isPending)
+  if (
+    financeQuery.isPending ||
+    subscriptionsQuery.isPending ||
+    financeSummaryQuery.isPending
+  )
     return <FinancePageSkeleton />
   if (
     financeQuery.isError ||
     subscriptionsQuery.isError ||
-    !financeQuery.data
+    financeSummaryQuery.isError ||
+    !financeQuery.data ||
+    !financeSummaryQuery.data
   ) {
     return (
       <Container maxW="6xl" py={{ base: '8', md: '12' }}>
@@ -196,12 +214,14 @@ export function FinancePage() {
           onRetry={() => {
             void financeQuery.refetch()
             void subscriptionsQuery.refetch()
+            void financeSummaryQuery.refetch()
           }}
         />
       </Container>
     )
   }
 
+  const financeSummary = financeSummaryQuery.data
   const {
     accounts,
     categories,
@@ -212,11 +232,11 @@ export function FinancePage() {
   const subscriptions = subscriptionsQuery.data ?? []
   const accountBalances = getAccountBalances(accounts, transactions)
   const totalBalances = getTotalBalancesByCurrency(accounts, transactions)
-  const monthlySummaries = getMonthlySummaries(transactions)
-  const upcomingPayments = getUpcomingPayments(
-    recurringTransactions,
-    subscriptions,
-  )
+  const monthlySummaries = financeSummary.byCurrency.map((item) => ({
+    ...item,
+    savings: Math.max(0, item.net),
+  }))
+  const upcomingPayments = financeSummary.upcomingPayments
   const visibleTransactions = filterTransactions(
     transactions,
     transactionFilters,
@@ -244,12 +264,19 @@ export function FinancePage() {
     1,
     ...monthlyChart.flatMap((item) => [item.income, item.expenses]),
   )
-  const categorySummaries = getCategorySummaries(
-    transactions,
-    categories,
-    undefined,
-    overviewCurrency,
+  const categorySource =
+    financeSummary.byCurrency.find((item) => item.currency === overviewCurrency)
+      ?.topExpenseCategories ?? []
+  const categoryTotal = categorySource.reduce(
+    (total, item) => total + item.amount,
+    0,
   )
+  const categorySummaries = categorySource.map((item) => ({
+    categoryId: item.categoryId,
+    name: item.name,
+    total: item.amount,
+    percentage: categoryTotal ? (item.amount / categoryTotal) * 100 : 0,
+  }))
   const latestMonth = new Intl.DateTimeFormat(i18n.language, {
     month: 'long',
     year: 'numeric',
@@ -352,7 +379,7 @@ export function FinancePage() {
                   {t('finance.incomeVsExpenses')}
                 </Text>
                 <Text color="fg.muted" fontSize="xs">
-                  {latestMonth} · {overviewCurrency ?? defaultCurrency}
+                  {latestMonth} Â· {overviewCurrency ?? defaultCurrency}
                 </Text>
               </Stack>
               <HStack gap="3">
@@ -572,7 +599,7 @@ export function FinancePage() {
                         {payment.title}
                       </Text>
                       <Text color="fg.muted" fontSize="xs">
-                        {dateLabel(payment.date, i18n.language)} ·{' '}
+                        {dateLabel(payment.date, i18n.language)} Â·{' '}
                         {t(`finance.paymentSources.${payment.source}`)}
                       </Text>
                     </Stack>
@@ -786,7 +813,7 @@ export function FinancePage() {
                   <Table.Row key={item.id}>
                     <Table.Cell fontWeight="medium">{item.title}</Table.Cell>
                     <Table.Cell color="fg.muted">
-                      {t(`finance.types.${item.type}`)} ·{' '}
+                      {t(`finance.types.${item.type}`)} Â·{' '}
                       {t('finance.paymentSources.recurring')}
                     </Table.Cell>
                     <Table.Cell>

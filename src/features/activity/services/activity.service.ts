@@ -1,4 +1,4 @@
-import type { FinanceSnapshot } from '@/features/finance/types/finance.types'
+﻿import type { FinanceSnapshot } from '@/features/finance/types/finance.types'
 import type { FocusTimerSnapshot } from '@/features/focus/types/focus.types'
 import type { Goal } from '@/features/goals/types/goals.types'
 import type { Habit, HabitLog } from '@/features/habits/types/habits.types'
@@ -6,7 +6,10 @@ import type { Note } from '@/features/notes/types/notes.types'
 import type { TimeBlock } from '@/features/planner/types/planner.types'
 import type { Subscription } from '@/features/subscriptions/types/subscriptions.types'
 import type { Task } from '@/features/tasks/types/tasks.types'
-import type { Activity, ActivityGroup } from '@/features/activity/types/activity.types'
+import type {
+  Activity,
+  ActivityGroup,
+} from '@/features/activity/types/activity.types'
 import { APP_ROUTES } from '@/lib/routes'
 
 type ActivitySources = {
@@ -90,7 +93,10 @@ export function createActivities({
     })),
     ...habitLogs
       .filter(
-        (log) => log.completed && isValidTimestamp(log.updatedAt) && habitNames.has(log.habitId),
+        (log) =>
+          log.completed &&
+          isValidTimestamp(log.updatedAt) &&
+          habitNames.has(log.habitId),
       )
       .map((log) => ({
         category: 'personal' as const,
@@ -126,41 +132,43 @@ export function createActivities({
         href: APP_ROUTES.notes,
         id: `note-created:${note.id}`,
         occurredAt: note.createdAt,
-        title: note.title?.trim() || note.content.slice(0, 80) || 'Untitled note',
+        title:
+          note.title?.trim() || note.content.slice(0, 80) || 'Untitled note',
         type: 'note_created' as const,
       })),
     ...subscriptions
       .filter((subscription) => isValidTimestamp(subscription.createdAt))
       .flatMap((subscription) => {
         const added: Activity = {
-          category: 'finance',
+          category: 'finance' as const,
           entityId: subscription.id,
           entityType: 'subscription',
           href: APP_ROUTES.subscriptions,
           id: `subscription-added:${subscription.id}`,
           occurredAt: subscription.createdAt,
           title: subscription.name,
-          type: 'subscription_added',
+          type: 'subscription_added' as const,
         }
         if (subscription.status !== 'cancelled') return [added]
         return [
           added,
           {
-            category: 'finance',
+            category: 'finance' as const,
             entityId: subscription.id,
             entityType: 'subscription',
             href: APP_ROUTES.subscriptions,
             id: `subscription-cancelled:${subscription.id}`,
             occurredAt: subscription.cancellationDate ?? subscription.updatedAt,
             title: subscription.name,
-            type: 'subscription_cancelled',
+            type: 'subscription_cancelled' as const,
           },
         ]
       }),
     ...finance.transactions
       .filter(
         (transaction) =>
-          transaction.type === 'expense' && isValidTimestamp(transaction.createdAt),
+          transaction.type === 'expense' &&
+          isValidTimestamp(transaction.createdAt),
       )
       .map((transaction) => ({
         amount: transaction.amount,
@@ -176,7 +184,8 @@ export function createActivities({
       })),
     ...plannerBlocks
       .filter(
-        (block) => block.status === 'completed' && isValidTimestamp(block.updatedAt),
+        (block) =>
+          block.status === 'completed' && isValidTimestamp(block.updatedAt),
       )
       .map((block) => ({
         category: 'productivity' as const,

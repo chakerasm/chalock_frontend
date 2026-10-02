@@ -13,22 +13,12 @@ import { useNavigate } from '@tanstack/react-router'
 import { Search, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useFinanceSnapshot } from '@/features/finance/hooks/use-finance'
-import {
-  createSearchResults,
-  searchResults,
-} from '@/features/global-search/services/global-search.service'
+import { useGlobalSearch } from '@/features/global-search/hooks/use-global-search'
+import { groupSearchResults } from '@/features/global-search/services/global-search.service'
 import type {
   SearchResult,
   SearchResultGroup,
 } from '@/features/global-search/types/global-search.types'
-import { useGoals } from '@/features/goals/hooks/use-goals'
-import { useHabits } from '@/features/habits/hooks/use-habits'
-import { useNotes } from '@/features/notes/hooks/use-notes'
-import { useAllTimeBlocks } from '@/features/planner/hooks/use-planner'
-import { useReminders } from '@/features/reminders/hooks/use-reminders'
-import { useSubscriptions } from '@/features/subscriptions/hooks/use-subscriptions'
-import { useTasks } from '@/features/tasks/hooks/use-tasks'
 import { APP_ROUTES } from '@/lib/routes'
 
 type PaletteItem = Pick<
@@ -53,64 +43,15 @@ export function GlobalSearchDialog() {
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(0)
   const debouncedQuery = useDebouncedValue(query)
-  const tasksQuery = useTasks()
-  const notesQuery = useNotes()
-  const goalsQuery = useGoals()
-  const habitsQuery = useHabits()
-  const plannerQuery = useAllTimeBlocks()
-  const remindersQuery = useReminders()
-  const subscriptionsQuery = useSubscriptions()
-  const financeQuery = useFinanceSnapshot()
   const queryText = query.trim()
   const isSearching = queryText.length >= 2
   const isDebouncing = queryText !== debouncedQuery.trim()
-  const isLoading = [
-    tasksQuery,
-    notesQuery,
-    goalsQuery,
-    habitsQuery,
-    plannerQuery,
-    remindersQuery,
-    subscriptionsQuery,
-    financeQuery,
-  ].some((item) => item.isPending)
-  const hasError = [
-    tasksQuery,
-    notesQuery,
-    goalsQuery,
-    habitsQuery,
-    plannerQuery,
-    remindersQuery,
-    subscriptionsQuery,
-    financeQuery,
-  ].some((item) => item.isError)
-
-  const searchRecords = useMemo(
-    () =>
-      createSearchResults({
-        finance: financeQuery.data,
-        goals: goalsQuery.data,
-        habits: habitsQuery.data,
-        notes: notesQuery.data,
-        plannerBlocks: plannerQuery.data,
-        reminders: remindersQuery.data,
-        subscriptions: subscriptionsQuery.data,
-        tasks: tasksQuery.data,
-      }),
-    [
-      financeQuery.data,
-      goalsQuery.data,
-      habitsQuery.data,
-      notesQuery.data,
-      plannerQuery.data,
-      remindersQuery.data,
-      subscriptionsQuery.data,
-      tasksQuery.data,
-    ],
-  )
+  const searchQuery = useGlobalSearch(debouncedQuery)
+  const isLoading = searchQuery.isPending
+  const hasError = searchQuery.isError
   const groups = useMemo(
-    () => searchResults(searchRecords, debouncedQuery),
-    [debouncedQuery, searchRecords],
+    () => groupSearchResults(searchQuery.data ?? []),
+    [searchQuery.data],
   )
   const commands = useMemo<PaletteItem[]>(
     () => [

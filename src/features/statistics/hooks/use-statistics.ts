@@ -1,92 +1,97 @@
-import { useEffect, useMemo, useState } from 'react'
-import {
-  getFocusTimerSnapshot,
-  subscribeToFocusTimerSnapshot,
-} from '@/features/focus/services/focus-timer.service'
+﻿import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { getStatisticsFromAPI } from '@/features/statistics/api/statistics.api'
+import { getGoalProgressSummary } from '@/features/goals/services/goal-progress.service'
 import { useGoals } from '@/features/goals/hooks/use-goals'
-import { useHabitLogs, useHabits } from '@/features/habits/hooks/use-habits'
-import { getLocalDate } from '@/features/habits/services/habit-calendar.service'
-import {
-  getDateInTimeZone,
-  getStatisticsOverview,
-  getStatisticsPresetRange,
-} from '@/features/statistics/services/statistics.service'
-import type { StatisticsPreset } from '@/features/statistics/types/statistics.types'
 import { useTasks } from '@/features/tasks/hooks/use-tasks'
+import { getStatisticsPresetRange } from '@/features/statistics/services/statistics.service'
+import type {
+  StatisticsOverview,
+  StatisticsPreset,
+} from '@/features/statistics/types/statistics.types'
 
 export function useStatistics(preset: StatisticsPreset) {
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const range = useMemo(() => getStatisticsPresetRange(preset), [preset])
-  const [focusSnapshot, setFocusSnapshot] = useState(getFocusTimerSnapshot)
-  const tasksQuery = useTasks()
-  const habitsQuery = useHabits({ state: 'active' })
+  const statisticsQuery = useQuery({
+    queryKey: ['statistics', range, timezone],
+    queryFn: () => getStatisticsFromAPI(range, timezone),
+  })
   const goalsQuery = useGoals({ status: 'active' })
-  const habitHistoryFrom = (habitsQuery.data ?? []).reduce(
-    (earliest, habit) => {
-      const createdOn =
-        getDateInTimeZone(habit.createdAt, timeZone) ?? getLocalDate()
-      return createdOn < earliest ? createdOn : earliest
-    },
-    range.from,
-  )
-  const logsQuery = useHabitLogs(habitHistoryFrom, range.to)
-
-  useEffect(
-    () =>
-      subscribeToFocusTimerSnapshot(() =>
-        setFocusSnapshot(getFocusTimerSnapshot()),
-      ),
-    [],
-  )
-
-  const isPending =
-    tasksQuery.isPending ||
-    habitsQuery.isPending ||
-    goalsQuery.isPending ||
-    logsQuery.isPending
-  const isError =
-    tasksQuery.isError ||
-    habitsQuery.isError ||
-    goalsQuery.isError ||
-    logsQuery.isError
-  const data = useMemo(() => {
-    if (
-      !tasksQuery.data ||
-      !habitsQuery.data ||
-      !goalsQuery.data ||
-      !logsQuery.data
-    ) {
+  const tasksQuery = useTasks()
+  const data = useMemo<StatisticsOverview | undefined>(() => {
+    if (!statisticsQuery.data || !goalsQuery.data || !tasksQuery.data)
       return undefined
-    }
-    return getStatisticsOverview({
-      focusSnapshot,
-      goals: goalsQuery.data,
-      habitLogs: logsQuery.data,
-      habits: habitsQuery.data,
+    const { summary, focus, tasks, habits } = statisticsQuery.data
+    return {
       range,
-      tasks: tasksQuery.data,
-      timeZone,
-    })
-  }, [
-    focusSnapshot,
-    goalsQuery.data,
-    habitsQuery.data,
-    logsQuery.data,
-    range,
-    tasksQuery.data,
-    timeZone,
-  ])
-
+      summary: {
+        focusSessions: summary.focus.sessionCount,
+        totalFocusSeconds: summary.focus.totalSeconds,
+        tasksCompleted: summary.tasksCompleted,
+        habitCompletionRate: summary.habits.completionRate,
+      },
+      focus: {
+        totalSeconds: focus.totalSeconds,
+        sessionCount: focus.sessionCount,
+        averageSessionSeconds: focus.averageSessionSeconds,
+        mostProductiveDate: focus.mostProductiveDay?.date ?? null,
+        daily: focus.daily.map((day) => ({
+          date: day.date,
+          focusSeconds: day.totalSeconds,
+          completedTasks: 0,
+          completedHabits: 0,
+          scheduledHabits: 0,
+        })),
+      },
+      tasks: {
+        completedCount: tasks.completedCount,
+        priorityCounts: tasks.priorityCounts,
+        daily: tasks.daily.map((day) => ({
+          date: day.date,
+          focusSeconds: 0,
+          completedTasks: day.completedCount,
+          completedHabits: 0,
+          scheduledHabits: 0,
+        })),
+      },
+      habits: {
+        completionRate: habits.completionRate,
+        completedOpportunities: habits.completedOpportunities,
+        scheduledOpportunities: habits.scheduledOpportunities,
+        consistency: habits.consistency.map((day) => ({
+          date: day.date,
+          completed: day.completed,
+          scheduled: day.scheduled,
+          rate: day.completionRate,
+        })),
+        streaks: habits.currentStreaks,
+      },
+      goals: {
+        activeCount: goalsQuery.data.length,
+        goals: goalsQuery.data
+          .map((goal) => ({
+            id: goal.id,
+            title: goal.title,
+            progress: getGoalProgressSummary(goal, tasksQuery.data).progress,
+          }))
+          .sort(
+            (a, b) => b.progress - a.progress || a.title.localeCompare(b.title),
+          ),
+      },
+    }
+  }, [goalsQuery.data, range, statisticsQuery.data, tasksQuery.data])
   return {
     data,
-    isError,
-    isPending,
+    isPending:
+      statisticsQuery.isPending || goalsQuery.isPending || tasksQuery.isPending,
+    isError:
+      statisticsQuery.isError || goalsQuery.isError || tasksQuery.isError,
     refetch: async () => {
       await Promise.all([
-        tasksQuery.refetch(),
-        habitsQuery.refetch(),
+        statisticsQuery.refetch(),
         goalsQuery.refetch(),
-        logsQuery.refetch(),
+        tasksQuery.refetch(),
       ])
     },
   }

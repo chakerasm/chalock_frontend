@@ -1,4 +1,4 @@
-import {
+﻿import {
   Box,
   Button,
   Container,
@@ -137,13 +137,13 @@ export function PlannerPage({
     })
   }
 
-  function handleStartFocus(block: TimeBlock) {
+  async function handleStartFocus(block: TimeBlock) {
     if (!focusAvailable) {
       toast.warning({ title: t('planner.focusUnavailable') })
       return
     }
     const focusInput = getFocusTimerInputForTimeBlock(block, now)
-    const session = focusTimer.start(focusInput)
+    const session = await focusTimer.start(focusInput)
     if (!session) return
 
     updateMutation.mutate(

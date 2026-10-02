@@ -1,4 +1,4 @@
-export type AccountType =
+﻿export type AccountType =
   | 'checking'
   | 'savings'
   | 'cash'
@@ -182,4 +182,31 @@ export type TransactionListFilters = {
   search?: string
   to?: string
   type?: TransactionType
+}
+
+export type FinanceSummaryByCurrency = {
+  currency: string
+  expenses: number
+  income: number
+  net: number
+  recurringExpenses: number
+  topExpenseCategories: Array<{
+    amount: number
+    categoryId: string
+    name: string
+  }>
+}
+
+export type FinanceSummary = {
+  byCurrency: FinanceSummaryByCurrency[]
+  from: string
+  to: string
+  upcomingPayments: Array<{
+    amount: number
+    currency: string
+    date: string
+    id: string
+    source: 'recurring' | 'subscription'
+    title: string
+  }>
 }
