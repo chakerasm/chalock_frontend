@@ -1,4 +1,4 @@
-# React Starter
+# Chalock
 
 A reusable Vite and React 19 foundation for client-side product applications. It includes strict TypeScript, Chakra UI v3, TanStack Router and Query, React Hook Form, Zod, i18next, Storybook, Biome, Vitest, and Playwright.
 
