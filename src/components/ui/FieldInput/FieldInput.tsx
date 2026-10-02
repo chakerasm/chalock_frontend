@@ -6,6 +6,7 @@ type FieldInputProps<TFieldValues extends FieldValues> = {
   control: Control<TFieldValues>
   name: FieldPath<TFieldValues>
   label: string
+  maxLength?: number
   description?: string
   placeholder?: string
   type?: 'date' | 'email' | 'search' | 'tel' | 'text' | 'time' | 'url'
@@ -18,6 +19,7 @@ export function FieldInput<TFieldValues extends FieldValues>({
   control,
   name,
   label,
+  maxLength,
   description,
   placeholder,
   type = 'text',
@@ -40,6 +42,7 @@ export function FieldInput<TFieldValues extends FieldValues>({
           <Field.Label htmlFor={id}>{label}</Field.Label>
           <Input
             id={id}
+            maxLength={maxLength}
             placeholder={placeholder}
             step={step}
             type={type}
