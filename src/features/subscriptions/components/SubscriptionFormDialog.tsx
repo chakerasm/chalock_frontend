@@ -176,6 +176,46 @@ export function SubscriptionFormDialog({
                       />
                     </Field.Root>
                   </Stack>
+                  <Stack direction={{ base: 'column', sm: 'row' }} gap="4">
+                    <Field.Root>
+                      <Field.Label>Category</Field.Label>
+                      <NativeSelect.Root>
+                        <NativeSelect.Field
+                          onChange={(event) =>
+                            update(
+                              'category',
+                              (event.target.value || undefined) as CreateSubscriptionInput['category'],
+                            )
+                          }
+                          value={form.category ?? ''}
+                        >
+                          <option value="">No category</option>
+                          <option value="software">Software</option>
+                          <option value="entertainment">Entertainment</option>
+                          <option value="productivity">Productivity</option>
+                          <option value="fitness">Fitness</option>
+                          <option value="education">Education</option>
+                          <option value="cloud">Cloud</option>
+                          <option value="finance">Finance</option>
+                          <option value="utilities">Utilities</option>
+                          <option value="membership">Membership</option>
+                          <option value="other">Other</option>
+                        </NativeSelect.Field>
+                        <NativeSelect.Indicator />
+                      </NativeSelect.Root>
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>Image URL</Field.Label>
+                      <Input
+                        onChange={(event) =>
+                          update('imageUrl', event.target.value || undefined)
+                        }
+                        placeholder="https://example.com/logo.png"
+                        type="url"
+                        value={form.imageUrl ?? ''}
+                      />
+                    </Field.Root>
+                  </Stack>
                   {form.billingCycle === 'custom' ? (
                     <Stack direction="row" gap="4">
                       <Field.Root required>

@@ -49,6 +49,7 @@ export type SubscriptionFromAPI = {
   }
   description?: string
   id: string
+  imageUrl?: string
   name: string
   nextBillingDate: string
   notes?: string
