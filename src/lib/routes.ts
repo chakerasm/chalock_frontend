@@ -16,6 +16,9 @@ export const APP_ROUTES = {
   subscriptions: '/subscriptions',
   finance: '/finance',
   financeAccount: '/finance/account',
+  financeTransactions: '/finance/transactions',
+  financeRecurring: '/finance/recurring',
+  financeSavings: '/finance/savings',
   templates: '/templates',
 } as const
 

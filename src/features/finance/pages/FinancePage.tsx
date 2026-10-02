@@ -22,6 +22,7 @@ import {
   Plus,
   WalletCards,
 } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog/ConfirmDialog'
@@ -79,6 +80,8 @@ const sections = [
 ] as const
 type FinanceSection = (typeof sections)[number]
 
+const financeSectionRoutes: Record<FinanceSection, '/finance' | '/finance/transactions' | '/finance/recurring' | '/finance/savings' | '/finance/account'> = { overview: '/finance', transactions: '/finance/transactions', recurring: '/finance/recurring', savings: '/finance/savings', accounts: '/finance/account' }
+
 function money(value: number, currency: string) {
   return new Intl.NumberFormat(undefined, {
     currency,
@@ -102,7 +105,7 @@ function MoneyList({
   if (!totals.length)
     return (
       <Text fontSize="lg" fontWeight="semibold">
-        â€”
+        ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â
       </Text>
     )
   return (
@@ -155,7 +158,12 @@ type FinancePageProps = { initialSection?: FinanceSection }
 export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
   const { i18n, t } = useTranslation()
   const defaultCurrency = 'MAD'
+  const navigate = useNavigate()
   const [section, setSection] = useState<FinanceSection>(initialSection)
+  function selectSection(nextSection: FinanceSection) {
+    setSection(nextSection)
+    void navigate({ to: financeSectionRoutes[nextSection] })
+  }
   const isOverview = section === 'overview'
   const financeQuery = useFinanceSnapshot({
     accounts:
@@ -400,7 +408,7 @@ export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
                   {t('finance.incomeVsExpenses')}
                 </Text>
                 <Text color="fg.muted" fontSize="xs">
-                  {latestMonth} Â· {overviewCurrency ?? defaultCurrency}
+                  {latestMonth} Ãƒâ€šÃ‚Â· {overviewCurrency ?? defaultCurrency}
                 </Text>
               </Stack>
               <HStack gap="3">
@@ -557,7 +565,7 @@ export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
                 {t('finance.recentTransactions')}
               </Text>
               <Button
-                onClick={() => setSection('transactions')}
+                onClick={() => selectSection('transactions')}
                 size="xs"
                 variant="ghost"
               >
@@ -598,7 +606,7 @@ export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
                 </Text>
               </HStack>
               <Button
-                onClick={() => setSection('recurring')}
+                onClick={() => selectSection('recurring')}
                 size="xs"
                 variant="ghost"
               >
@@ -620,7 +628,7 @@ export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
                         {payment.title}
                       </Text>
                       <Text color="fg.muted" fontSize="xs">
-                        {dateLabel(payment.date, i18n.language)} Â·{' '}
+                        {dateLabel(payment.date, i18n.language)} Ãƒâ€šÃ‚Â·{' '}
                         {t(`finance.paymentSources.${payment.source}`)}
                       </Text>
                     </Stack>
@@ -834,7 +842,7 @@ export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
                   <Table.Row key={item.id}>
                     <Table.Cell fontWeight="medium">{item.title}</Table.Cell>
                     <Table.Cell color="fg.muted">
-                      {t(`finance.types.${item.type}`)} Â·{' '}
+                      {t(`finance.types.${item.type}`)} Ãƒâ€šÃ‚Â·{' '}
                       {t('finance.paymentSources.recurring')}
                     </Table.Cell>
                     <Table.Cell>
@@ -1366,7 +1374,7 @@ export function FinancePage({ initialSection = 'overview' }: FinancePageProps) {
               aria-pressed={section === item}
               colorPalette={section === item ? 'brand' : undefined}
               key={item}
-              onClick={() => setSection(item)}
+              onClick={() => selectSection(item)}
               size="sm"
               variant={section === item ? 'solid' : 'ghost'}
             >

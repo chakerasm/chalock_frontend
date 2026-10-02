@@ -27,6 +27,9 @@ import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as TemplatesRouteImport } from './routes/templates'
 import { Route as FinanceAccountRouteImport } from './routes/finance/account'
+import { Route as FinanceRecurringRouteImport } from './routes/finance/recurring'
+import { Route as FinanceSavingsRouteImport } from './routes/finance/savings'
+import { Route as FinanceTransactionsRouteImport } from './routes/finance/transactions'
 import { Route as FocusIndexRouteImport } from './routes/focus/index'
 import { Route as FocusPomodoroRouteImport } from './routes/focus/pomodoro'
 
@@ -120,6 +123,21 @@ const FinanceAccountRoute = FinanceAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => FinanceRoute,
 } as any)
+const FinanceRecurringRoute = FinanceRecurringRouteImport.update({
+  id: '/recurring',
+  path: '/recurring',
+  getParentRoute: () => FinanceRoute,
+} as any)
+const FinanceSavingsRoute = FinanceSavingsRouteImport.update({
+  id: '/savings',
+  path: '/savings',
+  getParentRoute: () => FinanceRoute,
+} as any)
+const FinanceTransactionsRoute = FinanceTransactionsRouteImport.update({
+  id: '/transactions',
+  path: '/transactions',
+  getParentRoute: () => FinanceRoute,
+} as any)
 const FocusIndexRoute = FocusIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -150,6 +168,9 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof TasksRoute
   '/templates': typeof TemplatesRoute
   '/finance/account': typeof FinanceAccountRoute
+  '/finance/recurring': typeof FinanceRecurringRoute
+  '/finance/savings': typeof FinanceSavingsRoute
+  '/finance/transactions': typeof FinanceTransactionsRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
   '/focus/': typeof FocusIndexRoute
 }
@@ -171,6 +192,9 @@ export interface FileRoutesByTo {
   '/tasks': typeof TasksRoute
   '/templates': typeof TemplatesRoute
   '/finance/account': typeof FinanceAccountRoute
+  '/finance/recurring': typeof FinanceRecurringRoute
+  '/finance/savings': typeof FinanceSavingsRoute
+  '/finance/transactions': typeof FinanceTransactionsRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
   '/focus': typeof FocusIndexRoute
 }
@@ -194,6 +218,9 @@ export interface FileRoutesById {
   '/tasks': typeof TasksRoute
   '/templates': typeof TemplatesRoute
   '/finance/account': typeof FinanceAccountRoute
+  '/finance/recurring': typeof FinanceRecurringRoute
+  '/finance/savings': typeof FinanceSavingsRoute
+  '/finance/transactions': typeof FinanceTransactionsRoute
   '/focus/pomodoro': typeof FocusPomodoroRoute
   '/focus/': typeof FocusIndexRoute
 }
@@ -218,6 +245,9 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/templates'
     | '/finance/account'
+    | '/finance/recurring'
+    | '/finance/savings'
+    | '/finance/transactions'
     | '/focus/pomodoro'
     | '/focus/'
   fileRoutesByTo: FileRoutesByTo
@@ -239,6 +269,9 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/templates'
     | '/finance/account'
+    | '/finance/recurring'
+    | '/finance/savings'
+    | '/finance/transactions'
     | '/focus/pomodoro'
     | '/focus'
   id:
@@ -261,6 +294,9 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/templates'
     | '/finance/account'
+    | '/finance/recurring'
+    | '/finance/savings'
+    | '/finance/transactions'
     | '/focus/pomodoro'
     | '/focus/'
   fileRoutesById: FileRoutesById
@@ -413,6 +449,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FinanceAccountRouteImport
       parentRoute: typeof FinanceRoute
     }
+    '/finance/recurring': {
+      id: '/finance/recurring'
+      path: '/recurring'
+      fullPath: '/finance/recurring'
+      preLoaderRoute: typeof FinanceRecurringRouteImport
+      parentRoute: typeof FinanceRoute
+    }
+    '/finance/savings': {
+      id: '/finance/savings'
+      path: '/savings'
+      fullPath: '/finance/savings'
+      preLoaderRoute: typeof FinanceSavingsRouteImport
+      parentRoute: typeof FinanceRoute
+    }
+    '/finance/transactions': {
+      id: '/finance/transactions'
+      path: '/transactions'
+      fullPath: '/finance/transactions'
+      preLoaderRoute: typeof FinanceTransactionsRouteImport
+      parentRoute: typeof FinanceRoute
+    }
     '/focus/': {
       id: '/focus/'
       path: '/'
@@ -432,10 +489,16 @@ declare module '@tanstack/react-router' {
 
 interface FinanceRouteChildren {
   FinanceAccountRoute: typeof FinanceAccountRoute
+  FinanceRecurringRoute: typeof FinanceRecurringRoute
+  FinanceSavingsRoute: typeof FinanceSavingsRoute
+  FinanceTransactionsRoute: typeof FinanceTransactionsRoute
 }
 
 const FinanceRouteChildren: FinanceRouteChildren = {
   FinanceAccountRoute: FinanceAccountRoute,
+  FinanceRecurringRoute: FinanceRecurringRoute,
+  FinanceSavingsRoute: FinanceSavingsRoute,
+  FinanceTransactionsRoute: FinanceTransactionsRoute,
 }
 
 const FinanceRouteWithChildren =
