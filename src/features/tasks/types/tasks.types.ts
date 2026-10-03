@@ -34,6 +34,24 @@ export type CreateTaskInput = {
   title: string;
 };
 
+/** Task data accepted by the Goal bulk-import endpoint. */
+export type BulkCreateGoalTaskInput = Omit<CreateTaskInput, "goalId">;
+
+export type BulkCreateGoalTasksRequest = {
+  tasks: BulkCreateGoalTaskInput[];
+};
+
+export type BulkCreateGoalTasksResponseFromAPI = {
+  created: number;
+};
+
+export type BulkTaskValidationIssue = {
+  code?: string;
+  field?: keyof BulkCreateGoalTaskInput;
+  index: number;
+  message: string;
+};
+
 export type TaskFormSubmitInput = Omit<CreateTaskInput, "goalId"> & {
   goalId?: string | null;
 };

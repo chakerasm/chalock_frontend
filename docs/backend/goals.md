@@ -56,6 +56,8 @@ The backend should be authoritative for task-based progress. It has the canonica
 
 Tasks have an optional `goalId`. A task belongs to at most one Goal; a Goal may have zero or many Tasks. Assigning a task uses the task write contract, for example `PATCH /api/tasks/:taskId` with `{ "goalId": "goal-1" }`. Clear the relationship with `{"goalId": null}`. Validate that the Goal is accessible to the authenticated user/workspace. The task remains valid if the Goal is paused, completed, or archived; changing Goal status never cascades to task status. Changing a task's `goalId` or completion status updates derived progress for its previous and new Goal.
 
+`POST /api/goals/:goalId/tasks/bulk` creates 1–500 validated Tasks for this Goal atomically. It assigns `status: "todo"`, uses one request, preserves submitted order where supported, and rolls back all rows on any unexpected persistence failure. See [tasks.md](tasks.md#post-apigoalsgoalidtasksbulk) for its payload, response, duplicate semantics, and structured row-error contract.
+
 ## Focus relationship
 
 Focus timer sessions, completed focus sessions, and Pomodoro focus history may carry an optional `goalId`. This is an association only and does not cascade when a Goal changes status or is archived. Accumulated focus time is the sum of completed session durations for that Goal, counting completed timer sessions and completed focus-phase Pomodoro history once each. Exclude skipped/cancelled focus phases and active or paused work from the completed-time total. The frontend currently reads this optional relationship from local Focus history; a future Focus API should expose the same stable `goalId` and duration semantics.

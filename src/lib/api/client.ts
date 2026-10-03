@@ -27,6 +27,7 @@ export class ApiError extends Error {
   constructor(
     message: string,
     readonly status: number,
+    readonly body?: unknown,
   ) {
     super(message)
     this.name = 'ApiError'
@@ -67,8 +68,9 @@ export function apiFetch(path: string, init?: ApiFetchInit) {
       notifyUnauthorized()
 
     let message = `Request failed with status ${response.status}.`
+    let body: unknown
     try {
-      const body: unknown = await response.clone().json()
+      body = await response.clone().json()
       if (
         typeof body === 'object' &&
         body !== null &&
@@ -80,6 +82,6 @@ export function apiFetch(path: string, init?: ApiFetchInit) {
     } catch {
       // Keep the status-based message when the response has no JSON body.
     }
-    throw new ApiError(message, response.status)
+    throw new ApiError(message, response.status, body)
   })
 }

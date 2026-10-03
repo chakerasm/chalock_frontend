@@ -13,7 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "@tanstack/react-router";
-import { Archive, ArrowLeft, Check, Pencil, Plus, Unlink } from "lucide-react";
+import { Archive, ArrowLeft, Check, FileUp, Pencil, Plus, Unlink } from "lucide-react";
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -24,6 +24,7 @@ import { PageHeader } from "@/components/shared/PageHeader/PageHeader";
 import { toast } from "@/components/ui/Toaster/Toaster";
 import { getFocusTimerSnapshot } from "@/features/focus/services/focus-timer.service";
 import { GoalFormDialog } from "@/features/goals/components/GoalFormDialog";
+import { TaskImportDialog } from "@/features/goals/components/TaskImportDialog";
 import {
   useArchiveGoal,
   useGoal,
@@ -80,6 +81,7 @@ export function GoalDetailPage({ goalId }: GoalDetailPageProps) {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [taskToLink, setTaskToLink] = useState("");
   const [manualProgress, setManualProgress] = useState(0);
+  const [isImportOpen, setIsImportOpen] = useState(false);
   const goal = goalQuery.data;
 
   useEffect(() => {
@@ -356,6 +358,14 @@ export function GoalDetailPage({ goalId }: GoalDetailPageProps) {
                 })}
               </Text>
             </Box>
+            <Button
+              onClick={() => setIsImportOpen(true)}
+              size="sm"
+              variant="outline"
+            >
+              <FileUp aria-hidden="true" size={16} />
+              Import tasks
+            </Button>
           </Flex>
           <Stack gap="0">
             {linkedTasks.map((task) => (
@@ -475,6 +485,12 @@ export function GoalDetailPage({ goalId }: GoalDetailPageProps) {
         onOpenChange={setIsFormOpen}
         onSubmit={saveGoal}
         open={isFormOpen}
+      />
+      <TaskImportDialog
+        goal={goal}
+        onOpenChange={setIsImportOpen}
+        open={isImportOpen}
+        tasks={linkedTasks}
       />
     </Container>
   );

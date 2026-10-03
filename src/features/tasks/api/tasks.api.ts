@@ -1,19 +1,38 @@
 ﻿import {
   createTaskInputSchema,
+  bulkCreateGoalTasksRequestSchema,
+  bulkCreateGoalTasksResponseSchema,
   taskFromAPISchema,
   taskListResponseFromAPISchema,
   updateTaskInputSchema,
 } from '@/features/tasks/schemas/tasks.schemas'
 import type {
   CreateTaskInput,
+  BulkCreateGoalTasksRequest,
+  BulkCreateGoalTasksResponseFromAPI,
   TaskFromAPI,
   TaskListFilters,
   UpdateTaskInput,
 } from '@/features/tasks/types/tasks.types'
-import { apiFetch } from '@/lib/api/client'
+import { ApiError, apiFetch } from '@/lib/api/client'
 import { parseApiJson } from '@/lib/api/response'
 
 const tasksEndpoint = '/api/tasks'
+
+export type BulkTaskValidationError = ApiError & {
+  body: {
+    code: 'BULK_TASK_VALIDATION_FAILED'
+    errors: Array<{ field?: string; index: number; message: string }>
+  }
+}
+
+export function isBulkTaskValidationError(
+  error: unknown,
+): error is BulkTaskValidationError {
+  if (!(error instanceof ApiError) || !error.body || typeof error.body !== 'object') return false
+  const body = error.body as Record<string, unknown>
+  return body.code === 'BULK_TASK_VALIDATION_FAILED' && Array.isArray(body.errors)
+}
 
 async function parseResponse<T>(
   response: Response,
@@ -57,6 +76,22 @@ export async function createTaskFromAPI(
     }),
     taskFromAPISchema,
     'Unable to create the task.',
+  )
+}
+
+export async function bulkCreateGoalTasksFromAPI(
+  goalId: string,
+  input: BulkCreateGoalTasksRequest,
+): Promise<BulkCreateGoalTasksResponseFromAPI> {
+  const request = bulkCreateGoalTasksRequestSchema.parse(input)
+  return parseResponse(
+    await apiFetch(`/api/goals/${encodeURIComponent(goalId)}/tasks/bulk`, {
+      body: JSON.stringify(request),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+    }),
+    bulkCreateGoalTasksResponseSchema,
+    'Unable to import tasks.',
   )
 }
 

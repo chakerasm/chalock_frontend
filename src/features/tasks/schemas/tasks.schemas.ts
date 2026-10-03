@@ -53,6 +53,14 @@ export const createTaskInputSchema = z.object({
   title: z.string().trim().min(1).max(120),
 });
 
+export const bulkCreateGoalTasksRequestSchema = z.object({
+  tasks: z.array(createTaskInputSchema.omit({ goalId: true })).min(1).max(500),
+});
+
+export const bulkCreateGoalTasksResponseSchema = z.object({
+  created: z.number().int().nonnegative(),
+}).passthrough();
+
 export const updateTaskInputSchema = createTaskInputSchema.partial().extend({
   goalId: z.string().min(1).nullable().optional(),
   status: taskStatusSchema.optional(),

@@ -97,6 +97,30 @@ Full request:
 
 The server sets `id`, `status: "todo"`, `createdAt`, and `updatedAt`; it ignores client-supplied lifecycle timestamps. Validate title after trimming (1–120 characters), description (1–2,000), date/time formats, priority, duration integer (1–1,440), and accessible goal ID. Return `201` and the created task.
 
+### `POST /api/goals/:goalId/tasks/bulk`
+
+Creates 1–500 Tasks for one owned Goal in a single transaction. This endpoint supports the client-side spreadsheet importer; the raw CSV/XLSX file is never uploaded.
+
+```json
+{
+  "tasks": [
+    {
+      "title": "Define MVP scope",
+      "description": "Finalize the first release scope.",
+      "priority": "high",
+      "estimatedMinutes": 60,
+      "dueDate": "2026-10-05"
+    }
+  ]
+}
+```
+
+Every item follows normal Task validation, except `goalId`, status, IDs, and timestamps are not accepted. The server takes the Goal from the URL, sets `status: "todo"`, and preserves request order where ordering is supported. It validates all rows then creates all Tasks and associations atomically. Any validation or persistence failure rolls back the whole batch; no partial import is allowed. Exact-title duplicates are permitted (the frontend warns but does not deduplicate).
+
+Return `201` with `{ "created": 1, "tasks": [{ "id": "task-123", "title": "Define MVP scope", "goalId": "goal-456" }] }`.
+
+For row validation failures return `422 BULK_TASK_VALIDATION_FAILED` and an `errors` array whose entries contain zero-based task `index`, `field`, `code`, and a safe message. Documented codes are `GOAL_NOT_FOUND`, `BULK_TASK_LIMIT_EXCEEDED`, `INVALID_TASK_TITLE`, `INVALID_PRIORITY`, `INVALID_ESTIMATED_DURATION`, and `INVALID_DUE_DATE`.
+
 ### `PATCH /api/tasks/:taskId`
 
 Accepts any non-empty subset of create fields plus `status`.
