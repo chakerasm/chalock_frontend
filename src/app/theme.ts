@@ -62,11 +62,11 @@ export const appThemeConfig = defineConfig({
           500: { value: "#6b7280" },
           600: { value: "#4b5563" },
           700: { value: "#374151" },
-          800: { value: "#24272e" },
-          850: { value: "#1d2026" },
-          900: { value: "#181a1f" },
-          925: { value: "#14161a" },
-          950: { value: "#0f1115" },
+          800: { value: "#24314a" },
+          850: { value: "#172137" },
+          900: { value: "#111a2b" },
+          925: { value: "#0d1422" },
+          950: { value: "#080d17" },
         },
 
         success: {
@@ -225,7 +225,7 @@ export const appThemeConfig = defineConfig({
           subtle: {
             value: {
               _light: "#eceef1",
-              _dark: "#24272e",
+              _dark: "{colors.neutral.800}",
             },
           },
 

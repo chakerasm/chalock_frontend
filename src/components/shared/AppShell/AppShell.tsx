@@ -1,19 +1,19 @@
-import { Box, CloseButton, Drawer, Flex, Portal } from '@chakra-ui/react'
-import type { ReactNode } from 'react'
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { AppNavbar } from '@/components/shared/AppNavbar/AppNavbar'
-import { AppSidebar } from '@/components/shared/AppSidebar/AppSidebar'
+import { Box, CloseButton, Drawer, Flex, Portal } from "@chakra-ui/react";
+import type { ReactNode } from "react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { AppNavbar } from "@/components/shared/AppNavbar/AppNavbar";
+import { AppSidebar } from "@/components/shared/AppSidebar/AppSidebar";
 
 type AppShellProps = {
-  children: ReactNode
-  onLogout?: () => void
-}
+  children: ReactNode;
+  onLogout?: () => void;
+};
 
 export function AppShell({ children, onLogout }: AppShellProps) {
-  const { t } = useTranslation()
-  const [isNavigationOpen, setIsNavigationOpen] = useState(false)
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true)
+  const { t } = useTranslation();
+  const [isNavigationOpen, setIsNavigationOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
 
   return (
     <Flex bg="bg.canvas" color="fg" minH="100dvh">
@@ -22,7 +22,7 @@ export function AppShell({ children, onLogout }: AppShellProps) {
         bg="bg.surface"
         borderColor="border.subtle"
         borderRightWidth="1px"
-        display={{ base: 'none', lg: 'block' }}
+        display={{ base: "none", lg: "block" }}
         flex={isSidebarCollapsed ? "0 0 4rem" : "0 0 14rem"}
         h="100dvh"
         overflowY="auto"
@@ -30,14 +30,35 @@ export function AppShell({ children, onLogout }: AppShellProps) {
         top="0"
         zIndex="docked"
       >
-<AppSidebar collapsed={isSidebarCollapsed} onToggle={() => setIsSidebarCollapsed((value) => !value)} />
+        <AppSidebar
+          collapsed={isSidebarCollapsed}
+          onToggle={() => setIsSidebarCollapsed((value) => !value)}
+        />
       </Box>
       <Box flex="1" minW="0">
         <AppNavbar
           onLogout={onLogout}
           onOpenNavigation={() => setIsNavigationOpen(true)}
         />
-        <Box as="main">{children}</Box>
+        <Box
+          as="main"
+          css={{
+            "& > *": {
+              marginInline: "0 !important",
+              maxWidth: "none !important",
+              paddingBlock: "var(--chakra-spacing-8) !important",
+              paddingInline: "var(--chakra-spacing-6) !important",
+              width: "100%",
+            },
+            "@media screen and (min-width: 48rem)": {
+              "& > *": {
+                paddingInline: "var(--chakra-spacing-8) !important",
+              },
+            },
+          }}
+        >
+          {children}
+        </Box>
       </Box>
       <Drawer.Root
         onOpenChange={(details) => setIsNavigationOpen(details.open)}
@@ -58,9 +79,9 @@ export function AppShell({ children, onLogout }: AppShellProps) {
                 borderBottomWidth="1px"
                 borderColor="border.subtle"
               >
-                <Drawer.Title>{t('appShell.primaryNavigation')}</Drawer.Title>
+                <Drawer.Title>{t("appShell.primaryNavigation")}</Drawer.Title>
                 <Drawer.CloseTrigger asChild>
-                  <CloseButton aria-label={t('common.close')} size="sm" />
+                  <CloseButton aria-label={t("common.close")} size="sm" />
                 </Drawer.CloseTrigger>
               </Drawer.Header>
               <Drawer.Body p="0">
@@ -71,5 +92,5 @@ export function AppShell({ children, onLogout }: AppShellProps) {
         </Portal>
       </Drawer.Root>
     </Flex>
-  )
+  );
 }
