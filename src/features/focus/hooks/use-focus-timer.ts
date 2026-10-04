@@ -7,7 +7,10 @@ import {
   startFocusTimer,
   updateFocusTimer,
 } from '@/features/focus/services/focus-timer.service'
-import type { StartFocusTimerInput } from '@/features/focus/types/focus.types'
+import type {
+  FocusTimerSnapshot,
+  StartFocusTimerInput,
+} from '@/features/focus/types/focus.types'
 
 export const focusQueryKey = ['focus', 'snapshot'] as const
 export function useFocusTimer() {
@@ -25,12 +28,28 @@ export function useFocusTimer() {
   const actionMutation = useMutation({
     mutationFn: ({
       id,
-      action,
+      input,
     }: {
       id: string
-      action: 'pause' | 'resume' | 'complete' | 'cancel'
-    }) => updateFocusTimer(id, action),
-    onSuccess: invalidate,
+      input: {
+        action: 'pause' | 'resume' | 'complete' | 'cancel'
+        observedDurationSeconds?: number
+      }
+    }) => updateFocusTimer(id, input),
+    onError: invalidate,
+    onSuccess: async (session) => {
+      client.setQueryData<FocusTimerSnapshot>(focusQueryKey, (snapshot) => {
+        if (!snapshot) return snapshot
+        return {
+          ...snapshot,
+          activeTimer:
+            session.status === 'active' || session.status === 'paused'
+              ? session
+              : null,
+        }
+      })
+      await invalidate()
+    },
   })
   const [now, setNow] = useState(Date.now())
   const activeTimer = snapshotQuery.data?.activeTimer ?? null
@@ -56,10 +75,31 @@ export function useFocusTimer() {
       activeTimer.status === 'active' &&
       remainingSeconds === 0
     )
-      actionMutation.mutate({ id: activeTimer.id, action: 'complete' })
+      actionMutation.mutate({
+        id: activeTimer.id,
+        input: {
+          action: 'complete',
+          observedDurationSeconds: elapsedSeconds,
+        },
+      })
   }, [activeTimer, actionMutation, remainingSeconds])
   const action = (action: 'pause' | 'resume' | 'complete' | 'cancel') => {
-    if (activeTimer) actionMutation.mutate({ id: activeTimer.id, action })
+    if (
+      !activeTimer ||
+      actionMutation.isPending ||
+      (activeTimer.status === 'active' && action === 'resume') ||
+      (activeTimer.status === 'paused' && action === 'pause')
+    )
+      return Promise.resolve(undefined)
+    return actionMutation.mutateAsync({
+      id: activeTimer.id,
+      input: {
+        action,
+        ...(action === 'resume'
+          ? {}
+          : { observedDurationSeconds: elapsedSeconds }),
+      },
+    })
   }
   return {
     activePomodoro: snapshotQuery.data?.activePomodoro ?? null,
@@ -67,13 +107,14 @@ export function useFocusTimer() {
     savedSessions: snapshotQuery.data?.savedSessions ?? [],
     elapsedSeconds,
     remainingSeconds,
-    isPending: snapshotQuery.isPending,
+    isPending:
+      snapshotQuery.isPending ||
+      startMutation.isPending ||
+      actionMutation.isPending,
     start: (input: StartFocusTimerInput) => startMutation.mutateAsync(input),
     pause: () => action('pause'),
     resume: () => action('resume'),
     save: () => action('complete'),
     cancel: () => action('cancel'),
-    reset: () => action('cancel'),
-    restart: () => action('cancel'),
   }
 }

@@ -1,11 +1,6 @@
 import { z } from 'zod'
 
-export const focusSessionTypeSchema = z.enum([
-  'stopwatch',
-  'timer',
-  'pomodoro',
-  'manual',
-])
+export const focusSessionTypeSchema = z.enum(['stopwatch', 'timer', 'manual'])
 
 export const focusSessionStatusSchema = z.enum([
   'active',
@@ -14,22 +9,38 @@ export const focusSessionStatusSchema = z.enum([
   'cancelled',
 ])
 
-const optionalIdentifierSchema = z.string().trim().min(1).optional()
+const optionalIdentifierSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .nullish()
+  .transform((value) => value ?? undefined)
+const optionalDateTimeSchema = z
+  .string()
+  .datetime()
+  .nullish()
+  .transform((value) => value ?? undefined)
+const optionalPositiveIntegerSchema = z
+  .number()
+  .int()
+  .positive()
+  .nullish()
+  .transform((value) => value ?? undefined)
 
 export const focusSessionFromAPISchema = z.object({
   durationSeconds: z.number().int().min(0),
-  endedAt: z.string().datetime().optional(),
+  endedAt: optionalDateTimeSchema,
   goalId: optionalIdentifierSchema,
   id: z.string().trim().min(1),
-  plannedDurationSeconds: z.number().int().positive().optional(),
-  startedAt: z.string().datetime().optional(),
+  plannedDurationSeconds: optionalPositiveIntegerSchema,
+  startedAt: optionalDateTimeSchema,
   status: focusSessionStatusSchema,
   taskId: optionalIdentifierSchema,
   type: focusSessionTypeSchema,
 })
 
 export const activeFocusTimerFromAPISchema = focusSessionFromAPISchema.extend({
-  runningSince: z.string().datetime().optional(),
+  runningSince: optionalDateTimeSchema,
 })
 
 export const pomodoroPhaseSchema = z.enum([
@@ -106,6 +117,15 @@ export const startFocusTimerInputSchema = z
       })
     }
   })
+
+export const updateFocusSessionInputSchema = z.object({
+  action: z.enum(['pause', 'resume', 'complete', 'cancel']),
+  observedDurationSeconds: z.number().int().min(0).optional(),
+})
+
+export const updatePomodoroCycleInputSchema = z.object({
+  action: z.enum(['pause', 'resume', 'skip_phase', 'cancel']),
+})
 
 export const startPomodoroInputSchema = z.object({
   goalId: optionalIdentifierSchema,

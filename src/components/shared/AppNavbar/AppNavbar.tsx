@@ -6,6 +6,7 @@ import { ProfileMenu } from '@/components/shared/ProfileMenu/ProfileMenu'
 import { ColorModeToggle } from '@/components/ui/ColorModeToggle/ColorModeToggle'
 import { LanguageSelect } from '@/components/ui/LanguageSelect/LanguageSelect'
 import { PrivacyModeToggle } from '@/components/ui/PrivacyModeToggle/PrivacyModeToggle'
+import { ActiveFocusNavbarControl } from '@/features/focus/components/ActiveFocusNavbarControl'
 
 type AppNavbarProps = {
   onOpenNavigation: () => void
@@ -47,6 +48,9 @@ export function AppNavbar({ onOpenNavigation, onLogout }: AppNavbarProps) {
             <CommandMenu />
           </Box>
         </HStack>
+        <Box display={{ base: 'none', md: 'block' }} maxW="30rem" minW="0">
+          <ActiveFocusNavbarControl />
+        </Box>
         <HStack gap={{ base: '1', sm: '2' }} flexShrink="0">
           <Box display={{ base: 'none', sm: 'block' }}>
             <LanguageSelect />

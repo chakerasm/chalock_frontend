@@ -1,5 +1,4 @@
 import {
-  activeFocusSessionFromAPISchema,
   createTodayTaskInputSchema,
   startFocusSessionInputSchema,
   todayDashboardFromAPISchema,
@@ -7,8 +6,8 @@ import {
   updateFocusSessionInputSchema,
   updateTodayTaskInputSchema,
 } from '@/features/today/schemas/today.schemas'
+import { focusSessionFromAPISchema } from '@/features/focus/schemas/focus.schemas'
 import type {
-  ActiveFocusSessionFromAPI,
   CreateTodayTaskInput,
   StartFocusSessionInput,
   TodayDashboardFromAPI,
@@ -130,8 +129,11 @@ export async function updateHabitCheckInFromAPI({
 
 export async function startFocusSessionFromAPI(
   input: StartFocusSessionInput = {},
-): Promise<ActiveFocusSessionFromAPI> {
-  const request = startFocusSessionInputSchema.parse(input)
+) {
+  const request = startFocusSessionInputSchema.parse({
+    ...input,
+    type: 'stopwatch',
+  })
 
   return parseResponse(
     await apiFetch('/api/focus-sessions', {
@@ -139,7 +141,7 @@ export async function startFocusSessionFromAPI(
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
     }),
-    activeFocusSessionFromAPISchema,
+    focusSessionFromAPISchema,
     'Unable to start a focus session.',
   )
 }
@@ -148,19 +150,24 @@ export async function updateFocusSessionFromAPI({
   elapsedSeconds,
   sessionId,
   status,
-}: UpdateFocusSessionInput): Promise<ActiveFocusSessionFromAPI> {
-  const request = updateFocusSessionInputSchema.parse({
+}: UpdateFocusSessionInput) {
+  updateFocusSessionInputSchema.parse({
     elapsedSeconds,
     status,
   })
 
   return parseResponse(
     await apiFetch(`/api/focus-sessions/${encodeURIComponent(sessionId)}`, {
-      body: JSON.stringify(request),
+      body: JSON.stringify({
+        action: status === 'active' ? 'resume' : 'pause',
+        ...(status === 'paused'
+          ? { observedDurationSeconds: elapsedSeconds }
+          : {}),
+      }),
       headers: { 'Content-Type': 'application/json' },
       method: 'PATCH',
     }),
-    activeFocusSessionFromAPISchema,
+    focusSessionFromAPISchema,
     'Unable to update the focus session.',
   )
 }

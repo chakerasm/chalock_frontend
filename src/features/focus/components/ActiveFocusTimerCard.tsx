@@ -8,7 +8,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { Check, Pause, Play, RotateCcw, Save, X } from 'lucide-react'
+import { Check, Pause, Play, Save, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { formatFocusTimerDuration } from '@/features/focus/services/focus-timer.service'
 import type { ActiveFocusTimer } from '@/features/focus/types/focus.types'
@@ -17,8 +17,6 @@ type ActiveFocusTimerCardProps = {
   elapsedSeconds: number
   onCancel: () => void
   onPause: () => void
-  onReset: () => void
-  onRestart: () => void
   onResume: () => void
   onSave: () => void
   remainingSeconds?: number
@@ -29,8 +27,6 @@ export function ActiveFocusTimerCard({
   elapsedSeconds,
   onCancel,
   onPause,
-  onReset,
-  onRestart,
   onResume,
   onSave,
   remainingSeconds,
@@ -127,17 +123,6 @@ export function ActiveFocusTimerCard({
               {isActive ? t('focus.pause') : t('focus.resume')}
             </Button>
           ) : null}
-          {isCountdown ? (
-            <Button onClick={onRestart} variant="outline">
-              <RotateCcw aria-hidden="true" size={17} />
-              {t('focus.restart')}
-            </Button>
-          ) : !isCompleted ? (
-            <Button onClick={onReset} variant="outline">
-              <RotateCcw aria-hidden="true" size={17} />
-              {t('focus.reset')}
-            </Button>
-          ) : null}
           <Button
             colorPalette="brand"
             onClick={onSave}
@@ -146,7 +131,7 @@ export function ActiveFocusTimerCard({
             <Save aria-hidden="true" size={17} />
             {isCompleted ? t('focus.saveSession') : t('focus.finishAndSave')}
           </Button>
-          {isCountdown ? (
+          {!isCompleted ? (
             <Button onClick={onCancel} variant="ghost">
               <X aria-hidden="true" size={17} />
               {t('focus.cancel')}

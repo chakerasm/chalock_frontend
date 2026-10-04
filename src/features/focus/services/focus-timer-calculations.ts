@@ -8,13 +8,14 @@ export function getFocusElapsedSeconds(
   session: ActiveFocusTimer,
   now = Date.now(),
 ) {
-  if (session.status !== 'active' || !session.runningSince) {
+  const runningSince = session.runningSince ?? session.startedAt
+  if (session.status !== 'active' || !runningSince) {
     return session.durationSeconds
   }
 
   return (
     session.durationSeconds +
-    Math.max(0, Math.floor((now - Date.parse(session.runningSince)) / 1_000))
+    Math.max(0, Math.floor((now - Date.parse(runningSince)) / 1_000))
   )
 }
 

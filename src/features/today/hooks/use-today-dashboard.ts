@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createTodayTask,
   getTodayDashboard,
@@ -6,25 +6,25 @@ import {
   updateFocusSession,
   updateHabitCheckIn,
   updateTodayTask,
-} from "@/features/today/services/today.service";
+} from '@/features/today/services/today.service'
 
 export const todayDashboardQueryKeys = {
-  all: ["today-dashboard"] as const,
-  dashboard: () => [...todayDashboardQueryKeys.all, "today"] as const,
-};
+  all: ['today-dashboard'] as const,
+  dashboard: () => [...todayDashboardQueryKeys.all, 'today'] as const,
+}
 
 export function useTodayDashboard() {
   return useQuery({
     queryFn: getTodayDashboard,
     queryKey: todayDashboardQueryKeys.dashboard(),
-  });
+  })
 }
 
 function useDashboardMutation<TVariables>(
   mutationFn: (variables: TVariables) => Promise<unknown>,
   invalidateHabits = false,
 ) {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn,
@@ -33,30 +33,33 @@ function useDashboardMutation<TVariables>(
         queryClient.invalidateQueries({
           queryKey: todayDashboardQueryKeys.dashboard(),
         }),
+        queryClient.invalidateQueries({
+          queryKey: ['focus', 'snapshot'],
+        }),
         ...(invalidateHabits
-          ? [queryClient.invalidateQueries({ queryKey: ["habits"] })]
+          ? [queryClient.invalidateQueries({ queryKey: ['habits'] })]
           : []),
-      ]);
+      ])
     },
-  });
+  })
 }
 
 export function useCreateTodayTask() {
-  return useDashboardMutation(createTodayTask);
+  return useDashboardMutation(createTodayTask)
 }
 
 export function useUpdateTodayTask() {
-  return useDashboardMutation(updateTodayTask);
+  return useDashboardMutation(updateTodayTask)
 }
 
 export function useUpdateHabitCheckIn() {
-  return useDashboardMutation(updateHabitCheckIn, true);
+  return useDashboardMutation(updateHabitCheckIn, true)
 }
 
 export function useStartFocusSession() {
-  return useDashboardMutation(startFocusSession);
+  return useDashboardMutation(startFocusSession)
 }
 
 export function useUpdateFocusSession() {
-  return useDashboardMutation(updateFocusSession);
+  return useDashboardMutation(updateFocusSession)
 }

@@ -1,4 +1,6 @@
-export type FocusSessionType = 'stopwatch' | 'timer' | 'pomodoro' | 'manual'
+export type FocusSessionType = 'stopwatch' | 'timer' | 'manual'
+
+export type FocusAction = 'pause' | 'resume' | 'complete' | 'cancel'
 
 export type FocusSessionStatus = 'active' | 'paused' | 'completed' | 'cancelled'
 
@@ -78,6 +80,11 @@ export type StartFocusTimerInput = {
   plannedDurationSeconds?: number
   taskId?: string
   type: 'stopwatch' | 'timer'
+}
+
+export type UpdateFocusSessionInput = {
+  action: FocusAction
+  observedDurationSeconds?: number
 }
 
 export type StartPomodoroInput = {

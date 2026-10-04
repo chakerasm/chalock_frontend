@@ -5,11 +5,15 @@ import {
   pomodoroCycleFromAPISchema,
   startFocusTimerInputSchema,
   startPomodoroInputSchema,
+  updateFocusSessionInputSchema,
+  updatePomodoroCycleInputSchema,
 } from '@/features/focus/schemas/focus.schemas'
 import type {
+  FocusAction,
   FocusTimerSnapshot,
   StartFocusTimerInput,
   StartPomodoroInput,
+  UpdateFocusSessionInput,
 } from '@/features/focus/types/focus.types'
 import { apiFetch } from '@/lib/api/client'
 import { parseApiJson } from '@/lib/api/response'
@@ -18,13 +22,6 @@ const listSchema = z.object({
   data: z.array(focusSessionFromAPISchema),
   nextCursor: z.string().nullable().optional(),
 })
-const actionSchema = z.enum([
-  'pause',
-  'resume',
-  'complete',
-  'cancel',
-  'skip_phase',
-])
 const json = (method: 'PATCH' | 'POST', body: unknown) => ({
   method,
   body: JSON.stringify(body),
@@ -32,26 +29,33 @@ const json = (method: 'PATCH' | 'POST', body: unknown) => ({
 })
 
 export async function getFocusTimerSnapshotFromAPI(): Promise<FocusTimerSnapshot> {
-  const [sessionsResponse, timerResponse, pomodoroResponse] = await Promise.all(
-    [
-      apiFetch('/api/focus-sessions?limit=50'),
-      apiFetch('/api/focus-sessions/active'),
-      apiFetch('/api/pomodoro-cycles/active'),
-    ],
-  )
-  const sessions = (await parseApiJson(sessionsResponse, listSchema)).data
-  const activeTimer = await parseApiJson(
-    timerResponse,
-    activeFocusTimerFromAPISchema.nullable(),
-  )
-  const activePomodoro = await parseApiJson(
-    pomodoroResponse,
-    pomodoroCycleFromAPISchema.nullable(),
-  )
+  const [activeTimerResult, sessionsResult, activePomodoroResult] =
+    await Promise.allSettled([
+      apiFetch('/api/focus-sessions/active').then((response) =>
+        parseApiJson(response, activeFocusTimerFromAPISchema.nullable()),
+      ),
+      apiFetch('/api/focus-sessions?limit=50').then((response) =>
+        parseApiJson(response, listSchema),
+      ),
+      apiFetch('/api/pomodoro-cycles/active').then((response) =>
+        parseApiJson(response, pomodoroCycleFromAPISchema.nullable()),
+      ),
+    ])
+
+  if (activeTimerResult.status === 'rejected') throw activeTimerResult.reason
+
   return {
-    activeTimer,
-    activePomodoro,
-    savedSessions: sessions.filter((session) => session.status === 'completed'),
+    activeTimer: activeTimerResult.value,
+    activePomodoro:
+      activePomodoroResult.status === 'fulfilled'
+        ? activePomodoroResult.value
+        : null,
+    savedSessions:
+      sessionsResult.status === 'fulfilled'
+        ? sessionsResult.value.data.filter(
+            (session) => session.status === 'completed',
+          )
+        : [],
     pomodoroHistory: [],
   }
 }
@@ -65,11 +69,11 @@ export async function startFocusTimerFromAPI(input: StartFocusTimerInput) {
 }
 export async function updateFocusTimerFromAPI(
   sessionId: string,
-  action: z.infer<typeof actionSchema>,
+  input: UpdateFocusSessionInput,
 ) {
   const response = await apiFetch(
     `/api/focus-sessions/${encodeURIComponent(sessionId)}`,
-    json('PATCH', { action }),
+    json('PATCH', updateFocusSessionInputSchema.parse(input)),
   )
   return parseApiJson(response, activeFocusTimerFromAPISchema)
 }
@@ -82,11 +86,11 @@ export async function startPomodoroFromAPI(input: StartPomodoroInput) {
 }
 export async function updatePomodoroFromAPI(
   cycleId: string,
-  action: z.infer<typeof actionSchema>,
+  action: Exclude<FocusAction, 'complete'> | 'skip_phase',
 ) {
   const response = await apiFetch(
     `/api/pomodoro-cycles/${encodeURIComponent(cycleId)}`,
-    json('PATCH', { action }),
+    json('PATCH', updatePomodoroCycleInputSchema.parse({ action })),
   )
   return parseApiJson(response, pomodoroCycleFromAPISchema)
 }

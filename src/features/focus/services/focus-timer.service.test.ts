@@ -7,6 +7,18 @@ import {
 } from './focus-timer-calculations'
 
 describe('focus timer timestamps', () => {
+  it('uses the backend startedAt field when runningSince is absent', () => {
+    const stopwatch: ActiveFocusTimer = {
+      durationSeconds: 0,
+      id: 'focus-1',
+      startedAt: new Date(0).toISOString(),
+      status: 'active',
+      type: 'stopwatch',
+    }
+
+    expect(getFocusElapsedSeconds(stopwatch, 8_500)).toBe(8)
+  })
+
   it('derives stopwatch elapsed time from real timestamps across pauses', () => {
     const stopwatch: ActiveFocusTimer = {
       durationSeconds: 0,

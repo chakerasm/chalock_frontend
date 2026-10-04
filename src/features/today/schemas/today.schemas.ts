@@ -1,12 +1,12 @@
-import { z } from "zod";
+import { z } from 'zod'
 
-const todayTaskPrioritySchema = z.enum(["high", "medium", "low"]);
+const todayTaskPrioritySchema = z.enum(['high', 'medium', 'low'])
 const todayTaskStatusSchema = z.enum([
-  "todo",
-  "in_progress",
-  "completed",
-  "cancelled",
-]);
+  'todo',
+  'in_progress',
+  'completed',
+  'cancelled',
+])
 
 export const todayTaskFromAPISchema = z.object({
   dueTime: z
@@ -18,7 +18,7 @@ export const todayTaskFromAPISchema = z.object({
   priority: todayTaskPrioritySchema.optional(),
   status: todayTaskStatusSchema,
   title: z.string().min(1),
-});
+})
 
 export const todayHabitFromAPISchema = z.object({
   completed: z.boolean(),
@@ -28,20 +28,20 @@ export const todayHabitFromAPISchema = z.object({
   isWeeklyTarget: z.boolean().optional(),
   name: z.string().min(1),
   targetCount: z.number().int().positive().optional(),
-});
+})
 
 export const focusSummaryFromAPISchema = z.object({
   completedMinutes: z.number().int().nonnegative(),
   completedSessions: z.number().int().nonnegative(),
-});
+})
 
 export const activeFocusSessionFromAPISchema = z.object({
   elapsedSeconds: z.number().int().nonnegative(),
   id: z.string().min(1),
   startedAt: z.string().datetime().optional(),
-  status: z.enum(["active", "paused"]),
+  status: z.enum(['active', 'paused']),
   taskTitle: z.string().min(1).optional(),
-});
+})
 
 export const activeGoalFromAPISchema = z.object({
   currentValue: z.number().nonnegative(),
@@ -49,7 +49,7 @@ export const activeGoalFromAPISchema = z.object({
   name: z.string().min(1),
   targetDate: z.string().date().optional(),
   targetValue: z.number().positive(),
-});
+})
 
 export const todayDashboardFromAPISchema = z.object({
   activeFocusSession: activeFocusSessionFromAPISchema.nullable(),
@@ -58,21 +58,22 @@ export const todayDashboardFromAPISchema = z.object({
   focusSummary: focusSummaryFromAPISchema,
   scheduledHabits: z.array(todayHabitFromAPISchema),
   tasks: z.array(todayTaskFromAPISchema),
-});
+})
 
 export const createTodayTaskInputSchema = z.object({
   title: z.string().trim().min(1).max(120),
-});
+})
 
 export const updateTodayTaskInputSchema = z.object({
   status: todayTaskStatusSchema,
-});
+})
 
 export const updateFocusSessionInputSchema = z.object({
   elapsedSeconds: z.number().int().nonnegative(),
-  status: z.enum(["active", "paused"]),
-});
+  status: z.enum(['active', 'paused']),
+})
 
 export const startFocusSessionInputSchema = z.object({
-  taskTitle: z.string().trim().min(1).max(120).optional(),
-});
+  taskId: z.string().trim().min(1).optional(),
+  type: z.literal('stopwatch'),
+})
