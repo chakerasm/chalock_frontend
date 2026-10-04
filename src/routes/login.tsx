@@ -8,7 +8,7 @@ function sanitizeRedirect(value: unknown) {
     value.startsWith('/') &&
     !value.startsWith('//')
     ? value
-    : '/'
+    : '/today'
 }
 
 export const Route = createFileRoute('/login')({

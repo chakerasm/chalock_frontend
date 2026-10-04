@@ -13,6 +13,7 @@ import type { AuthContextValue } from '@/features/auth/components/AuthProvider'
 export const Route = createRootRouteWithContext<{ auth: AuthContextValue }>()({
   beforeLoad: ({ context, location }) => {
     if (
+      location.pathname !== '/' &&
       location.pathname !== '/login' &&
       location.pathname !== '/register' &&
       context.auth.status !== 'authenticated'
@@ -32,7 +33,11 @@ function RootComponent() {
   const { auth } = Route.useRouteContext()
   const location = useRouterState({ select: (state) => state.location })
 
-  if (location.pathname === '/login' || location.pathname === '/register')
+  if (
+    location.pathname === '/' ||
+    location.pathname === '/login' ||
+    location.pathname === '/register'
+  )
     return <Outlet />
 
   return (

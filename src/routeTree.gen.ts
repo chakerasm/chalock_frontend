@@ -26,6 +26,7 @@ import { Route as StatisticsRouteImport } from './routes/statistics'
 import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as TemplatesRouteImport } from './routes/templates'
+import { Route as TodayRouteImport } from './routes/today'
 import { Route as FinanceAccountRouteImport } from './routes/finance/account'
 import { Route as FinanceRecurringRouteImport } from './routes/finance/recurring'
 import { Route as FinanceSavingsRouteImport } from './routes/finance/savings'
@@ -118,6 +119,11 @@ const TemplatesRoute = TemplatesRouteImport.update({
   path: '/templates',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TodayRoute = TodayRouteImport.update({
+  id: '/today',
+  path: '/today',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FinanceAccountRoute = FinanceAccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
   '/templates': typeof TemplatesRoute
+  '/today': typeof TodayRoute
   '/finance/account': typeof FinanceAccountRoute
   '/finance/recurring': typeof FinanceRecurringRoute
   '/finance/savings': typeof FinanceSavingsRoute
@@ -191,6 +198,7 @@ export interface FileRoutesByTo {
   '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
   '/templates': typeof TemplatesRoute
+  '/today': typeof TodayRoute
   '/finance/account': typeof FinanceAccountRoute
   '/finance/recurring': typeof FinanceRecurringRoute
   '/finance/savings': typeof FinanceSavingsRoute
@@ -217,6 +225,7 @@ export interface FileRoutesById {
   '/subscriptions': typeof SubscriptionsRoute
   '/tasks': typeof TasksRoute
   '/templates': typeof TemplatesRoute
+  '/today': typeof TodayRoute
   '/finance/account': typeof FinanceAccountRoute
   '/finance/recurring': typeof FinanceRecurringRoute
   '/finance/savings': typeof FinanceSavingsRoute
@@ -244,6 +253,7 @@ export interface FileRouteTypes {
     | '/subscriptions'
     | '/tasks'
     | '/templates'
+    | '/today'
     | '/finance/account'
     | '/finance/recurring'
     | '/finance/savings'
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
     | '/subscriptions'
     | '/tasks'
     | '/templates'
+    | '/today'
     | '/finance/account'
     | '/finance/recurring'
     | '/finance/savings'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/subscriptions'
     | '/tasks'
     | '/templates'
+    | '/today'
     | '/finance/account'
     | '/finance/recurring'
     | '/finance/savings'
@@ -319,6 +331,7 @@ export interface RootRouteChildren {
   SubscriptionsRoute: typeof SubscriptionsRoute
   TasksRoute: typeof TasksRoute
   TemplatesRoute: typeof TemplatesRoute
+  TodayRoute: typeof TodayRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -442,6 +455,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TemplatesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/today': {
+      id: '/today'
+      path: '/today'
+      fullPath: '/today'
+      preLoaderRoute: typeof TodayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/finance/account': {
       id: '/finance/account'
       path: '/account'
@@ -534,6 +554,7 @@ const rootRouteChildren: RootRouteChildren = {
   SubscriptionsRoute: SubscriptionsRoute,
   TasksRoute: TasksRoute,
   TemplatesRoute: TemplatesRoute,
+  TodayRoute: TodayRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
