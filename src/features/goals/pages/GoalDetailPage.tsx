@@ -241,15 +241,20 @@ export function GoalDetailPage({ goalId }: GoalDetailPageProps) {
 
   function changeTaskStatus(task: Task, completed: boolean) {
     updateTaskMutation.mutate(
-      { taskId: task.id, status: completed ? 'completed' : 'todo' },
+      {
+        taskId: task.id,
+        status: completed ? 'completed' : 'todo',
+        title: task.title,
+      },
       { onError: () => toast.error({ title: t('goals.taskUpdateError') }) },
     )
   }
 
   function linkTask(taskId: string, selectedGoalId: string | undefined) {
-    if (!taskId) return
+    const task = allTasks.find((item) => item.id === taskId)
+    if (!task) return
     updateTaskMutation.mutate(
-      { taskId, goalId: selectedGoalId ?? null },
+      { taskId, goalId: selectedGoalId ?? null, title: task.title },
       {
         onError: () => toast.error({ title: t('goals.taskUpdateError') }),
         onSuccess: () => setTaskToLink(''),

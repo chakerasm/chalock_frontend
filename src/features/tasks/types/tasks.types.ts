@@ -9,7 +9,7 @@ export type TaskFromAPI = {
   dueDate?: string;
   dueTime?: string;
   estimatedMinutes?: number;
-  goalId?: string;
+  goalId?: string | null;
   id: string;
   priority: TaskPriority;
   status: TaskStatus;
@@ -29,7 +29,7 @@ export type CreateTaskInput = {
   dueDate?: string;
   dueTime?: string;
   estimatedMinutes?: number;
-  goalId?: string;
+  goalId?: string | null;
   priority?: TaskPriority;
   title: string;
 };
@@ -57,7 +57,6 @@ export type TaskFormSubmitInput = Omit<CreateTaskInput, "goalId"> & {
 };
 
 export type UpdateTaskInput = {
-  completedAt?: string;
   description?: string;
   dueDate?: string;
   dueTime?: string;
@@ -66,13 +65,16 @@ export type UpdateTaskInput = {
   priority?: TaskPriority;
   status?: TaskStatus;
   taskId: string;
-  title?: string;
+  /** Required by the backend because UpdateTaskDto extends CreateTaskDto. */
+  title: string;
 };
 
 export type TaskListFilters = {
+  cursor?: string;
   dueFrom?: string;
   dueTo?: string;
   goalId?: string;
+  limit?: number;
   priority?: TaskPriority;
   search?: string;
   status?: TaskStatus;

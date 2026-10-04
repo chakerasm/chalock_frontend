@@ -140,6 +140,7 @@ export function TasksPage() {
       {
         status: task.status === "completed" ? "todo" : "completed",
         taskId: task.id,
+        title: task.title,
       },
       { onError: () => toast.error({ title: t("tasks.updateError") }) },
     );

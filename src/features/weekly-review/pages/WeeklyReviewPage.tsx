@@ -174,6 +174,7 @@ export function WeeklyReviewPage() {
                         updateTask.mutate({
                           dueDate: nextWeekStart,
                           taskId: task.id,
+                          title: task.title,
                         })
                       }
                       size="xs"

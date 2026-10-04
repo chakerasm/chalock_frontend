@@ -5,7 +5,11 @@ import {
   getTasksFromAPI,
   updateTaskFromAPI,
 } from '@/features/tasks/api/tasks.api'
-import { mapTaskFromAPI } from '@/features/tasks/mappers/tasks.mapper'
+import {
+  mapCreateTaskToAPI,
+  mapTaskFromAPI,
+  mapUpdateTaskToAPI,
+} from '@/features/tasks/mappers/tasks.mapper'
 import type {
   CreateTaskInput,
   BulkCreateGoalTasksRequest,
@@ -18,7 +22,7 @@ export async function getTasks(filters: TaskListFilters = {}) {
 }
 
 export async function createTask(input: CreateTaskInput) {
-  return mapTaskFromAPI(await createTaskFromAPI(input))
+  return mapTaskFromAPI(await createTaskFromAPI(mapCreateTaskToAPI(input)))
 }
 
 export async function bulkCreateGoalTasks(
@@ -29,7 +33,7 @@ export async function bulkCreateGoalTasks(
 }
 
 export async function updateTask(input: UpdateTaskInput) {
-  return mapTaskFromAPI(await updateTaskFromAPI(input))
+  return mapTaskFromAPI(await updateTaskFromAPI(mapUpdateTaskToAPI(input)))
 }
 
 export async function deleteTask(taskId: string) {

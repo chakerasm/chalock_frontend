@@ -12,7 +12,7 @@ export const taskPrioritySchema = z.enum(["low", "medium", "high"]);
 const optionalDateSchema = z.string().date().optional();
 const optionalTimeSchema = z
   .string()
-  .regex(/^\d{2}:\d{2}$/)
+  .regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/)
   .optional();
 
 export const taskFromAPISchema = z.object({
@@ -22,7 +22,7 @@ export const taskFromAPISchema = z.object({
   dueDate: optionalDateSchema,
   dueTime: optionalTimeSchema,
   estimatedMinutes: z.number().int().positive().max(1_440).optional(),
-  goalId: z.string().min(1).optional(),
+  goalId: z.string().min(1).nullable().optional(),
   id: z.string().min(1),
   priority: taskPrioritySchema.optional().default('medium'),
   status: taskStatusSchema,
@@ -48,7 +48,7 @@ export const createTaskInputSchema = z.object({
   dueDate: optionalDateSchema,
   dueTime: optionalTimeSchema,
   estimatedMinutes: z.number().int().positive().max(1_440).optional(),
-  goalId: z.string().min(1).optional(),
+  goalId: z.string().min(1).nullable().optional(),
   priority: taskPrioritySchema.optional(),
   title: z.string().trim().min(1).max(120),
 });
@@ -64,13 +64,17 @@ export const bulkCreateGoalTasksResponseSchema = z.object({
 export const updateTaskInputSchema = createTaskInputSchema.partial().extend({
   goalId: z.string().min(1).nullable().optional(),
   status: taskStatusSchema.optional(),
+  title: z.string().trim().min(1).max(120),
 });
 
 export const taskFormSchema = z
   .object({
     description: z.string().max(2_000),
     dueDate: z.union([z.literal(""), z.string().date()]),
-    dueTime: z.union([z.literal(""), z.string().regex(/^\d{2}:\d{2}$/)]),
+    dueTime: z.union([
+      z.literal(""),
+      z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/),
+    ]),
     estimatedMinutes: z.number().int().positive().max(1_440).optional(),
     goalId: z.string(),
     priority: taskPrioritySchema,

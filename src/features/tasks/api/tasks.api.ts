@@ -47,7 +47,7 @@ function createSearchParams(filters: TaskListFilters) {
   const searchParams = new URLSearchParams()
 
   for (const [key, value] of Object.entries(filters)) {
-    if (value) searchParams.set(key, value)
+    if (value !== undefined) searchParams.set(key, String(value))
   }
 
   const query = searchParams.toString()
