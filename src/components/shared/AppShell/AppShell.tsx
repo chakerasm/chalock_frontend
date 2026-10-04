@@ -19,7 +19,7 @@ export function AppShell({ children, onLogout }: AppShellProps) {
     <Flex bg="bg.canvas" color="fg" minH="100dvh">
       <Box
         alignSelf="flex-start"
-        bg="bg.surface"
+        bg="bg.sidebar"
         borderColor="border.subtle"
         borderRightWidth="1px"
         display={{ base: "none", lg: "block" }}
@@ -69,10 +69,11 @@ export function AppShell({ children, onLogout }: AppShellProps) {
           <Drawer.Backdrop backdropFilter="blur(4px)" bg="bg.overlay" />
           <Drawer.Positioner>
             <Drawer.Content
-              bg="bg.surface"
+              bg="bg.sidebar"
               borderColor="border.subtle"
               borderRightWidth="1px"
               maxW="xs"
+              roundedRight="l3"
               shadow="lg"
             >
               <Drawer.Header

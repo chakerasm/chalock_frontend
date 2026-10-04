@@ -41,19 +41,19 @@ function getToastStyles(type: string | undefined) {
       return {
         bg: 'danger.solid',
         borderColor: 'danger.solid',
-        color: 'fg.inverted',
+        color: 'brand.contrast',
       }
     case 'success':
       return {
         bg: 'success.solid',
         borderColor: 'success.solid',
-        color: 'fg.inverted',
+        color: 'brand.contrast',
       }
     case 'warning':
       return {
         bg: 'warning.solid',
         borderColor: 'warning.solid',
-        color: 'fg.inverted',
+        color: 'brand.contrast',
       }
     default:
       return { bg: 'bg.elevated', borderColor: 'border.subtle', color: 'fg' }
@@ -75,6 +75,7 @@ export function Toaster() {
               borderColor={styles.borderColor}
               borderWidth="1px"
               color={styles.color}
+              rounded="l2"
               shadow="lg"
               width={{ base: 'calc(100vw - 2rem)', sm: 'sm' }}
             >

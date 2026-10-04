@@ -20,10 +20,11 @@ export function AppNavbar({ onOpenNavigation, onLogout }: AppNavbarProps) {
     <Box
       as="header"
       backdropFilter="blur(16px)"
-      bg="bg.surface"
+      bg="bg.topbar"
       borderBottomWidth="1px"
       borderColor="border.subtle"
       position="sticky"
+      shadow="xs"
       top="0"
       zIndex="sticky"
     >

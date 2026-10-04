@@ -9,7 +9,7 @@ type DataListProps = {
 
 export function DataList({ children, caption, size = 'md' }: DataListProps) {
   return (
-    <Table.ScrollArea borderWidth="1px" rounded="l2">
+    <Table.ScrollArea bg="bg.panel" borderColor="border.subtle" borderWidth="1px" rounded="l2" shadow="xs">
       <Table.Root size={size} variant="outline">
         {caption ? <Table.Caption>{caption}</Table.Caption> : null}
         {children}

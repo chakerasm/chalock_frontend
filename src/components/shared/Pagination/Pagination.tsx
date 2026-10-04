@@ -90,6 +90,8 @@ export function Pagination({
               key={item}
               onClick={() => onPageChange(item)}
               size="sm"
+              colorPalette={isCurrentPage ? 'brand' : undefined}
+              rounded="l1"
               variant={isCurrentPage ? 'solid' : 'ghost'}
             >
               {item}

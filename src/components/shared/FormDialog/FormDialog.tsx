@@ -37,9 +37,9 @@ export function FormDialog({
       onOpenChange={(details) => onOpenChange(details.open)}
     >
       <Portal>
-        <Dialog.Backdrop />
+        <Dialog.Backdrop backdropFilter="blur(4px)" bg="bg.overlay" />
         <Dialog.Positioner>
-          <Dialog.Content>
+          <Dialog.Content bg="bg.elevated" borderColor="border.subtle" borderWidth="1px" rounded="l3" shadow="lg">
             <form id={formId} onSubmit={onSubmit}>
               <Dialog.Header>
                 <Stack gap="1">

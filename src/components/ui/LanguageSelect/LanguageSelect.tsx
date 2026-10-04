@@ -19,7 +19,7 @@ export function LanguageSelect() {
   }, [language])
 
   return (
-    <NativeSelect.Root size="sm" variant="subtle" width="auto">
+    <NativeSelect.Root rounded="l1" size="sm" variant="subtle" width="auto">
       <NativeSelect.Field
         aria-label={t('app.language')}
         onChange={(event) => {

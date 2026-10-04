@@ -44,9 +44,9 @@ export function ConfirmDialog({
       open={open}
     >
       <Portal>
-        <Dialog.Backdrop />
+        <Dialog.Backdrop backdropFilter="blur(4px)" bg="bg.overlay" />
         <Dialog.Positioner>
-          <Dialog.Content>
+          <Dialog.Content bg="bg.elevated" borderColor="border.subtle" borderWidth="1px" rounded="l3" shadow="lg">
             <Dialog.Header>
               <Stack gap="1">
                 <Dialog.Title>{title}</Dialog.Title>
@@ -69,7 +69,7 @@ export function ConfirmDialog({
               </Button>
               <Button
                 bg={isDestructive ? 'danger.solid' : undefined}
-                color={isDestructive ? 'fg.inverted' : undefined}
+                color={isDestructive ? 'brand.contrast' : undefined}
                 colorPalette={isDestructive ? undefined : 'brand'}
                 loading={isSubmitting}
                 onClick={() => void handleConfirm()}

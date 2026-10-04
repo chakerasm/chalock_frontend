@@ -42,7 +42,7 @@ export function ProfileMenu({ onLogout }: ProfileMenuProps) {
       </Menu.Trigger>
       <Portal>
         <Menu.Positioner>
-          <Menu.Content minW="52">
+          <Menu.Content bg="bg.elevated" borderColor="border.subtle" borderWidth="1px" minW="52" rounded="l2" shadow="md">
             <Menu.Item disabled value="identity">
               <HStack gap="2">
                 <UserRound aria-hidden="true" size={16} />

@@ -40,9 +40,9 @@ export function FormDrawer({
       placement={placement}
     >
       <Portal>
-        <Drawer.Backdrop />
+        <Drawer.Backdrop backdropFilter="blur(4px)" bg="bg.overlay" />
         <Drawer.Positioner>
-          <Drawer.Content>
+          <Drawer.Content bg="bg.elevated" borderColor="border.subtle" borderWidth="1px" shadow="lg">
             <form id={formId} onSubmit={onSubmit}>
               <Drawer.Header>
                 <Stack gap="1">

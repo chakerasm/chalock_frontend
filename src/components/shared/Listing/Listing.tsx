@@ -41,11 +41,11 @@ export function Listing({
         ) : null}
       </Flex>
       {toolbar ? (
-        <Box bg="bg.subtle" borderRadius="md" px="3" py="2">
+        <Box bg="bg.subtle" borderColor="border.subtle" borderRadius="l2" borderWidth="1px" px="3" py="2">
           {toolbar}
         </Box>
       ) : null}
-      <Box borderWidth="1px" overflowX="auto" rounded="lg">
+      <Box bg="bg.panel" borderColor="border.subtle" borderWidth="1px" overflowX="auto" rounded="l2" shadow="xs">
         {children}
       </Box>
     </Stack>

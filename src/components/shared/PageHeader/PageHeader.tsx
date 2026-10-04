@@ -18,15 +18,15 @@ export function PageHeader({
     <Flex
       align={{ base: 'flex-start', md: 'flex-end' }}
       direction={{ base: 'column', md: 'row' }}
-      gap={{ base: '5', md: '6' }}
+      gap={{ base: '5', md: '7' }}
       justify="space-between"
     >
-      <Stack gap="3" maxW="2xl">
+      <Stack gap="3" maxW="3xl">
         {eyebrow ? (
           <Text
             color="brand.fg"
             fontSize="xs"
-            fontWeight="bold"
+            fontWeight="semibold"
             letterSpacing="wider"
             textTransform="uppercase"
           >
@@ -43,7 +43,7 @@ export function PageHeader({
             {title}
           </Heading>
           {description ? (
-            <Text color="fg.muted" lineHeight="tall" maxW="xl">
+            <Text color="fg.muted" fontSize={{ base: 'md', md: 'lg' }} lineHeight="tall" maxW="2xl">
               {description}
             </Text>
           ) : null}

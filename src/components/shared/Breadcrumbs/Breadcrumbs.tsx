@@ -13,7 +13,7 @@ type BreadcrumbsProps = {
 
 export function Breadcrumbs({ items }: BreadcrumbsProps) {
   return (
-    <Breadcrumb.Root>
+    <Breadcrumb.Root color="fg.muted">
       <Breadcrumb.List>
         {items.map((item, index) => {
           const isCurrentPage = index === items.length - 1

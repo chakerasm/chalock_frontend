@@ -1,11 +1,10 @@
-import { Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
+import { Box, Button, HStack, Image, Stack, Text } from '@chakra-ui/react'
 import { Link as RouterLink, useMatchRoute } from '@tanstack/react-router'
 import type { LucideIcon } from 'lucide-react'
 import {
   Activity,
   Bell,
   BookOpenCheck,
-  Boxes,
   CalendarCheck,
   CalendarDays,
   CheckCheck,
@@ -72,18 +71,15 @@ export function AppSidebar({ collapsed = false, onNavigate, onToggle }: AppSideb
     >
       <Stack gap="5">
         <HStack gap="2" justify={collapsed ? "center" : "start"} px="2">
-          <Flex
-            align="center"
-            bg="brand.solid"
-            color="brand.contrast"
+          <Image
+            alt=""
+            flexShrink="0"
             h="8"
-            justify="center"
             rounded="l1"
-            shadow="sm"
+            shadow="brandGlow"
+            src="/logo.png"
             w="8"
-          >
-            <Boxes aria-hidden="true" size={17} />
-          </Flex>
+          />
           <Text display={collapsed ? "none" : "block"} fontSize="md" fontWeight="bold" letterSpacing="tight">
             {t('app.name')}
           </Text>

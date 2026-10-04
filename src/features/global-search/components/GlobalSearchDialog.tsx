@@ -132,6 +132,7 @@ export function GlobalSearchDialog() {
         aria-label={t('globalSearch.open')}
         justifyContent="flex-start"
         onClick={() => setIsOpen(true)}
+        rounded="l2"
         size="sm"
         variant="outline"
         w="full"
@@ -146,7 +147,7 @@ export function GlobalSearchDialog() {
           color="fg.muted"
           fontSize="xs"
           px="1.5"
-          rounded="sm"
+          rounded="l1"
         >
           Ctrl K
         </Text>
@@ -156,9 +157,9 @@ export function GlobalSearchDialog() {
         open={isOpen}
       >
         <Portal>
-          <Dialog.Backdrop />
+          <Dialog.Backdrop backdropFilter="blur(6px)" bg="bg.overlay" />
           <Dialog.Positioner alignItems={{ base: 'start', md: 'center' }} p="4">
-            <Dialog.Content maxH="min(42rem, calc(100dvh - 2rem))">
+            <Dialog.Content bg="bg.elevated" borderColor="border.subtle" borderWidth="1px" maxH="min(42rem, calc(100dvh - 2rem))" rounded="l3" shadow="lg">
               <Dialog.Header>
                 <Dialog.Title>{t('globalSearch.title')}</Dialog.Title>
                 <Dialog.CloseTrigger asChild>
@@ -308,6 +309,8 @@ function SearchItem({
       onMouseMove={onSelect}
       role="option"
       textAlign="start"
+      colorPalette={active ? 'brand' : undefined}
+      rounded="l1"
       variant={active ? 'subtle' : 'ghost'}
       w="full"
     >
