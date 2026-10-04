@@ -9,7 +9,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { Pencil, Play, Trash2 } from 'lucide-react'
+import { CalendarDays, Clock3, Pencil, Play, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { isTaskOverdue } from '@/features/tasks/services/task-view.service'
 import type {
@@ -64,10 +64,16 @@ export function TaskListItem({
   return (
     <Flex
       align={{ base: 'flex-start', sm: 'center' }}
-      borderBottomWidth="1px"
+      bg={isOverdue ? 'danger.subtle' : 'bg.panel'}
+      borderColor={isOverdue ? 'danger.fg' : 'border.subtle'}
+      borderLeftWidth={isOverdue ? '2px' : '1px'}
+      borderWidth="1px"
       gap="3"
       justify="space-between"
-      py="3"
+      p={{ base: '3', md: '3' }}
+      rounded="l2"
+      shadow="xs"
+      _hover={{ bg: 'bg.hover', borderColor: 'brand.border' }}
     >
       <Checkbox.Root
         checked={isCompleted}
@@ -88,19 +94,21 @@ export function TaskListItem({
             </Text>
             <HStack color="fg.muted" fontSize="xs" gap="2" wrap="wrap">
               {task.dueDate ? (
-                <Text color={isOverdue ? 'danger.fg' : undefined}>
+                <HStack color={isOverdue ? 'danger.fg' : undefined} gap="1">
+                  <CalendarDays aria-hidden="true" size={13} />
                   {isOverdue
                     ? t('tasks.overdueDate', {
                         date: formatDueDate(task.dueDate, i18n.language),
                       })
                     : formatDueDate(task.dueDate, i18n.language)}
-                </Text>
+                </HStack>
               ) : null}
               {task.dueTime ? <Text>{task.dueTime}</Text> : null}
               {task.estimatedMinutes ? (
-                <Text>
+                <HStack gap="1">
+                  <Clock3 aria-hidden="true" size={13} />
                   {t('tasks.duration', { minutes: task.estimatedMinutes })}
-                </Text>
+                </HStack>
               ) : null}
               <Badge
                 bg={priorityStyles[task.priority].bg}
