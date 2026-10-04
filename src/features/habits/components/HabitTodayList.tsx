@@ -74,7 +74,7 @@ export function HabitTodayList({
   }
 
   return (
-    <Stack gap="0">
+    <Stack gap="3">
       {habits.map((habit) => {
         const todayLog = logs.find(
           (log) => log.habitId === habit.id && log.date === date,
@@ -94,10 +94,14 @@ export function HabitTodayList({
         return (
           <Flex
             align={{ base: "flex-start", sm: "center" }}
-            borderBottomWidth="1px"
+            bg="bg.elevated"
+            borderColor={isComplete ? "success.fg" : "border.subtle"}
+            borderWidth="1px"
             gap="3"
             key={habit.id}
-            py="3"
+            p={{ base: "3", md: "4" }}
+            rounded="l2"
+            shadow="xs"
           >
             <Box flex="1" minW="0">
               {hasTarget ? (

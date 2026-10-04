@@ -40,7 +40,7 @@ export function HabitWeeklyView({
 
   return (
     <Box overflowX="auto">
-      <Grid minW="38rem" templateColumns={columns}>
+      <Grid bg="bg.elevated" borderColor="border.subtle" borderWidth="1px" minW="38rem" overflow="hidden" rounded="l2" templateColumns={columns}>
         <Text color="fg.muted" fontSize="xs" fontWeight="semibold" pb="3">
           {t("habits.habitColumn")}
         </Text>
@@ -69,6 +69,7 @@ export function HabitWeeklyView({
             .reduce((total, log) => total + log.progress, 0);
           return (
             <Grid
+              borderColor="border.subtle"
               borderTopWidth="1px"
               gridColumn="1 / -1"
               key={habit.id}
