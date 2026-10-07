@@ -1,10 +1,11 @@
 import { Box, Button, HStack, IconButton, Stack, Text } from '@chakra-ui/react'
 import { Link as RouterLink } from '@tanstack/react-router'
-import { Pause, Play, Timer } from 'lucide-react'
+import { Pause, Play, Square, Timer } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useTodayDashboard,
+  useStopFocusSession,
   useUpdateFocusSession,
 } from '@/features/today/hooks/use-today-dashboard'
 import { APP_ROUTES } from '@/lib/routes'
@@ -36,6 +37,7 @@ export function ActiveFocusNavbarControl() {
   const { t } = useTranslation()
   const dashboardQuery = useTodayDashboard()
   const updateFocus = useUpdateFocusSession()
+  const stopFocus = useStopFocusSession()
   const [now, setNow] = useState(Date.now())
   const session = dashboardQuery.data?.activeFocusSession
 
@@ -86,7 +88,7 @@ export function ActiveFocusNavbarControl() {
       <IconButton
         aria-label={isRunning ? t('today.pauseFocus') : t('today.resumeFocus')}
         colorPalette="brand"
-        disabled={updateFocus.isPending}
+        disabled={updateFocus.isPending || stopFocus.isPending}
         onClick={() =>
           updateFocus.mutate({
             elapsedSeconds,
@@ -103,6 +105,22 @@ export function ActiveFocusNavbarControl() {
         ) : (
           <Play aria-hidden="true" size={14} />
         )}
+      </IconButton>
+      <IconButton
+        aria-label={t('today.stopFocus')}
+        colorPalette="red"
+        disabled={updateFocus.isPending || stopFocus.isPending}
+        onClick={() =>
+          stopFocus.mutate({
+            elapsedSeconds,
+            sessionId: session.id,
+          })
+        }
+        size="xs"
+        title={t('today.stopFocus')}
+        variant="subtle"
+      >
+        <Square aria-hidden="true" fill="currentColor" size={12} />
       </IconButton>
       <Button
         asChild

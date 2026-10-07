@@ -7,10 +7,12 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { Bell, Check, Plus, X } from 'lucide-react'
+import { Check, Plus, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog/ConfirmDialog'
+import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
 import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
 import { PageHeader } from '@/components/shared/PageHeader/PageHeader'
 import { toast } from '@/components/ui/Toaster/Toaster'
@@ -300,26 +302,18 @@ export function RemindersPage() {
             ))}
           </Stack>
         ) : (
-          <Box
-            bg="bg.panel"
-            borderWidth="1px"
-            p="10"
-            rounded="l2"
-            textAlign="center"
-          >
-            <Stack align="center">
-              <Bell aria-hidden="true" size={28} />
-              <Text fontWeight="semibold">
-                {t(`reminders.empty.${view}.title`)}
-              </Text>
-              <Text color="fg.muted">
-                {t(`reminders.empty.${view}.description`)}
-              </Text>
-              <Button colorPalette="brand" onClick={() => setFormOpen(true)}>
-                <Plus aria-hidden="true" size={17} />
-                {t('reminders.createReminder')}
-              </Button>
-            </Stack>
+          <Box bg="bg.panel" borderWidth="1px" rounded="l2">
+            <EmptyState
+              action={
+                <Button colorPalette="brand" onClick={() => setFormOpen(true)}>
+                  <Plus aria-hidden="true" size={17} />
+                  {t('reminders.createReminder')}
+                </Button>
+              }
+              description={t(`reminders.empty.${view}.description`)}
+              illustrationSrc="/icons/reminders.png"
+              title={t(`reminders.empty.${view}.title`)}
+            />
           </Box>
         )}
       </Stack>
@@ -380,7 +374,9 @@ function ReminderRow({
       p="4"
     >
       <Stack gap="1">
-        <Text fontWeight="semibold">{reminder.title}</Text>
+        <Text fontWeight="semibold">
+          <PrivateText>{reminder.title}</PrivateText>
+        </Text>
         <Text
           color={
             reminder.resolvedStatus === 'triggered' ? 'warning.fg' : 'fg.muted'

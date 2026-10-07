@@ -10,6 +10,7 @@ import { focusSessionFromAPISchema } from '@/features/focus/schemas/focus.schema
 import type {
   CreateTodayTaskInput,
   StartFocusSessionInput,
+  StopFocusSessionInput,
   TodayDashboardFromAPI,
   TodayTaskFromAPI,
   UpdateFocusSessionInput,
@@ -169,5 +170,28 @@ export async function updateFocusSessionFromAPI({
     }),
     focusSessionFromAPISchema,
     'Unable to update the focus session.',
+  )
+}
+
+export async function stopFocusSessionFromAPI({
+  elapsedSeconds,
+  sessionId,
+}: StopFocusSessionInput) {
+  updateFocusSessionInputSchema.parse({
+    elapsedSeconds,
+    status: 'paused',
+  })
+
+  return parseResponse(
+    await apiFetch(`/api/focus-sessions/${encodeURIComponent(sessionId)}`, {
+      body: JSON.stringify({
+        action: 'complete',
+        observedDurationSeconds: elapsedSeconds,
+      }),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH',
+    }),
+    focusSessionFromAPISchema,
+    'Unable to stop the focus session.',
   )
 }

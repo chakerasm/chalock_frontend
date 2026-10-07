@@ -4,6 +4,7 @@ import type {
   SearchResultType,
 } from '@/features/global-search/types/global-search.types'
 import { apiFetch } from '@/lib/api/client'
+import { APP_ROUTES } from '@/lib/routes'
 
 const typeSchema = z.enum([
   'task',
@@ -28,6 +29,18 @@ const responseSchema = z.object({
   ),
   nextCursor: z.string().nullable(),
 })
+
+const routesByType: Record<SearchResultType, SearchResult['href']> = {
+  goal: APP_ROUTES.goals,
+  habit: APP_ROUTES.habits,
+  note: APP_ROUTES.notes,
+  planner: APP_ROUTES.planner,
+  reminder: APP_ROUTES.reminders,
+  subscription: APP_ROUTES.subscriptions,
+  task: APP_ROUTES.tasks,
+  transaction: APP_ROUTES.financeTransactions,
+}
+
 export async function searchFromAPI(query: string): Promise<SearchResult[]> {
   const response = responseSchema.parse(
     await (
@@ -36,7 +49,7 @@ export async function searchFromAPI(query: string): Promise<SearchResult[]> {
   )
   return response.results.map((result) => ({
     ...result,
-    type: result.type as SearchResultType,
-    href: result.href as SearchResult['href'],
+    href: routesByType[result.type],
+    type: result.type,
   }))
 }

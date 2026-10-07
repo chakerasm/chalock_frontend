@@ -3,8 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
 import { TaskListItem } from '@/features/tasks/components/TaskListItem'
 import type { Task } from '@/features/tasks/types/tasks.types'
+import type { ActiveFocusSession } from '@/features/today/types/today.types'
 
 type TaskListProps = {
+  activeFocusSession: ActiveFocusSession | null
   focusAvailable: boolean
   isMutating: boolean
   onDelete: (task: Task) => void
@@ -15,6 +17,7 @@ type TaskListProps = {
 }
 
 export function TaskList({
+  activeFocusSession,
   focusAvailable,
   isMutating,
   onDelete,
@@ -28,6 +31,7 @@ export function TaskList({
   if (tasks.length === 0) {
     return (
       <EmptyState
+        illustrationSrc="/icons/tasks.png"
         description={t('tasks.emptyDescription')}
         title={t('tasks.emptyTitle')}
       />
@@ -38,6 +42,7 @@ export function TaskList({
     <Stack gap="1">
       {tasks.map((task) => (
         <TaskListItem
+          activeFocusSession={activeFocusSession}
           focusAvailable={focusAvailable}
           isMutating={isMutating}
           key={task.id}

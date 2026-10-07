@@ -22,6 +22,7 @@ import {
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
+import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
 import { PageHeader } from '@/components/shared/PageHeader/PageHeader'
 import { ActivityTimelineSkeleton } from '@/features/activity/components/ActivityTimelineSkeleton'
 import { useActivity } from '@/features/activity/hooks/use-activity'
@@ -129,19 +130,19 @@ export function ActivityPage() {
             ))}
           </Stack>
         ) : (
-          <Box
-            bg="bg.panel"
-            borderWidth="1px"
-            p={{ base: '5', md: '6' }}
-            rounded="l2"
-          >
-            <Text color="fg.muted">
-              {filter === 'all'
-                ? t('activity.empty')
-                : t('activity.emptyFiltered', {
-                    filter: t(`activity.${filter}`),
-                  })}
-            </Text>
+          <Box bg="bg.panel" borderWidth="1px" rounded="l2">
+            <EmptyState
+              compact
+              description={
+                filter === 'all'
+                  ? t('activity.empty')
+                  : t('activity.emptyFiltered', {
+                      filter: t(`activity.${filter}`),
+                    })
+              }
+              illustrationSrc="/icons/statistics.png"
+              title={t('activity.title')}
+            />
           </Box>
         )}
 

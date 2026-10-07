@@ -1,10 +1,13 @@
-import { Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
-import { Pencil, Play } from 'lucide-react'
+import { Badge, Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
+import { Check, Pencil, Play, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import {
   formatDuration,
   getTimeBlockDurationMinutes,
+  getTimeBlockTimelineLayout,
   isTimeBlockCurrent,
+  isTimeBlockPassed,
   timeToMinutes,
 } from '@/features/planner/services/planner-calculations'
 import type { TimeBlock } from '@/features/planner/types/planner.types'
@@ -23,6 +26,7 @@ type PlannerTimelineProps = {
   onAddAt: (time: string) => void
   onEdit: (block: TimeBlock) => void
   onStartFocus: (block: TimeBlock) => void
+  onUpdateStatus: (block: TimeBlock, status: TimeBlock['status']) => void
   planning: PlanningPreferences
   selectedDate: string
   timeFormat: TimeFormat
@@ -79,6 +83,7 @@ export function PlannerTimeline({
   onAddAt,
   onEdit,
   onStartFocus,
+  onUpdateStatus,
   planning,
   selectedDate,
   timeFormat,
@@ -98,6 +103,7 @@ export function PlannerTimeline({
     isToday &&
     currentMinutes >= dayStartMinutes &&
     currentMinutes <= dayStartMinutes + timelineMinutes
+  const blockLayouts = getTimeBlockTimelineLayout(blocks)
 
   return (
     <>
@@ -180,10 +186,25 @@ export function PlannerTimeline({
                 </Flex>
               ) : null}
               {blocks.map((block) => {
-                const top =
-                  (timeToMinutes(block.startTime) - dayStartMinutes) *
-                  pixelsPerMinute
+                const start = timeToMinutes(block.startTime)
+                const end = start + getTimeBlockDurationMinutes(block)
+                const visibleStart = Math.max(start, dayStartMinutes)
+                const visibleEnd = Math.min(
+                  end,
+                  dayStartMinutes + timelineMinutes,
+                )
+                if (visibleEnd <= visibleStart) return null
+                const top = (visibleStart - dayStartMinutes) * pixelsPerMinute
+                const height = Math.max(
+                  52,
+                  (visibleEnd - visibleStart) * pixelsPerMinute,
+                )
+                const layout = blockLayouts.get(block.id) ?? {
+                  lane: 0,
+                  laneCount: 1,
+                }
                 const current = isTimeBlockCurrent(block, now)
+                const passed = isTimeBlockPassed(block, now)
                 const colors = getTimeBlockColor(block)
                 return (
                   <Box
@@ -193,9 +214,9 @@ export function PlannerTimeline({
                     borderLeftWidth="4px"
                     borderWidth="1px"
                     cursor="default"
-                    insetInlineEnd="3"
                     key={block.id}
-                    left="2"
+                    h={`${height}px`}
+                    left={`calc(${(layout.lane / layout.laneCount) * 100}% + 2px)`}
                     minH="52px"
                     opacity={block.status === 'cancelled' ? 0.55 : 1}
                     overflow="hidden"
@@ -204,13 +225,25 @@ export function PlannerTimeline({
                     rounded="l1"
                     shadow={current ? 'xs' : undefined}
                     top={`${top}px`}
+                    w={`calc(${100 / layout.laneCount}% - 6px)`}
                     zIndex="2"
                   >
                     <Flex align="start" gap="3" justify="space-between">
                       <Stack gap="0" minW="0">
-                        <Text fontSize="sm" fontWeight="semibold" lineClamp="1">
-                          {block.title}
-                        </Text>
+                        <HStack gap="2">
+                          <Text
+                            fontSize="sm"
+                            fontWeight="semibold"
+                            lineClamp="1"
+                          >
+                            <PrivateText>{block.title}</PrivateText>
+                          </Text>
+                          {passed ? (
+                            <Badge colorPalette="gray" size="sm">
+                              {t('planner.passed')}
+                            </Badge>
+                          ) : null}
+                        </HStack>
                         <Text color="fg.muted" fontSize="xs">
                           {formatPlannerTime(
                             block.startTime,
@@ -219,7 +252,8 @@ export function PlannerTimeline({
                           )}
                           {' \u2013 '}
                           {formatPlannerTime(block.endTime, locale, timeFormat)}
-                          {' \u00b7 '}{formatDuration(getTimeBlockDurationMinutes(block))}
+                          {' \u00b7 '}
+                          {formatDuration(getTimeBlockDurationMinutes(block))}
                         </Text>
                       </Stack>
                       <HStack gap="1">
@@ -235,6 +269,28 @@ export function PlannerTimeline({
                             variant="ghost"
                           >
                             <Play aria-hidden="true" size={14} />
+                          </Button>
+                        ) : null}
+                        {block.status !== 'completed' &&
+                        block.status !== 'cancelled' ? (
+                          <Button
+                            aria-label={t('planner.markComplete')}
+                            onClick={() => onUpdateStatus(block, 'completed')}
+                            size="xs"
+                            variant="ghost"
+                          >
+                            <Check aria-hidden="true" size={14} />
+                          </Button>
+                        ) : null}
+                        {block.status !== 'completed' &&
+                        block.status !== 'cancelled' ? (
+                          <Button
+                            aria-label={t('planner.cancelBlock')}
+                            onClick={() => onUpdateStatus(block, 'cancelled')}
+                            size="xs"
+                            variant="ghost"
+                          >
+                            <X aria-hidden="true" size={14} />
                           </Button>
                         ) : null}
                         <Button
@@ -268,11 +324,20 @@ export function PlannerTimeline({
             <Flex gap="3" justify="space-between">
               <Stack gap="1">
                 <Text color="fg.muted" fontSize="sm">
-                  {formatPlannerTime(block.startTime, locale, timeFormat)}{' \u2013 '}
-                  {formatPlannerTime(block.endTime, locale, timeFormat)}{' \u00b7 '}
+                  {formatPlannerTime(block.startTime, locale, timeFormat)}
+                  {' \u2013 '}
+                  {formatPlannerTime(block.endTime, locale, timeFormat)}
+                  {' \u00b7 '}
                   {formatDuration(getTimeBlockDurationMinutes(block))}
                 </Text>
-                <Text fontWeight="semibold">{block.title}</Text>
+                <Text fontWeight="semibold">
+                  <PrivateText>{block.title}</PrivateText>
+                </Text>
+                {isTimeBlockPassed(block, now) ? (
+                  <Badge alignSelf="start" colorPalette="gray" size="sm">
+                    {t('planner.passed')}
+                  </Badge>
+                ) : null}
                 {block.description ? (
                   <Text color="fg.muted" fontSize="sm">
                     {block.description}
@@ -295,6 +360,28 @@ export function PlannerTimeline({
                 <Button onClick={() => onEdit(block)} size="xs" variant="ghost">
                   {t('planner.edit')}
                 </Button>
+                {block.status !== 'completed' &&
+                block.status !== 'cancelled' ? (
+                  <Button
+                    onClick={() => onUpdateStatus(block, 'completed')}
+                    size="xs"
+                    variant="outline"
+                  >
+                    <Check aria-hidden="true" size={14} />
+                    {t('planner.markComplete')}
+                  </Button>
+                ) : null}
+                {block.status !== 'completed' &&
+                block.status !== 'cancelled' ? (
+                  <Button
+                    onClick={() => onUpdateStatus(block, 'cancelled')}
+                    size="xs"
+                    variant="ghost"
+                  >
+                    <X aria-hidden="true" size={14} />
+                    {t('planner.cancelBlock')}
+                  </Button>
+                ) : null}
               </Stack>
             </Flex>
           </Box>

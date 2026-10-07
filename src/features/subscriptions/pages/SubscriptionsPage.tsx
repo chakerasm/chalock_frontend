@@ -323,6 +323,7 @@ function SubscriptionsList() {
         </Flex>
         {subscriptions.length === 0 ? (
           <EmptyState
+            illustrationSrc="/icons/subscriptions.png"
             description={
               search
                 ? t('subscriptions.noSearchResults')
@@ -332,6 +333,7 @@ function SubscriptionsList() {
           />
         ) : filtered.length === 0 ? (
           <EmptyState
+            illustrationSrc="/icons/subscriptions.png"
             description={t('subscriptions.noSearchResults')}
             title={t('subscriptions.emptyTitle')}
           />

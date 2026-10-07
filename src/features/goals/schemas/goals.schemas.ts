@@ -14,6 +14,7 @@ export const goalProgressStrategySchema = z.discriminatedUnion('mode', [
 
 const goalInputBaseSchema = z.object({
   description: z.string().trim().min(1).max(2_000).optional(),
+  goalImageUrl: z.url().optional(),
   targetDate: z.string().date().optional(),
   title: z.string().trim().min(1).max(120),
 })
@@ -52,6 +53,7 @@ export const updateGoalInputSchema = goalInputBaseSchema.partial().extend({
 
 const goalFormBaseSchema = z.object({
   description: z.string().max(2_000),
+  goalImageUrl: z.union([z.literal(''), z.url()]),
   targetDate: z.union([z.literal(''), z.string().date()]),
   title: z.string().trim().min(1).max(120),
 })

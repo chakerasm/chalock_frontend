@@ -32,15 +32,17 @@ type TaskFormDialogProps = {
   open: boolean
   task?: Task
   goals: Goal[]
+  defaultGoalId?: string
+  hideGoalField?: boolean
 }
 
-function createDefaultValues(task?: Task): TaskFormValues {
+function createDefaultValues(task?: Task, defaultGoalId?: string): TaskFormValues {
   return {
     description: task?.description ?? '',
     dueDate: task?.dueDate ?? '',
     dueTime: task?.dueTime ?? '',
     estimatedMinutes: task?.estimatedMinutes,
-    goalId: task?.goalId ?? '',
+    goalId: task?.goalId ?? defaultGoalId ?? '',
     priority: task?.priority ?? 'medium',
     title: task?.title ?? '',
   }
@@ -58,20 +60,22 @@ export function TaskFormDialog({
   open,
   task,
   goals,
+  defaultGoalId,
+  hideGoalField = false,
 }: TaskFormDialogProps) {
   const { t } = useTranslation()
   const form = useForm<TaskFormValues>({
-    defaultValues: createDefaultValues(task),
+    defaultValues: createDefaultValues(task, defaultGoalId),
     resolver: zodResolver(taskFormSchema),
   })
   const isEditing = Boolean(task)
 
   useEffect(() => {
-    if (open) form.reset(createDefaultValues(task))
-  }, [form, open, task])
+    if (open) form.reset(createDefaultValues(task, defaultGoalId))
+  }, [defaultGoalId, form, open, task])
 
   function handleOpenChange(nextOpen: boolean) {
-    if (!nextOpen) form.reset(createDefaultValues(task))
+    if (!nextOpen) form.reset(createDefaultValues(task, defaultGoalId))
     onOpenChange(nextOpen)
   }
 
@@ -114,17 +118,19 @@ export function TaskFormDialog({
           rows={3}
         />
         <SimpleGrid columns={{ base: 1, sm: 2 }} gap="4">
-          <FieldSelect
-            control={form.control}
-            label={t('tasks.goalLabel')}
-            name="goalId"
-            options={[
-              { label: t('tasks.noGoal'), value: '' },
-              ...goals
-                .filter((goal) => goal.status === 'active')
-                .map((goal) => ({ label: goal.title, value: goal.id })),
-            ]}
-          />
+          {!hideGoalField ? (
+            <FieldSelect
+              control={form.control}
+              label={t('tasks.goalLabel')}
+              name="goalId"
+              options={[
+                { label: t('tasks.noGoal'), value: '' },
+                ...goals
+                  .filter((goal) => goal.status === 'active')
+                  .map((goal) => ({ label: goal.title, value: goal.id })),
+              ]}
+            />
+          ) : null}
           <FieldInput
             control={form.control}
             label={t('tasks.dueDateLabel')}

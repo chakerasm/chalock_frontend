@@ -2,6 +2,7 @@ import {
   createTodayTaskFromAPI,
   getTodayDashboardFromAPI,
   startFocusSessionFromAPI,
+  stopFocusSessionFromAPI,
   updateFocusSessionFromAPI,
   updateHabitCheckInFromAPI,
   updateTodayTaskFromAPI,
@@ -13,6 +14,7 @@ import {
 import type {
   CreateTodayTaskInput,
   StartFocusSessionInput,
+  StopFocusSessionInput,
   UpdateFocusSessionInput,
   UpdateHabitCheckInInput,
   UpdateTodayTaskInput,
@@ -40,4 +42,8 @@ export async function startFocusSession(input: StartFocusSessionInput = {}) {
 
 export async function updateFocusSession(input: UpdateFocusSessionInput) {
   await updateFocusSessionFromAPI(input)
+}
+
+export async function stopFocusSession(input: StopFocusSessionInput) {
+  await stopFocusSessionFromAPI(input)
 }

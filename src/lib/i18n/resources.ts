@@ -64,6 +64,7 @@ const en = {
     privacyMode: {
       hideAmounts: 'Hide amounts',
       hiddenAmount: 'Amount hidden',
+      hiddenText: 'Private text hidden',
       showAmounts: 'Show amounts',
     },
   },
@@ -163,6 +164,7 @@ const fr: typeof en = {
     privacyMode: {
       hideAmounts: 'Masquer les montants',
       hiddenAmount: 'Montant masque',
+      hiddenText: 'Texte prive masque',
       showAmounts: 'Afficher les montants',
     },
   },

@@ -40,6 +40,7 @@ export function SavedFocusSessions({
       </Flex>
       {sessions.length === 0 ? (
         <EmptyState
+          illustrationSrc="/icons/focus.png"
           description={t('focus.savedSessionsEmptyDescription')}
           title={t('focus.savedSessionsEmptyTitle')}
         />

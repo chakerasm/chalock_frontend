@@ -11,6 +11,7 @@ import {
 import { CheckCircle2, Clock3 } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
 import type {
   TodayTask,
@@ -23,14 +24,12 @@ type TodayTasksCardProps = {
   tasks: TodayTask[]
 }
 
-const priorityStyles: Record<
-  TodayTaskPriority,
-  { bg: string; color: string }
-> = {
-  high: { bg: 'danger.subtle', color: 'danger.fg' },
-  low: { bg: 'bg.subtle', color: 'fg.muted' },
-  medium: { bg: 'warning.subtle', color: 'warning.fg' },
-}
+const priorityStyles: Record<TodayTaskPriority, { bg: string; color: string }> =
+  {
+    high: { bg: 'danger.subtle', color: 'danger.fg' },
+    low: { bg: 'bg.subtle', color: 'fg.muted' },
+    medium: { bg: 'warning.subtle', color: 'warning.fg' },
+  }
 
 export function TodayTasksCard({
   isUpdating,
@@ -66,6 +65,7 @@ export function TodayTasksCard({
       </Flex>
       {tasks.length === 0 ? (
         <EmptyState
+          illustrationSrc="/icons/tasks.png"
           description={t('today.tasksEmptyDescription')}
           title={t('today.tasksEmptyTitle')}
         />
@@ -97,7 +97,7 @@ export function TodayTasksCard({
                   }
                   truncate
                 >
-                  {task.title}
+                  <PrivateText>{task.title}</PrivateText>
                 </Checkbox.Label>
               </Checkbox.Root>
               <HStack color="fg.muted" flexShrink="0" fontSize="xs" gap="2">

@@ -40,6 +40,7 @@ export const activeFocusSessionFromAPISchema = z.object({
   id: z.string().min(1),
   startedAt: z.string().datetime().optional(),
   status: z.enum(['active', 'paused']),
+  taskId: z.string().min(1).optional(),
   taskTitle: z.string().min(1).optional(),
 })
 

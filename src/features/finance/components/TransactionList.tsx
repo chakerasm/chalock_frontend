@@ -2,6 +2,7 @@ import { Button, HStack, Table, Text } from '@chakra-ui/react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PrivateAmount } from '@/components/ui/PrivateAmount/PrivateAmount'
+import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import type {
   Account,
   FinanceCategory,
@@ -80,7 +81,7 @@ export function TransactionList({
                 </Table.Cell>
                 <Table.Cell>
                   <Text fontWeight="medium" lineClamp="1" maxW="15rem">
-                    {transaction.title}
+                    <PrivateText>{transaction.title}</PrivateText>
                   </Text>
                 </Table.Cell>
                 <Table.Cell>

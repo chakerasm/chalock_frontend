@@ -10,6 +10,7 @@ import {
 import { Play } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import type { StartPomodoroInput } from '@/features/focus/types/focus.types'
 import { useTasks } from '@/features/tasks/hooks/use-tasks'
 import { useTodayDashboard } from '@/features/today/hooks/use-today-dashboard'
@@ -74,7 +75,7 @@ export function PomodoroStartPanel({
                 .filter((task) => task.status !== 'completed')
                 .map((task) => (
                   <option key={task.id} value={task.id}>
-                    {task.title}
+                    <PrivateText>{task.title}</PrivateText>
                   </option>
                 ))}
             </NativeSelect.Field>
@@ -91,7 +92,7 @@ export function PomodoroStartPanel({
               <option value="">{t('pomodoro.noGoal')}</option>
               {(dashboardQuery.data?.activeGoals ?? []).map((goal) => (
                 <option key={goal.id} value={goal.id}>
-                  {goal.name}
+                  <PrivateText>{goal.name}</PrivateText>
                 </option>
               ))}
             </NativeSelect.Field>

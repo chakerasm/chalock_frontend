@@ -3,6 +3,7 @@ const en = {
     addAtTime: 'Add a time block at {{time}}',
     addBlock: 'Add time block',
     cancelBlock: 'Cancel block',
+    passed: 'Passed',
     categories: {
       break: 'Break',
       fitness: 'Fitness',

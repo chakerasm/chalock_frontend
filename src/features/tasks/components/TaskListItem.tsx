@@ -6,26 +6,62 @@ import {
   Flex,
   HStack,
   IconButton,
+  Progress,
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { CalendarDays, Clock3, Pencil, Play, Trash2 } from 'lucide-react'
+import {
+  CalendarDays,
+  Clock3,
+  Pause,
+  Pencil,
+  Play,
+  Square,
+  Timer,
+  Trash2,
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import { isTaskOverdue } from '@/features/tasks/services/task-view.service'
 import type {
   Task,
   TaskPriority,
   TaskStatus,
 } from '@/features/tasks/types/tasks.types'
+import {
+  useStopFocusSession,
+  useUpdateFocusSession,
+} from '@/features/today/hooks/use-today-dashboard'
+import type { ActiveFocusSession } from '@/features/today/types/today.types'
 
 type TaskListItemProps = {
+  activeFocusSession: ActiveFocusSession | null
   focusAvailable: boolean
   isMutating: boolean
   onDelete: () => void
   onEdit: () => void
   onStartFocus: () => void
   onToggleCompletion: () => void
+  onSecondaryAction?: () => void
+  secondaryActionIcon?: ReactNode
+  secondaryActionLabel?: string
   task: Task
+}
+
+function getElapsedSeconds(session: ActiveFocusSession, now: number) {
+  if (session.status !== 'active' || !session.startedAt)
+    return session.elapsedSeconds
+  return (
+    session.elapsedSeconds +
+    Math.max(0, Math.floor((now - Date.parse(session.startedAt)) / 1_000))
+  )
+}
+
+function formatFocusDuration(totalSeconds: number) {
+  const minutes = Math.floor(totalSeconds / 60)
+  return `${String(minutes).padStart(2, '0')}:${String(totalSeconds % 60).padStart(2, '0')}`
 }
 
 const priorityStyles: Record<TaskPriority, { bg: string; color: string }> = {
@@ -49,31 +85,65 @@ function formatDueDate(dueDate: string, locale: string) {
 }
 
 export function TaskListItem({
+  activeFocusSession,
   focusAvailable,
   isMutating,
   onDelete,
   onEdit,
   onStartFocus,
   onToggleCompletion,
+  onSecondaryAction,
+  secondaryActionIcon,
+  secondaryActionLabel,
   task,
 }: TaskListItemProps) {
   const { i18n, t } = useTranslation()
+  const updateFocus = useUpdateFocusSession()
+  const stopFocus = useStopFocusSession()
+  const [now, setNow] = useState(Date.now())
   const isCompleted = task.status === 'completed'
   const isOverdue = isTaskOverdue(task)
+  const isFocused = Boolean(
+    activeFocusSession &&
+      (activeFocusSession.taskId === task.id ||
+        (!activeFocusSession.taskId &&
+          activeFocusSession.taskTitle === task.title)),
+  )
+
+  useEffect(() => {
+    if (!isFocused || activeFocusSession?.status !== 'active') return undefined
+    const intervalId = window.setInterval(() => setNow(Date.now()), 1_000)
+    return () => window.clearInterval(intervalId)
+  }, [activeFocusSession?.status, isFocused])
+
+  const elapsedSeconds =
+    isFocused && activeFocusSession
+      ? getElapsedSeconds(activeFocusSession, now)
+      : 0
+  const targetSeconds = Math.max(1, (task.estimatedMinutes ?? 60) * 60)
+  const isRunning = activeFocusSession?.status === 'active'
 
   return (
     <Flex
-      align={{ base: 'flex-start', sm: 'center' }}
-      bg={isOverdue ? 'danger.subtle' : 'bg.panel'}
-      borderColor={isOverdue ? 'danger.fg' : 'border.subtle'}
-      borderLeftWidth={isOverdue ? '2px' : '1px'}
+      align={{ base: 'flex-start', lg: 'center' }}
+      bg={
+        isFocused ? 'brand.subtle' : isOverdue ? 'danger.subtle' : 'bg.elevated'
+      }
+      borderColor={
+        isFocused ? 'brand.border' : isOverdue ? 'danger.fg' : 'border.subtle'
+      }
+      borderLeftWidth={isFocused || isOverdue ? '2px' : '1px'}
       borderWidth="1px"
-      gap="3"
+      direction={{ base: 'column', lg: 'row' }}
+      gap="4"
       justify="space-between"
-      p={{ base: '3', md: '3' }}
-      rounded="l2"
-      shadow="xs"
-      _hover={{ bg: 'bg.hover', borderColor: 'brand.border' }}
+      p={{ base: '4', md: '5' }}
+      rounded="l3"
+      shadow={isFocused ? 'md' : 'sm'}
+      _hover={{
+        bg: isFocused ? 'brand.subtle' : 'bg.hover',
+        borderColor: 'brand.border',
+      }}
     >
       <Checkbox.Root
         checked={isCompleted}
@@ -83,15 +153,21 @@ export function TaskListItem({
         onCheckedChange={onToggleCompletion}
       >
         <Checkbox.HiddenInput />
-        <Checkbox.Control mt={{ base: '1', sm: '0' }} />
+        <Checkbox.Control mt="1" />
         <Checkbox.Label w="full">
-          <Stack gap="1">
+          <Stack gap="2">
             <Text
-              fontWeight="medium"
+              fontSize={{ base: 'md', md: 'lg' }}
+              fontWeight="semibold"
               textDecoration={isCompleted ? 'line-through' : undefined}
             >
-              {task.title}
+              <PrivateText>{task.title}</PrivateText>
             </Text>
+            {task.description ? (
+              <Text color="fg.muted" fontSize="sm" lineClamp={1}>
+                {task.description}
+              </Text>
+            ) : null}
             <HStack color="fg.muted" fontSize="xs" gap="2" wrap="wrap">
               {task.dueDate ? (
                 <HStack color={isOverdue ? 'danger.fg' : undefined} gap="1">
@@ -113,6 +189,9 @@ export function TaskListItem({
               <Badge
                 bg={priorityStyles[task.priority].bg}
                 color={priorityStyles[task.priority].color}
+                px="2"
+                py="1"
+                rounded="full"
                 size="sm"
               >
                 {t(`tasks.priority.${task.priority}`)}
@@ -130,31 +209,128 @@ export function TaskListItem({
           </Stack>
         </Checkbox.Label>
       </Checkbox.Root>
-      <Box flexShrink="0">
-        <HStack gap="1">
-          {focusAvailable && !isCompleted && task.status !== 'cancelled' ? (
-            <Button onClick={onStartFocus} size="xs" variant="ghost">
-              <Play aria-hidden="true" size={14} />
-              {t('tasks.startFocus')}
-            </Button>
-          ) : null}
-          <IconButton
-            aria-label={t('tasks.editTask')}
-            onClick={onEdit}
-            size="xs"
-            variant="ghost"
+      <Box
+        borderLeftWidth={{ base: '0', lg: '1px' }}
+        flexShrink="0"
+        pl={{ base: '0', lg: '4' }}
+        w={{ base: 'full', lg: isFocused ? '26rem' : 'auto' }}
+      >
+        {isFocused && activeFocusSession ? (
+          <Stack
+            bg="bg.panel"
+            borderColor="brand.border"
+            borderWidth="1px"
+            gap="3"
+            p="3"
+            rounded="l2"
           >
-            <Pencil aria-hidden="true" size={15} />
-          </IconButton>
-          <IconButton
-            aria-label={t('tasks.deleteTask')}
-            onClick={onDelete}
-            size="xs"
-            variant="ghost"
-          >
-            <Trash2 aria-hidden="true" size={15} />
-          </IconButton>
-        </HStack>
+            <HStack color="brand.fg" justify="space-between">
+              <HStack fontWeight="semibold" gap="2">
+                <Timer aria-hidden="true" size={16} />
+                <Text fontSize="sm">
+                  {isRunning ? t('today.focusRunning') : t('today.focusPaused')}
+                </Text>
+              </HStack>
+              <Text
+                fontVariantNumeric="tabular-nums"
+                fontWeight="semibold"
+                fontSize="sm"
+              >
+                {formatFocusDuration(elapsedSeconds)} /{' '}
+                {formatFocusDuration(targetSeconds)}
+              </Text>
+            </HStack>
+            <Progress.Root
+              colorPalette="brand"
+              size="sm"
+              value={Math.min(100, (elapsedSeconds / targetSeconds) * 100)}
+            >
+              <Progress.Track>
+                <Progress.Range />
+              </Progress.Track>
+            </Progress.Root>
+            <HStack gap="2">
+              <Button
+                colorPalette="brand"
+                disabled={updateFocus.isPending || stopFocus.isPending}
+                flex="1"
+                onClick={() =>
+                  updateFocus.mutate({
+                    elapsedSeconds,
+                    sessionId: activeFocusSession.id,
+                    status: isRunning ? 'paused' : 'active',
+                  })
+                }
+                size="sm"
+                variant="outline"
+              >
+                {isRunning ? (
+                  <Pause aria-hidden="true" size={15} />
+                ) : (
+                  <Play aria-hidden="true" fill="currentColor" size={15} />
+                )}
+                {isRunning ? t('today.pauseFocus') : t('today.resumeFocus')}
+              </Button>
+              <Button
+                colorPalette="red"
+                disabled={updateFocus.isPending || stopFocus.isPending}
+                flex="1"
+                onClick={() =>
+                  stopFocus.mutate({
+                    elapsedSeconds,
+                    sessionId: activeFocusSession.id,
+                  })
+                }
+                size="sm"
+                variant="outline"
+              >
+                <Square aria-hidden="true" fill="currentColor" size={13} />
+                {t('today.stopFocus')}
+              </Button>
+            </HStack>
+          </Stack>
+        ) : (
+          <HStack gap="2" justify={{ base: 'space-between', lg: 'start' }}>
+            {focusAvailable && !isCompleted && task.status !== 'cancelled' ? (
+              <Button
+                colorPalette="brand"
+                onClick={onStartFocus}
+                size="sm"
+                variant="outline"
+              >
+                <Play aria-hidden="true" fill="currentColor" size={16} />
+                {t('tasks.startFocus')}
+              </Button>
+            ) : null}
+            <IconButton
+              aria-label={t('tasks.editTask')}
+              onClick={onEdit}
+              size="sm"
+              variant="outline"
+            >
+              <Pencil aria-hidden="true" size={15} />
+            </IconButton>
+            {onSecondaryAction ? (
+              <IconButton
+                aria-label={secondaryActionLabel ?? t('tasks.deleteTask')}
+                onClick={onSecondaryAction}
+                size="sm"
+                variant="outline"
+              >
+                {secondaryActionIcon ?? <Trash2 aria-hidden="true" size={15} />}
+              </IconButton>
+            ) : (
+              <IconButton
+                aria-label={t('tasks.deleteTask')}
+                onClick={onDelete}
+                size="sm"
+                variant="outline"
+              >
+                <Trash2 aria-hidden="true" size={15} />
+              </IconButton>
+            )}
+          </HStack>
+        )}
       </Box>
     </Flex>
   )

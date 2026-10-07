@@ -9,10 +9,23 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { Bell, CalendarDays, CheckSquare, ChevronLeft, Circle, ChevronRight, Clock3, Grid3X3, Plus, Sun, Timer } from 'lucide-react'
+import { Link as RouterLink } from '@tanstack/react-router'
+import {
+  Bell,
+  CalendarDays,
+  ChevronLeft,
+  Circle,
+  ChevronRight,
+  Clock3,
+  Grid3X3,
+  Plus,
+  Sun,
+  Timer,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog/ConfirmDialog'
+import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
 import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
 import { PageHeader } from '@/components/shared/PageHeader/PageHeader'
 import { toast } from '@/components/ui/Toaster/Toaster'
@@ -93,6 +106,25 @@ export function PlannerPage({
   }, [])
 
   const blocks = blocksQuery.data ?? []
+  const todayTasks = (tasksQuery.data ?? [])
+    .filter(
+      (task) =>
+        task.dueDate === getLocalDate(now) && task.status !== 'completed',
+    )
+    .slice(0, 4)
+  const upcomingReminders = (remindersQuery.data ?? [])
+    .filter(
+      (reminder) =>
+        reminder.status === 'scheduled' &&
+        (!reminder.triggerAt ||
+          new Date(reminder.triggerAt).getTime() >= now.getTime()),
+    )
+    .sort(
+      (left, right) =>
+        new Date(left.triggerAt ?? '9999-12-31').getTime() -
+        new Date(right.triggerAt ?? '9999-12-31').getTime(),
+    )
+    .slice(0, 3)
   const isMutating =
     createMutation.isPending ||
     updateMutation.isPending ||
@@ -184,8 +216,7 @@ export function PlannerPage({
     })
   }
 
-  if (blocksQuery.isPending)
-    return <PlannerPageSkeleton />
+  if (blocksQuery.isPending) return <PlannerPageSkeleton />
 
   if (blocksQuery.isError) {
     return (
@@ -207,132 +238,248 @@ export function PlannerPage({
   }
 
   return (
-    <Container maxW="8xl" py={{ base: '6', md: '10' }}><Grid alignItems="start" gap="6" templateColumns={{ base: '1fr', xl: 'minmax(0, 1fr) 19rem' }}><Stack gap={{ base: '5', md: '7' }}>
-        <PageHeader
-          actions={
-            <Button colorPalette="brand" onClick={() => openCreate()}>
-              <Plus aria-hidden="true" size={18} />
-              {t('planner.addBlock')}
-            </Button>
-          }
-          description={t('planner.description')}
-          eyebrow={t('planner.eyebrow')}
-          title={t('planner.title')}
-        />
-        <SimpleGrid columns={{ base: 2, md: 4 }} gap="3">
-          {[
-            { icon: Clock3, label: 'Planned hours', value: formatDuration(plannedMinutes) },
-            { icon: Timer, label: 'Focus hours', value: formatDuration(focusMinutes) },
-            { icon: Sun, label: 'Free time', value: formatDuration(Math.max(0, (planning.dayEndHour - planning.dayStartHour) * 60 - plannedMinutes)) },
-            { icon: Grid3X3, label: 'Time blocks', value: String(blocks.length) },
-          ].map(({ icon: Icon, label, value }) => (
-            <Flex key={label} align="center" bg="bg.panel" borderWidth="1px" gap="3" p="4" rounded="l2" shadow="xs">
-              <Box bg="brand.subtle" color="brand.fg" p="2" rounded="full"><Icon aria-hidden="true" size={18} /></Box>
-              <Box><Text color="fg.muted" fontSize="xs">{label}</Text><Text fontSize="lg" fontWeight="bold">{value}</Text></Box>
-            </Flex>
-          ))}
-        </SimpleGrid>
-        <Flex
-          align={{ base: 'stretch', md: 'center' }}
-          bg="bg.panel"
-          borderWidth="1px"
-          direction={{ base: 'column', md: 'row' }}
-          gap="3"
-          justify="space-between"
-          p={{ base: '3', md: '4' }}
-          rounded="l2"
-        >
-          <HStack justify={{ base: 'space-between', md: 'start' }}>
-            <Button
-              aria-label={t('planner.previousDay')}
-              onClick={() => onSelectedDateChange(shiftDate(selectedDate, -1))}
-              size="sm"
-              variant="ghost"
-            >
-              <ChevronLeft aria-hidden="true" size={18} />
-            </Button>
-            <Text fontWeight="semibold" textAlign="center">
-              {formatPlannerDate(selectedDate, i18n.language)}
-            </Text>
-            <Button
-              aria-label={t('planner.nextDay')}
-              onClick={() => onSelectedDateChange(shiftDate(selectedDate, 1))}
-              size="sm"
-              variant="ghost"
-            >
-              <ChevronRight aria-hidden="true" size={18} />
-            </Button>
-          </HStack>
-          <Button
-            onClick={() => onSelectedDateChange(getLocalDate())}
-            size="sm"
-            variant="outline"
-          >
-            {t('planner.today')}
-          </Button>
-        </Flex>
-        {blocks.length ? (
-          <>
-            <HStack color="fg.muted" fontSize="sm" gap="4" wrap="wrap">
-              <Text>
-                {t('planner.plannedSummary', {
-                  duration: formatDuration(plannedMinutes),
-                })}
-              </Text>
-              <Text>
-                {t('planner.focusSummary', {
-                  duration: formatDuration(focusMinutes),
-                })}
-              </Text>
-              {!focusAvailable ? <Text>{t('planner.focusActive')}</Text> : null}
-            </HStack>
-            <PlannerTimeline
-              blocks={blocks}
-              focusAvailable={focusAvailable}
-              now={now}
-              onAddAt={openCreate}
-              onEdit={(block) => {
-                setBlockToEdit(block)
-                setIsFormOpen(true)
-              }}
-              onStartFocus={handleStartFocus}
-              selectedDate={selectedDate}
-              locale={i18n.language}
-              planning={planning}
-              timeFormat={timeFormat}
-            />
-          </>
-        ) : (
-          <Box
-            bg="bg.panel"
-            borderWidth="1px"
-            p={{ base: '7', md: '10' }}
-            rounded="l2"
-            textAlign="center"
-          >
-            <Stack align="center" gap="3">
-              <Clock3 aria-hidden="true" size={28} />
-              <Text fontWeight="semibold">{t('planner.emptyTitle')}</Text>
-              <Text color="fg.muted">{t('planner.emptyDescription')}</Text>
+    <Container maxW="8xl" py={{ base: '6', md: '10' }}>
+      <Grid
+        alignItems="start"
+        gap="6"
+        templateColumns={{ base: '1fr', xl: 'minmax(0, 1fr) 19rem' }}
+      >
+        <Stack gap={{ base: '5', md: '7' }}>
+          <PageHeader
+            actions={
               <Button colorPalette="brand" onClick={() => openCreate()}>
-                <Plus aria-hidden="true" size={17} />
+                <Plus aria-hidden="true" size={18} />
                 {t('planner.addBlock')}
               </Button>
+            }
+            description={t('planner.description')}
+            eyebrow={t('planner.eyebrow')}
+            title={t('planner.title')}
+          />
+          <SimpleGrid columns={{ base: 2, md: 4 }} gap="3">
+            {[
+              {
+                icon: Clock3,
+                label: 'Planned hours',
+                value: formatDuration(plannedMinutes),
+              },
+              {
+                icon: Timer,
+                label: 'Focus hours',
+                value: formatDuration(focusMinutes),
+              },
+              {
+                icon: Sun,
+                label: 'Free time',
+                value: formatDuration(
+                  Math.max(
+                    0,
+                    (planning.dayEndHour - planning.dayStartHour) * 60 -
+                      plannedMinutes,
+                  ),
+                ),
+              },
+              {
+                icon: Grid3X3,
+                label: 'Time blocks',
+                value: String(blocks.length),
+              },
+            ].map(({ icon: Icon, label, value }) => (
+              <Flex
+                key={label}
+                align="center"
+                bg="bg.panel"
+                borderWidth="1px"
+                gap="3"
+                p="4"
+                rounded="l2"
+                shadow="xs"
+              >
+                <Box bg="brand.subtle" color="brand.fg" p="2" rounded="full">
+                  <Icon aria-hidden="true" size={18} />
+                </Box>
+                <Box>
+                  <Text color="fg.muted" fontSize="xs">
+                    {label}
+                  </Text>
+                  <Text fontSize="lg" fontWeight="bold">
+                    {value}
+                  </Text>
+                </Box>
+              </Flex>
+            ))}
+          </SimpleGrid>
+          <Flex
+            align={{ base: 'stretch', md: 'center' }}
+            bg="bg.panel"
+            borderWidth="1px"
+            direction={{ base: 'column', md: 'row' }}
+            gap="3"
+            justify="space-between"
+            p={{ base: '3', md: '4' }}
+            rounded="l2"
+          >
+            <HStack justify={{ base: 'space-between', md: 'start' }}>
+              <Button
+                aria-label={t('planner.previousDay')}
+                onClick={() =>
+                  onSelectedDateChange(shiftDate(selectedDate, -1))
+                }
+                size="sm"
+                variant="ghost"
+              >
+                <ChevronLeft aria-hidden="true" size={18} />
+              </Button>
+              <Text fontWeight="semibold" textAlign="center">
+                {formatPlannerDate(selectedDate, i18n.language)}
+              </Text>
+              <Button
+                aria-label={t('planner.nextDay')}
+                onClick={() => onSelectedDateChange(shiftDate(selectedDate, 1))}
+                size="sm"
+                variant="ghost"
+              >
+                <ChevronRight aria-hidden="true" size={18} />
+              </Button>
+            </HStack>
+            <Button
+              onClick={() => onSelectedDateChange(getLocalDate())}
+              size="sm"
+              variant="outline"
+            >
+              {t('planner.today')}
+            </Button>
+          </Flex>
+          {blocks.length ? (
+            <>
+              <HStack color="fg.muted" fontSize="sm" gap="4" wrap="wrap">
+                <Text>
+                  {t('planner.plannedSummary', {
+                    duration: formatDuration(plannedMinutes),
+                  })}
+                </Text>
+                <Text>
+                  {t('planner.focusSummary', {
+                    duration: formatDuration(focusMinutes),
+                  })}
+                </Text>
+                {!focusAvailable ? (
+                  <Text>{t('planner.focusActive')}</Text>
+                ) : null}
+              </HStack>
+              <PlannerTimeline
+                blocks={blocks}
+                focusAvailable={focusAvailable}
+                now={now}
+                onAddAt={openCreate}
+                onEdit={(block) => {
+                  setBlockToEdit(block)
+                  setIsFormOpen(true)
+                }}
+                onStartFocus={handleStartFocus}
+                onUpdateStatus={(block, status) =>
+                  updateMutation.mutate({ status, timeBlockId: block.id })
+                }
+                selectedDate={selectedDate}
+                locale={i18n.language}
+                planning={planning}
+                timeFormat={timeFormat}
+              />
+            </>
+          ) : (
+            <Box bg="bg.panel" borderWidth="1px" rounded="l2">
+              <EmptyState
+                action={
+                  <Button colorPalette="brand" onClick={() => openCreate()}>
+                    <Plus aria-hidden="true" size={17} />
+                    {t('planner.addBlock')}
+                  </Button>
+                }
+                description={t('planner.emptyDescription')}
+                illustrationSrc="/icons/planner.png"
+                title={t('planner.emptyTitle')}
+              />
+            </Box>
+          )}
+        </Stack>
+        <Stack
+          display={{ base: 'none', xl: 'flex' }}
+          gap="4"
+          position="sticky"
+          top="6"
+        >
+          <Box bg="bg.panel" borderWidth="1px" p="4" rounded="l2" shadow="xs">
+            <HStack justify="space-between" mb="3">
+              <Text fontWeight="semibold">Today’s tasks</Text>
+              <Button asChild size="xs" variant="ghost">
+                <RouterLink to="/tasks">View all</RouterLink>
+              </Button>
+            </HStack>
+            <Stack gap="2">
+              {todayTasks.map((task) => (
+                <HStack key={task.id} gap="2" minW="0">
+                  <Circle aria-hidden="true" color="fg.muted" size={10} />
+                  <Text fontSize="sm" lineClamp={1}>
+                    {task.title}
+                  </Text>
+                </HStack>
+              ))}
+              {!todayTasks.length ? (
+                <Text color="fg.muted" fontSize="sm">
+                  No tasks due today.
+                </Text>
+              ) : null}
             </Stack>
           </Box>
-        )}
-      </Stack>
-      <Stack display={{ base: 'none', xl: 'flex' }} gap="4" position="sticky" top="6">
-        <Box bg="bg.panel" borderWidth="1px" p="4" rounded="l2" shadow="xs">
-          <HStack justify="space-between" mb="3"><Text fontWeight="semibold">Today’s tasks</Text><CheckSquare aria-hidden="true" color="brand.fg" size={17} /></HStack>
-          <Stack gap="2">{(tasksQuery.data ?? []).filter((task) => task.dueDate === selectedDate && task.status !== 'completed').slice(0, 4).map((task) => <HStack key={task.id} gap="2" minW="0"><Circle aria-hidden="true" color="fg.muted" size={10} /><Text fontSize="sm" lineClamp={1}>{task.title}</Text></HStack>)}</Stack>
-        </Box>
-        <Box bg="bg.panel" borderWidth="1px" p="4" rounded="l2" shadow="xs">
-          <HStack justify="space-between" mb="3"><Text fontWeight="semibold">Upcoming reminders</Text><Bell aria-hidden="true" color="brand.fg" size={17} /></HStack>
-          <Stack gap="2">{(remindersQuery.data ?? []).filter((reminder) => reminder.status === 'scheduled').slice(0, 3).map((reminder) => <HStack key={reminder.id} gap="2" minW="0"><Bell aria-hidden="true" color="brand.fg" size={14} /><Text fontSize="sm" lineClamp={1}>{reminder.title}</Text></HStack>)}</Stack>
-        </Box>
-        <Box bg="brand.subtle" borderColor="brand.border" borderWidth="1px" p="4" rounded="l2"><HStack mb="1"><CalendarDays aria-hidden="true" color="brand.fg" size={17}/><Text color="brand.fg" fontWeight="semibold">Plan with intent</Text></HStack><Text color="fg.muted" fontSize="sm">Time blocking protects space for what matters most.</Text></Box>
-      </Stack>
+          <Box bg="bg.panel" borderWidth="1px" p="4" rounded="l2" shadow="xs">
+            <HStack justify="space-between" mb="3">
+              <Text fontWeight="semibold">Upcoming reminders</Text>
+              <Button asChild size="xs" variant="ghost">
+                <RouterLink to="/reminders">View all</RouterLink>
+              </Button>
+            </HStack>
+            <Stack gap="2">
+              {upcomingReminders.map((reminder) => (
+                <HStack key={reminder.id} gap="2" minW="0">
+                  <Bell aria-hidden="true" color="brand.fg" size={14} />
+                  <Text fontSize="sm" lineClamp={1}>
+                    {reminder.title}
+                  </Text>
+                </HStack>
+              ))}
+              {!upcomingReminders.length ? (
+                <Text color="fg.muted" fontSize="sm">
+                  No upcoming reminders.
+                </Text>
+              ) : null}
+            </Stack>
+          </Box>
+          <Box
+            bg="brand.subtle"
+            borderColor="brand.border"
+            borderWidth="1px"
+            p="4"
+            rounded="l2"
+          >
+            <HStack mb="1">
+              <CalendarDays aria-hidden="true" color="brand.fg" size={17} />
+              <Text color="brand.fg" fontWeight="semibold">
+                Plan with intent
+              </Text>
+            </HStack>
+            <Text color="fg.muted" fontSize="sm">
+              Time blocking protects space for what matters most.
+            </Text>
+            <Button
+              colorPalette="brand"
+              mt="3"
+              onClick={() => openCreate()}
+              size="sm"
+            >
+              {t('planner.addBlock')}
+            </Button>
+          </Box>
+        </Stack>
       </Grid>
       <TimeBlockFormDialog
         blocks={blocks}

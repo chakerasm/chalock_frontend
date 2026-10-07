@@ -27,6 +27,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import { toast } from '@/components/ui/Toaster/Toaster'
 import { SavedFocusSessions } from '@/features/focus/components/SavedFocusSessions'
 import { useFocusTimer } from '@/features/focus/hooks/use-focus-timer'
@@ -415,7 +416,7 @@ export function FocusPage() {
                               .filter((task) => task.status !== 'completed')
                               .map((task) => (
                                 <option key={task.id} value={task.id}>
-                                  {task.title}
+                                  <PrivateText>{task.title}</PrivateText>
                                 </option>
                               ))}
                           </NativeSelect.Field>
@@ -432,7 +433,7 @@ export function FocusPage() {
                             <option value="">{t('focus.noGoal')}</option>
                             {goals.map((goal) => (
                               <option key={goal.id} value={goal.id}>
-                                {goal.name}
+                                <PrivateText>{goal.name}</PrivateText>
                               </option>
                             ))}
                           </NativeSelect.Field>

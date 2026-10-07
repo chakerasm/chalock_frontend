@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  Flex,
-  HStack,
-  IconButton,
-  Stack,
-  Text,
-} from '@chakra-ui/react'
+import { Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
 import { Link as RouterLink } from '@tanstack/react-router'
 import { Clock3, Pause, Play, Timer } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -74,7 +66,7 @@ export function FocusCard({
     const elapsedSeconds = getFocusElapsedSeconds(activeSession, now)
     return (
       <Box
-        bg="brand.subtle"
+        bg="bg.elevated"
         borderColor="brand.border"
         borderWidth="1px"
         p={{ base: '4', md: '5' }}
@@ -90,20 +82,36 @@ export function FocusCard({
             {isRunning ? t('today.focusRunning') : t('today.focusPaused')}
           </Text>
         </Flex>
-        <Stack gap="1">
-          <Text
-            fontSize="2xl"
-            fontVariantNumeric="tabular-nums"
-            fontWeight="bold"
+        <Stack align="center" gap="3" textAlign="center">
+          <Flex
+            align="center"
+            borderColor="brand.border"
+            borderWidth="7px"
+            h="36"
+            justify="center"
+            rounded="full"
+            shadow="brandGlow"
+            w="36"
           >
-            {formatFocusDuration(elapsedSeconds)}
-          </Text>
+            <Stack gap="0">
+              <Text
+                fontSize="2xl"
+                fontVariantNumeric="tabular-nums"
+                fontWeight="bold"
+              >
+                {formatFocusDuration(elapsedSeconds)}
+              </Text>
+              <Text color="fg.muted" fontSize="xs">
+                {t('today.focusRunning')}
+              </Text>
+            </Stack>
+          </Flex>
           {activeSession.taskTitle ? (
-            <Text color="fg.muted" fontSize="sm">
+            <Text fontSize="sm" fontWeight="medium" lineClamp={1}>
               {activeSession.taskTitle}
             </Text>
           ) : null}
-          <Text color="fg.muted" fontSize="sm">
+          <Text color="fg.muted" fontSize="xs">
             {t('today.focusSummary', {
               minutes:
                 focusSummary.completedMinutes + Math.floor(elapsedSeconds / 60),
@@ -112,11 +120,13 @@ export function FocusCard({
           </Text>
         </Stack>
         <HStack gap="2" mt="5">
-          <IconButton
+          <Button
             aria-label={
               isRunning ? t('today.pauseFocus') : t('today.resumeFocus')
             }
+            colorPalette="brand"
             disabled={isUpdating}
+            flex="1"
             onClick={() =>
               onUpdateSession(
                 activeSession,
@@ -132,12 +142,15 @@ export function FocusCard({
             ) : (
               <Play aria-hidden="true" size={16} />
             )}
-          </IconButton>
+            {isRunning ? t('today.pauseFocus') : t('today.resumeFocus')}
+          </Button>
           <Button onClick={onOpenSession} size="sm" variant="ghost">
             {t('today.openSession')}
           </Button>
           <Button asChild size="sm" variant="ghost">
-            <RouterLink to={APP_ROUTES.focus}>{t('today.timerTools')}</RouterLink>
+            <RouterLink to={APP_ROUTES.focus}>
+              {t('today.timerTools')}
+            </RouterLink>
           </Button>
         </HStack>
       </Box>
@@ -173,7 +186,9 @@ export function FocusCard({
             {t('today.startFocus')}
           </Button>
           <Button asChild size="sm" variant="ghost">
-            <RouterLink to={APP_ROUTES.focus}>{t('today.timerTools')}</RouterLink>
+            <RouterLink to={APP_ROUTES.focus}>
+              {t('today.timerTools')}
+            </RouterLink>
           </Button>
         </HStack>
       </Flex>
@@ -199,9 +214,22 @@ export function FocusCard({
           </Stack>
         </HStack>
       ) : (
-        <Text color="fg.muted" fontSize="sm">
-          {t('today.focusEmpty')}
-        </Text>
+        <Stack align="center" gap="3" py="3" textAlign="center">
+          <Flex
+            align="center"
+            borderColor="border.subtle"
+            borderWidth="7px"
+            h="28"
+            justify="center"
+            rounded="full"
+            w="28"
+          >
+            <Clock3 aria-hidden="true" color="brand.fg" size={28} />
+          </Flex>
+          <Text color="fg.muted" fontSize="sm">
+            {t('today.focusEmpty')}
+          </Text>
+        </Stack>
       )}
     </Box>
   )

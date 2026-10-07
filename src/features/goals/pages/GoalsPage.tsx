@@ -5,6 +5,7 @@ import {
   Flex,
   Grid,
   HStack,
+  Image,
   Progress,
   SimpleGrid,
   Stack,
@@ -24,6 +25,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import { APP_ROUTES } from '@/lib/routes'
 import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
 import { GoalsListSkeleton } from '@/features/goals/components/GoalsListSkeleton'
@@ -260,6 +262,7 @@ function GoalsListPage() {
             </HStack>
             {goals.length === 0 ? (
               <EmptyState
+                illustrationSrc="/icons/goals.png"
                 description={t('goals.emptyDescription')}
                 title={t('goals.emptyTitle')}
               />
@@ -307,23 +310,36 @@ function GoalsListPage() {
                               : '4rem minmax(0, 1fr) auto',
                           }}
                         >
-                          <Flex
-                            align="center"
-                            bg="brand.subtle"
-                            color="brand.fg"
-                            display={{ base: 'none', md: 'flex' }}
-                            h="14"
-                            justify="center"
-                            rounded="l2"
-                            w="14"
-                          >
-                            <Target aria-hidden="true" size={27} />
-                          </Flex>
+                          {goal.goalImageUrl ? (
+                            <Image
+                              alt=""
+                              borderColor="brand.border"
+                              borderWidth="1px"
+                              boxSize="14"
+                              display={{ base: 'none', md: 'block' }}
+                              objectFit="cover"
+                              rounded="l2"
+                              src={goal.goalImageUrl}
+                            />
+                          ) : (
+                            <Flex
+                              align="center"
+                              bg="brand.subtle"
+                              color="brand.fg"
+                              display={{ base: 'none', md: 'flex' }}
+                              h="14"
+                              justify="center"
+                              rounded="l2"
+                              w="14"
+                            >
+                              <Target aria-hidden="true" size={27} />
+                            </Flex>
+                          )}
                           <Stack gap="2" minW="0">
                             <Flex align="start" justify="space-between" gap="3">
                               <Box minW="0">
                                 <Text fontWeight="semibold" lineClamp={1}>
-                                  {goal.title}
+                                  <PrivateText>{goal.title}</PrivateText>
                                 </Text>
                                 {goal.description ? (
                                   <Text
@@ -433,7 +449,7 @@ function GoalsListPage() {
                                     {t('goals.nextStep')}
                                   </Text>
                                   <Text fontSize="xs" lineClamp={1}>
-                                    {nextTask.title}
+                                    <PrivateText>{nextTask.title}</PrivateText>
                                   </Text>
                                 </Box>
                                 <ChevronRight
@@ -500,7 +516,7 @@ function GoalsListPage() {
                       </Flex>
                       <Box flex="1" minW="0">
                         <Text fontSize="sm" fontWeight="medium" lineClamp={1}>
-                          {goal.title}
+                          <PrivateText>{goal.title}</PrivateText>
                         </Text>
                         <Text color="fg.muted" fontSize="xs">
                           {goal.targetDate
@@ -605,7 +621,7 @@ function GoalsListPage() {
                         fontWeight="medium"
                         lineClamp={1}
                       >
-                        {goal.title}
+                        <PrivateText>{goal.title}</PrivateText>
                       </Text>
                       <Text color="brand.fg" fontSize="xs" fontWeight="bold">
                         {goal.progress}%

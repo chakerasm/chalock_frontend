@@ -8,6 +8,7 @@ export type GoalFromAPI = {
   completedAt?: string
   createdAt: string
   description?: string
+  goalImageUrl?: string
   id: string
   progress: number
   progressStrategy: GoalProgressStrategy
@@ -21,6 +22,7 @@ export type Goal = GoalFromAPI
 
 type GoalInputBase = {
   description?: string
+  goalImageUrl?: string
   targetDate?: string
   title: string
 }

@@ -3,6 +3,7 @@ import {
   createTodayTask,
   getTodayDashboard,
   startFocusSession,
+  stopFocusSession,
   updateFocusSession,
   updateHabitCheckIn,
   updateTodayTask,
@@ -62,4 +63,8 @@ export function useStartFocusSession() {
 
 export function useUpdateFocusSession() {
   return useDashboardMutation(updateFocusSession)
+}
+
+export function useStopFocusSession() {
+  return useDashboardMutation(stopFocusSession)
 }

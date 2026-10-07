@@ -33,6 +33,7 @@ export function GoalFormDialog({
   const { t } = useTranslation()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [goalImageUrl, setGoalImageUrl] = useState('')
   const [targetDate, setTargetDate] = useState('')
   const [progressMode, setProgressMode] = useState<'manual' | 'task-based'>(
     'manual',
@@ -44,6 +45,7 @@ export function GoalFormDialog({
     if (!open) return
     setTitle(goal?.title ?? '')
     setDescription(goal?.description ?? '')
+    setGoalImageUrl(goal?.goalImageUrl ?? '')
     setTargetDate(goal?.targetDate ?? '')
     setProgressMode(goal?.progressStrategy.mode ?? 'manual')
     setProgress(goal?.progress ?? 0)
@@ -54,6 +56,7 @@ export function GoalFormDialog({
     event.preventDefault()
     const result = goalFormSchema.safeParse({
       description,
+      goalImageUrl,
       ...(progressMode === 'manual' ? { progress } : {}),
       progressMode,
       targetDate,
@@ -66,6 +69,7 @@ export function GoalFormDialog({
     setHasError(false)
     const input = {
       description: result.data.description.trim() || undefined,
+      goalImageUrl: result.data.goalImageUrl || undefined,
       progressStrategy: { mode: result.data.progressMode },
       targetDate: result.data.targetDate || undefined,
       title: result.data.title.trim(),
@@ -117,6 +121,15 @@ export function GoalFormDialog({
                       onChange={(event) => setDescription(event.target.value)}
                       rows={3}
                       value={description}
+                    />
+                  </Field.Root>
+                  <Field.Root>
+                    <Field.Label>{t('goals.imageUrlLabel')}</Field.Label>
+                    <Input
+                      onChange={(event) => setGoalImageUrl(event.target.value)}
+                      placeholder={t('goals.imageUrlPlaceholder')}
+                      type="url"
+                      value={goalImageUrl}
                     />
                   </Field.Root>
                   <Field.Root>

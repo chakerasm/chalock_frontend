@@ -13,6 +13,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { Search, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import { useGlobalSearch } from '@/features/global-search/hooks/use-global-search'
 import { groupSearchResults } from '@/features/global-search/services/global-search.service'
 import type {
@@ -24,7 +25,7 @@ import { APP_ROUTES } from '@/lib/routes'
 type PaletteItem = Pick<
   SearchResult,
   'href' | 'id' | 'metadata' | 'subtitle' | 'title'
->
+> & { type?: SearchResult['type'] }
 
 function useDebouncedValue(value: string, delay = 180) {
   const [debouncedValue, setDebouncedValue] = useState(value)
@@ -99,6 +100,13 @@ export function GlobalSearchDialog() {
 
   function execute(item: PaletteItem) {
     setIsOpen(false)
+    if (item.type === 'goal') {
+      void navigate({
+        search: { goalId: item.id },
+        to: APP_ROUTES.goals,
+      })
+      return
+    }
     void navigate({ to: item.href })
   }
 
@@ -159,7 +167,14 @@ export function GlobalSearchDialog() {
         <Portal>
           <Dialog.Backdrop backdropFilter="blur(6px)" bg="bg.overlay" />
           <Dialog.Positioner alignItems={{ base: 'start', md: 'center' }} p="4">
-            <Dialog.Content bg="bg.elevated" borderColor="border.subtle" borderWidth="1px" maxH="min(42rem, calc(100dvh - 2rem))" rounded="l3" shadow="lg">
+            <Dialog.Content
+              bg="bg.elevated"
+              borderColor="border.subtle"
+              borderWidth="1px"
+              maxH="min(42rem, calc(100dvh - 2rem))"
+              rounded="l3"
+              shadow="lg"
+            >
               <Dialog.Header>
                 <Dialog.Title>{t('globalSearch.title')}</Dialog.Title>
                 <Dialog.CloseTrigger asChild>
@@ -315,7 +330,9 @@ function SearchItem({
       w="full"
     >
       <Stack align="start" gap="0" minW="0">
-        <Text lineClamp="1">{item.title}</Text>
+        <Text lineClamp="1">
+          <PrivateText>{item.title}</PrivateText>
+        </Text>
         {item.subtitle ? (
           <Text color="fg.muted" fontSize="sm" lineClamp="1">
             {item.subtitle}

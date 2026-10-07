@@ -186,7 +186,8 @@ export function TasksPage() {
     createTaskMutation.isPending ||
     updateTaskMutation.isPending ||
     deleteTaskMutation.isPending
-  const focusAvailable = !focusDashboardQuery.data?.activeFocusSession
+  const focusAvailable =
+    !focusDashboardQuery.data?.activeFocusSession && !startFocusMutation.isPending
 
   function openCreateTask() {
     setTaskToEdit(undefined)
@@ -579,6 +580,7 @@ export function TasksPage() {
             </Flex>
 
             <TaskList
+              activeFocusSession={focusDashboardQuery.data?.activeFocusSession ?? null}
               focusAvailable={focusAvailable}
               isMutating={isMutating}
               onDelete={setTaskToDelete}
