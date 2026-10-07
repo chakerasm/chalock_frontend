@@ -9,7 +9,7 @@ import {
   SimpleGrid,
   Stack,
   Text,
-} from '@chakra-ui/react'
+} from "@chakra-ui/react";
 import {
   CalendarDays,
   CheckCircle2,
@@ -18,23 +18,23 @@ import {
   Play,
   Plus,
   StickyNote,
-} from 'lucide-react'
-import { useRef, useState, type ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
-import { TodayDashboardSkeleton } from '@/features/today/components/TodayDashboardSkeleton'
-import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
-import { toast } from '@/components/ui/Toaster/Toaster'
-import { useCreateNote } from '@/features/notes/hooks/use-notes'
-import { ActiveFocusSessionDialog } from '@/features/today/components/ActiveFocusSessionDialog'
-import { ActiveGoalsCard } from '@/features/today/components/ActiveGoalsCard'
-import { AddTaskDialog } from '@/features/today/components/AddTaskDialog'
+} from "lucide-react";
+import { useRef, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import { TodayDashboardSkeleton } from "@/features/today/components/TodayDashboardSkeleton";
+import { ErrorState } from "@/components/shared/ErrorState/ErrorState";
+import { toast } from "@/components/ui/Toaster/Toaster";
+import { useCreateNote } from "@/features/notes/hooks/use-notes";
+import { ActiveFocusSessionDialog } from "@/features/today/components/ActiveFocusSessionDialog";
+import { ActiveGoalsCard } from "@/features/today/components/ActiveGoalsCard";
+import { AddTaskDialog } from "@/features/today/components/AddTaskDialog";
 import {
   FocusCard,
   getFocusElapsedSeconds,
-} from '@/features/today/components/FocusCard'
-import { QuickNoteCard } from '@/features/today/components/QuickNoteCard'
-import { TodayHabitsCard } from '@/features/today/components/TodayHabitsCard'
-import { TodayTasksCard } from '@/features/today/components/TodayTasksCard'
+} from "@/features/today/components/FocusCard";
+import { QuickNoteCard } from "@/features/today/components/QuickNoteCard";
+import { TodayHabitsCard } from "@/features/today/components/TodayHabitsCard";
+import { TodayTasksCard } from "@/features/today/components/TodayTasksCard";
 import {
   useCreateTodayTask,
   useStartFocusSession,
@@ -42,24 +42,24 @@ import {
   useUpdateFocusSession,
   useUpdateHabitCheckIn,
   useUpdateTodayTask,
-} from '@/features/today/hooks/use-today-dashboard'
+} from "@/features/today/hooks/use-today-dashboard";
 import type {
   ActiveFocusSession,
   CreateTodayTaskInput,
-} from '@/features/today/types/today.types'
+} from "@/features/today/types/today.types";
 
 function greetingKey(hour: number) {
-  if (hour < 12) return 'today.greetingMorning'
-  if (hour < 18) return 'today.greetingAfternoon'
-  return 'today.greetingEvening'
+  if (hour < 12) return "today.greetingMorning";
+  if (hour < 18) return "today.greetingAfternoon";
+  return "today.greetingEvening";
 }
 
 function formatTodayDate(date: string, locale: string) {
   return new Intl.DateTimeFormat(locale, {
-    day: 'numeric',
-    month: 'long',
-    weekday: 'long',
-  }).format(new Date(`${date}T12:00:00`))
+    day: "numeric",
+    month: "long",
+    weekday: "long",
+  }).format(new Date(`${date}T12:00:00`));
 }
 
 function DashboardMetric({
@@ -68,10 +68,10 @@ function DashboardMetric({
   label,
   value,
 }: {
-  detail: string
-  icon: typeof ListTodo
-  label: string
-  value: string | number
+  detail: string;
+  icon: typeof ListTodo;
+  label: string;
+  value: string | number;
 }) {
   return (
     <FlexMetric>
@@ -99,7 +99,7 @@ function DashboardMetric({
         </Text>
       </Stack>
     </FlexMetric>
-  )
+  );
 }
 
 function FlexMetric({ children }: { children: ReactNode }) {
@@ -116,70 +116,70 @@ function FlexMetric({ children }: { children: ReactNode }) {
     >
       {children}
     </HStack>
-  )
+  );
 }
 
 export function TodayDashboardPage() {
-  const { i18n, t } = useTranslation()
-  const dashboardQuery = useTodayDashboard()
-  const createTask = useCreateTodayTask()
-  const updateTask = useUpdateTodayTask()
-  const updateHabit = useUpdateHabitCheckIn()
-  const startFocus = useStartFocusSession()
-  const updateFocus = useUpdateFocusSession()
-  const createNote = useCreateNote()
-  const quickNoteRef = useRef<HTMLTextAreaElement>(null)
-  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false)
-  const [isFocusDialogOpen, setIsFocusDialogOpen] = useState(false)
-  const dashboard = dashboardQuery.data
+  const { i18n, t } = useTranslation();
+  const dashboardQuery = useTodayDashboard();
+  const createTask = useCreateTodayTask();
+  const updateTask = useUpdateTodayTask();
+  const updateHabit = useUpdateHabitCheckIn();
+  const startFocus = useStartFocusSession();
+  const updateFocus = useUpdateFocusSession();
+  const createNote = useCreateNote();
+  const quickNoteRef = useRef<HTMLTextAreaElement>(null);
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [isFocusDialogOpen, setIsFocusDialogOpen] = useState(false);
+  const dashboard = dashboardQuery.data;
 
   function handleCreateTask(input: CreateTodayTaskInput) {
     createTask.mutate(input, {
-      onError: () => toast.error({ title: t('today.taskCreateError') }),
+      onError: () => toast.error({ title: t("today.taskCreateError") }),
       onSuccess: () => {
-        setIsAddTaskOpen(false)
-        toast.success({ title: t('today.taskCreated') })
+        setIsAddTaskOpen(false);
+        toast.success({ title: t("today.taskCreated") });
       },
-    })
+    });
   }
 
   function handleStartFocus() {
     startFocus.mutate(
       {},
       {
-        onError: () => toast.error({ title: t('today.focusStartError') }),
+        onError: () => toast.error({ title: t("today.focusStartError") }),
       },
-    )
+    );
   }
 
   function handleUpdateFocus(
     session: ActiveFocusSession,
     elapsedSeconds: number,
-    status: 'active' | 'paused',
+    status: "active" | "paused",
   ) {
     updateFocus.mutate(
       { elapsedSeconds, sessionId: session.id, status },
-      { onError: () => toast.error({ title: t('today.focusUpdateError') }) },
-    )
+      { onError: () => toast.error({ title: t("today.focusUpdateError") }) },
+    );
   }
 
-  if (dashboardQuery.isPending) return <TodayDashboardSkeleton />
+  if (dashboardQuery.isPending) return <TodayDashboardSkeleton />;
   if (dashboardQuery.isError || !dashboard) {
     return (
-      <Container maxW="7xl" py={{ base: '8', md: '12' }}>
+      <Container maxW="7xl" py={{ base: "8", md: "12" }}>
         <ErrorState onRetry={() => void dashboardQuery.refetch()} />
       </Container>
-    )
+    );
   }
 
   const remainingTasks = dashboard.tasks.filter(
-    (task) => task.status !== 'completed',
-  ).length
+    (task) => task.status !== "completed",
+  ).length;
   const remainingHabits = dashboard.scheduledHabits.filter(
     (habit) => !habit.completed,
-  ).length
-  const completedHabits = dashboard.scheduledHabits.length - remainingHabits
-  const focusMinutes = dashboard.focusSummary.completedMinutes
+  ).length;
+  const completedHabits = dashboard.scheduledHabits.length - remainingHabits;
+  const focusMinutes = dashboard.focusSummary.completedMinutes;
   const quickActions = (
     <HStack gap="2" wrap="wrap">
       <Button
@@ -188,7 +188,7 @@ export function TodayDashboardPage() {
         size="sm"
       >
         <Plus aria-hidden="true" size={16} />
-        {t('today.addTask')}
+        {t("today.addTask")}
       </Button>
       <Button
         disabled={Boolean(dashboard.activeFocusSession)}
@@ -197,7 +197,7 @@ export function TodayDashboardPage() {
         variant="outline"
       >
         <Play aria-hidden="true" size={15} />
-        {t('today.startFocus')}
+        {t("today.startFocus")}
       </Button>
       <Button
         onClick={() => quickNoteRef.current?.focus()}
@@ -205,17 +205,17 @@ export function TodayDashboardPage() {
         variant="ghost"
       >
         <StickyNote aria-hidden="true" size={16} />
-        {t('today.addQuickNote')}
+        {t("today.addQuickNote")}
       </Button>
     </HStack>
-  )
+  );
 
   return (
-    <Container maxW="7xl" py={{ base: '5', md: '7' }}>
-      <Stack gap={{ base: '4', md: '5' }}>
+    <Container maxW="7xl" py={{ base: "5", md: "7" }}>
+      <Stack gap={{ base: "4", md: "5" }}>
         <Flex
-          align={{ base: 'start', md: 'end' }}
-          direction={{ base: 'column', md: 'row' }}
+          align={{ base: "start", md: "end" }}
+          direction={{ base: "column", md: "row" }}
           gap="4"
           justify="space-between"
         >
@@ -230,47 +230,47 @@ export function TodayDashboardPage() {
             </Text>
             <Text
               as="h1"
-              fontSize={{ base: '2xl', md: '3xl' }}
+              fontSize={{ base: "2xl", md: "3xl" }}
               fontWeight="bold"
               letterSpacing="tight"
             >
-              {t(greetingKey(new Date().getHours()), { name: 'Chaker' })}
+              {t(greetingKey(new Date().getHours()), { name: "Chaker" })}
             </Text>
             <Text color="fg.muted" fontSize="sm">
-              {t('today.overview', {
+              {t("today.overview", {
                 habits: remainingHabits,
                 tasks: remainingTasks,
               })}
             </Text>
           </Stack>
-          <Box display={{ base: 'none', md: 'block' }}>{quickActions}</Box>
+          <Box display={{ base: "none", md: "block" }}>{quickActions}</Box>
         </Flex>
         <SimpleGrid columns={{ base: 2, md: 4 }} gap="3">
           <DashboardMetric
-            detail={t('today.tasksSummary', { remaining: remainingTasks })}
+            detail={t("today.tasksSummary", { remaining: remainingTasks })}
             icon={ListTodo}
-            label={t('today.tasksTitle')}
+            label={t("today.tasksTitle")}
             value={remainingTasks}
           />
           <DashboardMetric
-            detail={t('today.habitsSummary', {
+            detail={t("today.habitsSummary", {
               completed: completedHabits,
               total: dashboard.scheduledHabits.length,
             })}
             icon={CheckCircle2}
-            label={t('today.habitsTitle')}
+            label={t("today.habitsTitle")}
             value={`${completedHabits}/${dashboard.scheduledHabits.length}`}
           />
           <DashboardMetric
-            detail={t('today.focusToday')}
+            detail={t("today.focusToday")}
             icon={Clock3}
-            label={t('today.focusTitle')}
-            value={t('today.focusMinutes', { minutes: focusMinutes })}
+            label={t("today.focusTitle")}
+            value={t("today.focusMinutes", { minutes: focusMinutes })}
           />
           <DashboardMetric
             detail={formatTodayDate(dashboard.date, i18n.language)}
             icon={CalendarDays}
-            label={t('today.eventsToday')}
+            label={t("today.eventsToday")}
             value="0"
           />
         </SimpleGrid>
@@ -278,12 +278,12 @@ export function TodayDashboardPage() {
           alignItems="start"
           gap="3"
           templateColumns={{
-            base: '1fr',
-            xl: 'minmax(0, 1.5fr) minmax(18rem, 0.8fr) minmax(16rem, 0.6fr)',
+            base: "1fr",
+            xl: "minmax(0, 1.5fr) minmax(18rem, 0.8fr) minmax(16rem, 0.6fr)",
           }}
         >
           <GridItem
-            colStart={{ base: 'auto', xl: 1 }}
+            colStart={{ base: "auto", xl: 1 }}
             order={{ base: 1, xl: 1 }}
           >
             <TodayTasksCard
@@ -293,7 +293,7 @@ export function TodayDashboardPage() {
                   { completed, taskId },
                   {
                     onError: () =>
-                      toast.error({ title: t('today.taskUpdateError') }),
+                      toast.error({ title: t("today.taskUpdateError") }),
                   },
                 )
               }
@@ -301,7 +301,7 @@ export function TodayDashboardPage() {
             />
           </GridItem>
           <GridItem
-            colStart={{ base: 'auto', xl: 2 }}
+            colStart={{ base: "auto", xl: 2 }}
             order={{ base: 2, xl: 2 }}
           >
             <FocusCard
@@ -314,7 +314,7 @@ export function TodayDashboardPage() {
             />
           </GridItem>
           <GridItem
-            colStart={{ base: 'auto', xl: 3 }}
+            colStart={{ base: "auto", xl: 3 }}
             order={{ base: 4, xl: 3 }}
           >
             <QuickNoteCard
@@ -325,10 +325,10 @@ export function TodayDashboardPage() {
                   { content },
                   {
                     onError: () =>
-                      toast.error({ title: t('today.noteCreateError') }),
+                      toast.error({ title: t("today.noteCreateError") }),
                     onSuccess: () => {
-                      onSuccess()
-                      toast.success({ title: t('today.noteSaved') })
+                      onSuccess();
+                      toast.success({ title: t("today.noteSaved") });
                     },
                   },
                 )
@@ -336,7 +336,7 @@ export function TodayDashboardPage() {
             />
           </GridItem>
           <GridItem
-            colStart={{ base: 'auto', xl: 1 }}
+            colStart={{ base: "auto", xl: 1 }}
             order={{ base: 3, xl: 4 }}
           >
             <TodayHabitsCard
@@ -354,21 +354,21 @@ export function TodayDashboardPage() {
                   },
                   {
                     onError: () =>
-                      toast.error({ title: t('today.habitUpdateError') }),
+                      toast.error({ title: t("today.habitUpdateError") }),
                   },
                 )
               }
             />
           </GridItem>
           <GridItem
-            display={{ base: 'block', md: 'none' }}
+            display={{ base: "block", md: "none" }}
             order={{ base: 4, xl: 4 }}
           >
             {quickActions}
           </GridItem>
           <GridItem
             colSpan={{ base: 1, xl: 2 }}
-            colStart={{ base: 'auto', xl: 2 }}
+            colStart={{ base: "auto", xl: 2 }}
             order={{ base: 5, xl: 5 }}
           >
             <ActiveGoalsCard goals={dashboard.activeGoals} />
@@ -394,5 +394,5 @@ export function TodayDashboardPage() {
         session={dashboard.activeFocusSession}
       />
     </Container>
-  )
+  );
 }

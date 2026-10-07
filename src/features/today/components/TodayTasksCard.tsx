@@ -7,56 +7,56 @@ import {
   HStack,
   Stack,
   Text,
-} from '@chakra-ui/react'
-import { CheckCircle2, Clock3 } from 'lucide-react'
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
-import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
+} from "@chakra-ui/react";
+import { CheckCircle2, Clock3 } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { PrivateText } from "@/components/ui/PrivateText/PrivateText";
+import { EmptyState } from "@/components/shared/EmptyState/EmptyState";
 import type {
   TodayTask,
   TodayTaskPriority,
-} from '@/features/today/types/today.types'
+} from "@/features/today/types/today.types";
 
 type TodayTasksCardProps = {
-  isUpdating: boolean
-  onUpdateTask: (taskId: string, completed: boolean) => void
-  tasks: TodayTask[]
-}
+  isUpdating: boolean;
+  onUpdateTask: (taskId: string, completed: boolean) => void;
+  tasks: TodayTask[];
+};
 
 const priorityStyles: Record<TodayTaskPriority, { bg: string; color: string }> =
   {
-    high: { bg: 'danger.subtle', color: 'danger.fg' },
-    low: { bg: 'bg.subtle', color: 'fg.muted' },
-    medium: { bg: 'warning.subtle', color: 'warning.fg' },
-  }
+    high: { bg: "danger.subtle", color: "danger.fg" },
+    low: { bg: "bg.subtle", color: "fg.muted" },
+    medium: { bg: "warning.subtle", color: "warning.fg" },
+  };
 
 export function TodayTasksCard({
   isUpdating,
   onUpdateTask,
   tasks,
 }: TodayTasksCardProps) {
-  const { t } = useTranslation()
-  const [showAll, setShowAll] = useState(false)
-  const visibleTasks = showAll ? tasks : tasks.slice(0, 4)
+  const { t } = useTranslation();
+  const [showAll, setShowAll] = useState(false);
+  const visibleTasks = showAll ? tasks : tasks.slice(0, 4);
 
   return (
     <Box
       bg="bg.elevated"
       borderColor="border.subtle"
       borderWidth="1px"
-      p={{ base: '4', md: '5' }}
+      p={{ base: "4", md: "5" }}
       rounded="l3"
       shadow="sm"
     >
       <Flex align="center" justify="space-between" mb="4">
         <Box>
           <Text fontSize="lg" fontWeight="semibold">
-            {t('today.tasksTitle')}
+            {t("today.tasksTitle")}
           </Text>
           <Text color="fg.muted" fontSize="sm">
-            {t('today.tasksSummary', {
-              remaining: tasks.filter((task) => task.status !== 'completed')
+            {t("today.tasksSummary", {
+              remaining: tasks.filter((task) => task.status !== "completed")
                 .length,
             })}
           </Text>
@@ -66,8 +66,8 @@ export function TodayTasksCard({
       {tasks.length === 0 ? (
         <EmptyState
           illustrationSrc="/icons/tasks.png"
-          description={t('today.tasksEmptyDescription')}
-          title={t('today.tasksEmptyTitle')}
+          description={t("today.tasksEmptyDescription")}
+          title={t("today.tasksEmptyTitle")}
         />
       ) : (
         <Stack gap="1">
@@ -81,7 +81,7 @@ export function TodayTasksCard({
               py="2"
             >
               <Checkbox.Root
-                checked={task.status === 'completed'}
+                checked={task.status === "completed"}
                 disabled={isUpdating}
                 flex="1"
                 minW="0"
@@ -93,7 +93,7 @@ export function TodayTasksCard({
                 <Checkbox.Control />
                 <Checkbox.Label
                   textDecoration={
-                    task.status === 'completed' ? 'line-through' : undefined
+                    task.status === "completed" ? "line-through" : undefined
                   }
                   truncate
                 >
@@ -106,7 +106,7 @@ export function TodayTasksCard({
                   <HStack gap="1">
                     <Clock3 aria-hidden="true" size={13} />
                     <Text>
-                      {t('today.duration', { minutes: task.estimatedMinutes })}
+                      {t("today.duration", { minutes: task.estimatedMinutes })}
                     </Text>
                   </HStack>
                 ) : null}
@@ -131,9 +131,9 @@ export function TodayTasksCard({
           size="sm"
           variant="ghost"
         >
-          {showAll ? t('today.showFewerTasks') : t('today.viewAllTasks')}
+          {showAll ? t("today.showFewerTasks") : t("today.viewAllTasks")}
         </Button>
       ) : null}
     </Box>
-  )
+  );
 }
