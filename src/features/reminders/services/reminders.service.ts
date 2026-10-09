@@ -11,10 +11,13 @@ import { reminderInputSchema } from '@/features/reminders/schemas/reminders.sche
 import type {
   CreateReminderInput,
   Reminder,
+  ReminderListFilters,
   UpdateReminderInput,
 } from '@/features/reminders/types/reminders.types'
-export async function getReminders(): Promise<Reminder[]> {
-  return (await getRemindersFromAPI()).map(mapReminderFromAPI)
+export async function getReminders(
+  filters: ReminderListFilters = {},
+): Promise<Reminder[]> {
+  return (await getRemindersFromAPI(filters)).map(mapReminderFromAPI)
 }
 export async function createReminder(input: CreateReminderInput) {
   return mapReminderFromAPI(

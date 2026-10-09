@@ -9,15 +9,20 @@ import {
 } from '@/features/reminders/services/reminders.service'
 import type {
   CreateReminderInput,
+  ReminderListFilters,
   UpdateReminderInput,
 } from '@/features/reminders/types/reminders.types'
 
 export const reminderQueryKeys = {
   all: ['reminders'] as const,
-  list: ['reminders', 'list'] as const,
+  list: (filters: ReminderListFilters) =>
+    ['reminders', 'list', filters] as const,
 }
-export const useReminders = () =>
-  useQuery({ queryFn: getReminders, queryKey: reminderQueryKeys.list })
+export const useReminders = (filters: ReminderListFilters = {}) =>
+  useQuery({
+    queryFn: () => getReminders(filters),
+    queryKey: reminderQueryKeys.list(filters),
+  })
 
 function useReminderMutation<T>(mutationFn: (value: T) => Promise<unknown>) {
   const client = useQueryClient()

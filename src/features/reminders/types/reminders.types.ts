@@ -70,6 +70,11 @@ export type ReminderEntityReference = {
   type: Exclude<ReminderEntityType, 'custom'>
 }
 
+export type ReminderListFilters = {
+  from?: string
+  to?: string
+}
+
 export type ResolvedReminder = Reminder & {
   isOverdue: boolean
   nextTriggerAt?: string

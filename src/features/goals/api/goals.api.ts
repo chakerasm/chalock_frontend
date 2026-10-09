@@ -22,9 +22,11 @@ async function parseResponse<T>(
 }
 
 export async function getGoalsFromAPI(filters: GoalListFilter = {}) {
-  const query = filters.status
-    ? `?${new URLSearchParams({ status: filters.status })}`
-    : ''
+  const params = new URLSearchParams()
+  if (filters.status) params.set('status', filters.status)
+  if (filters.from) params.set('from', filters.from)
+  if (filters.to) params.set('to', filters.to)
+  const query = params.size ? `?${params}` : ''
   return parseResponse(
     await apiFetch(`/api/goals${query}`),
     goalsFromAPISchema,

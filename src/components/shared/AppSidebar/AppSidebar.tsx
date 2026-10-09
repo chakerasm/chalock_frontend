@@ -37,6 +37,7 @@ type NavigationItem = {
 
 const navigationItems: NavigationItem[] = [
   { icon: CalendarCheck, label: 'app.home', to: APP_ROUTES.home },
+  { icon: CalendarDays, label: 'Calendar', to: APP_ROUTES.calendar },
   { icon: ListTodo, label: 'tasks.title', to: APP_ROUTES.tasks },
   { icon: CheckCheck, label: 'habits.title', to: APP_ROUTES.habits },
   { icon: Goal, label: 'goals.title', to: APP_ROUTES.goals },
@@ -49,7 +50,11 @@ const navigationItems: NavigationItem[] = [
   { icon: LayoutTemplate, label: 'Templates', to: APP_ROUTES.templates },
 ]
 
-export function AppSidebar({ collapsed = false, onNavigate, onToggle }: AppSidebarProps) {
+export function AppSidebar({
+  collapsed = false,
+  onNavigate,
+  onToggle,
+}: AppSidebarProps) {
   const { t } = useTranslation()
   const matchRoute = useMatchRoute()
   const isActive = (to: AppRoute) =>
@@ -70,7 +75,7 @@ export function AppSidebar({ collapsed = false, onNavigate, onToggle }: AppSideb
       p="3"
     >
       <Stack gap="5">
-        <HStack gap="2" justify={collapsed ? "center" : "start"} px="2">
+        <HStack gap="2" justify={collapsed ? 'center' : 'start'} px="2">
           <Image
             alt=""
             flexShrink="0"
@@ -80,7 +85,12 @@ export function AppSidebar({ collapsed = false, onNavigate, onToggle }: AppSideb
             src="/logo.png"
             w="8"
           />
-          <Text display={collapsed ? "none" : "block"} fontSize="md" fontWeight="bold" letterSpacing="tight">
+          <Text
+            display={collapsed ? 'none' : 'block'}
+            fontSize="md"
+            fontWeight="bold"
+            letterSpacing="tight"
+          >
             {t('app.name')}
           </Text>
         </HStack>
@@ -99,7 +109,7 @@ export function AppSidebar({ collapsed = false, onNavigate, onToggle }: AppSideb
             asChild
             colorPalette={isActive(APP_ROUTES.statistics) ? 'brand' : undefined}
             fontWeight={isActive(APP_ROUTES.statistics) ? 'semibold' : 'medium'}
-            justifyContent={collapsed ? "center" : "flex-start"}
+            justifyContent={collapsed ? 'center' : 'flex-start'}
             fontSize="sm"
             h="9"
             px="2.5"
@@ -114,7 +124,9 @@ export function AppSidebar({ collapsed = false, onNavigate, onToggle }: AppSideb
               to={APP_ROUTES.statistics}
             >
               <Activity aria-hidden="true" size={16} />
-<Text display={collapsed ? "none" : "block"}>{t('statistics.title')}</Text>
+              <Text display={collapsed ? 'none' : 'block'}>
+                {t('statistics.title')}
+              </Text>
             </RouterLink>
           </Button>
           <NavigationLink
@@ -140,9 +152,27 @@ export function AppSidebar({ collapsed = false, onNavigate, onToggle }: AppSideb
         </Stack>
       </Stack>
       <Stack gap="3">
-        <Button aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} onClick={onToggle} size="sm" variant="ghost">{collapsed ? <PanelLeftOpen aria-hidden="true" size={17} /> : <PanelLeftClose aria-hidden="true" size={17} />}</Button>
-        <Box display={collapsed ? "none" : "block"}><QuickAddDialog /></Box>
-        <Box borderTopWidth="1px" borderColor="border.subtle" display={collapsed ? "none" : "block"} pt="3">
+        <Button
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          onClick={onToggle}
+          size="sm"
+          variant="ghost"
+        >
+          {collapsed ? (
+            <PanelLeftOpen aria-hidden="true" size={17} />
+          ) : (
+            <PanelLeftClose aria-hidden="true" size={17} />
+          )}
+        </Button>
+        <Box display={collapsed ? 'none' : 'block'}>
+          <QuickAddDialog />
+        </Box>
+        <Box
+          borderTopWidth="1px"
+          borderColor="border.subtle"
+          display={collapsed ? 'none' : 'block'}
+          pt="3"
+        >
           <Text color="fg.muted" fontSize="xs" px="2">
             {t('appShell.workspace')}
           </Text>
@@ -165,7 +195,12 @@ type NavigationLinkProps = {
   onNavigate?: () => void
 }
 
-function NavigationLink({ collapsed, isActive, item, onNavigate }: NavigationLinkProps) {
+function NavigationLink({
+  collapsed,
+  isActive,
+  item,
+  onNavigate,
+}: NavigationLinkProps) {
   const { t } = useTranslation()
   const Icon = item.icon
 
@@ -177,7 +212,7 @@ function NavigationLink({ collapsed, isActive, item, onNavigate }: NavigationLin
       fontWeight={isActive ? 'semibold' : 'medium'}
       fontSize="sm"
       h="9"
-      justifyContent={collapsed ? "center" : "flex-start"}
+      justifyContent={collapsed ? 'center' : 'flex-start'}
       px="2.5"
       rounded="control"
       variant={isActive ? 'subtle' : 'ghost'}
@@ -189,7 +224,7 @@ function NavigationLink({ collapsed, isActive, item, onNavigate }: NavigationLin
         to={item.to}
       >
         <Icon aria-hidden="true" size={16} />
-<Text display={collapsed ? "none" : "block"}>{t(item.label)}</Text>
+        <Text display={collapsed ? 'none' : 'block'}>{t(item.label)}</Text>
       </RouterLink>
     </Button>
   )

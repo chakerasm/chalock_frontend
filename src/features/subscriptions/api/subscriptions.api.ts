@@ -30,6 +30,8 @@ function createSearchParams(filters: SubscriptionListFilter) {
   if (filters.status) params.set('status', filters.status)
   if (filters.category) params.set('category', filters.category)
   if (filters.search?.trim()) params.set('search', filters.search.trim())
+  if (filters.renewsAfter) params.set('renewsAfter', filters.renewsAfter)
+  if (filters.renewsBefore) params.set('renewsBefore', filters.renewsBefore)
   const query = params.toString()
   return query ? `?${query}` : ''
 }
@@ -79,5 +81,8 @@ export function updateSubscriptionFromAPI({
 }
 
 export async function deleteSubscriptionFromAPI(subscriptionId: string) {
-  await apiFetch(subscriptionsEndpoint + '/' + encodeURIComponent(subscriptionId), { method: 'DELETE' })
+  await apiFetch(
+    subscriptionsEndpoint + '/' + encodeURIComponent(subscriptionId),
+    { method: 'DELETE' },
+  )
 }

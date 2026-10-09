@@ -41,7 +41,7 @@ export type UpdateGoalInput = Partial<CreateGoalInput> & {
   status?: GoalStatus
 }
 
-export type GoalListFilter = { status?: GoalStatus }
+export type GoalListFilter = { from?: string; status?: GoalStatus; to?: string }
 
 export type GoalProgressSummary = {
   completedTasks: number

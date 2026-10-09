@@ -3,6 +3,7 @@ import { reminderFromAPISchema } from '@/features/reminders/schemas/reminders.sc
 import type {
   CreateReminderInput,
   ReminderFromAPI,
+  ReminderListFilters,
   UpdateReminderInput,
 } from '@/features/reminders/types/reminders.types'
 import { apiFetch } from '@/lib/api/client'
@@ -31,11 +32,23 @@ function mapReminderWriteToAPI(
 }
 const listSchema = z.union([
   z.array(reminderFromAPISchema),
-  z.object({ data: z.array(reminderFromAPISchema) }).transform(({ data }) => data),
-  z.object({ items: z.array(reminderFromAPISchema) }).transform(({ items }) => items),
+  z
+    .object({ data: z.array(reminderFromAPISchema) })
+    .transform(({ data }) => data),
+  z
+    .object({ items: z.array(reminderFromAPISchema) })
+    .transform(({ items }) => items),
 ])
-export function getRemindersFromAPI(): Promise<ReminderFromAPI[]> {
-  return json(apiFetch(endpoint), listSchema)
+export function getRemindersFromAPI(
+  filters: ReminderListFilters = {},
+): Promise<ReminderFromAPI[]> {
+  const params = new URLSearchParams()
+  if (filters.from) params.set('from', filters.from)
+  if (filters.to) params.set('to', filters.to)
+  return json(
+    apiFetch(`${endpoint}${params.size ? `?${params}` : ''}`),
+    listSchema,
+  )
 }
 export function createReminderFromAPI(input: CreateReminderInput) {
   return json(

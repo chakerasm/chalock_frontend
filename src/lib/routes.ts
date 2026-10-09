@@ -1,5 +1,6 @@
 export const APP_ROUTES = {
   home: '/today',
+  calendar: '/calendar',
   activity: '/activity',
   login: '/login',
   tasks: '/tasks',

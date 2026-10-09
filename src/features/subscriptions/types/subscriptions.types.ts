@@ -72,6 +72,8 @@ export type UpdateSubscriptionInput = Partial<CreateSubscriptionInput> & {
 
 export type SubscriptionListFilter = {
   category?: SubscriptionCategory
+  renewsAfter?: string
+  renewsBefore?: string
   search?: string
   status?: SubscriptionStatus
 }
