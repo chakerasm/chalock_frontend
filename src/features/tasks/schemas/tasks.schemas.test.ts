@@ -9,9 +9,9 @@ describe('task input validation', () => {
   })
 
   it('requires a title for updates because the backend UpdateTaskDto inherits CreateTaskDto', () => {
-    expect(updateTaskInputSchema.safeParse({ status: 'completed' }).success).toBe(
-      false,
-    )
+    expect(
+      updateTaskInputSchema.safeParse({ status: 'completed' }).success,
+    ).toBe(false)
   })
 
   it('rejects invalid backend due-time values before a request is sent', () => {

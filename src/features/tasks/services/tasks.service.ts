@@ -1,6 +1,6 @@
 import {
-  createTaskFromAPI,
   bulkCreateGoalTasksFromAPI,
+  createTaskFromAPI,
   deleteTaskFromAPI,
   getTasksFromAPI,
   updateTaskFromAPI,
@@ -11,8 +11,9 @@ import {
   mapUpdateTaskToAPI,
 } from '@/features/tasks/mappers/tasks.mapper'
 import type {
-  CreateTaskInput,
   BulkCreateGoalTasksRequest,
+  CreateTaskInput,
+  DeleteTaskInput,
   TaskListFilters,
   UpdateTaskInput,
 } from '@/features/tasks/types/tasks.types'
@@ -36,6 +37,6 @@ export async function updateTask(input: UpdateTaskInput) {
   return mapTaskFromAPI(await updateTaskFromAPI(mapUpdateTaskToAPI(input)))
 }
 
-export async function deleteTask(taskId: string) {
-  await deleteTaskFromAPI(taskId)
+export async function deleteTask(input: DeleteTaskInput) {
+  await deleteTaskFromAPI(input)
 }

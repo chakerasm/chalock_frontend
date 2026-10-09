@@ -16,12 +16,13 @@ import {
   Pause,
   Pencil,
   Play,
+  Repeat2,
   Square,
   Timer,
   Trash2,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import { isTaskOverdue } from '@/features/tasks/services/task-view.service'
@@ -184,6 +185,12 @@ export function TaskListItem({
                 <HStack gap="1">
                   <Clock3 aria-hidden="true" size={13} />
                   {t('tasks.duration', { minutes: task.estimatedMinutes })}
+                </HStack>
+              ) : null}
+              {task.seriesId ? (
+                <HStack gap="1">
+                  <Repeat2 aria-label={t('tasks.recurring')} size={13} />
+                  <Text>{t('tasks.recurring')}</Text>
                 </HStack>
               ) : null}
               <Badge

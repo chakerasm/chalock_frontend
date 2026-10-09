@@ -40,7 +40,17 @@ function sortByDueDate(tasks: Task[]) {
 
 export function getTasksForView(tasks: Task[], view: TaskView) {
   const today = getLocalDate()
-  const filteredTasks = tasks.filter((task) => {
+  const uniqueTasks = Array.from(
+    new Map(
+      tasks.map((task) => [
+        task.seriesId && task.occurrenceDate
+          ? `${task.seriesId}:${task.occurrenceDate}`
+          : task.id,
+        task,
+      ]),
+    ).values(),
+  )
+  const filteredTasks = uniqueTasks.filter((task) => {
     if (view === 'completed') return isTaskCompleted(task)
     if (view === 'today') {
       return (

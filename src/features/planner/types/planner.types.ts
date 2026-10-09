@@ -14,32 +14,13 @@ export type TimeBlockStatus =
   | 'completed'
   | 'cancelled'
 
-export type PlannerRecurrenceFrequency =
-  | 'daily'
-  | 'weekly'
-  | 'monthly'
-  | 'yearly'
+import type {
+  RecurrenceRule,
+  RecurringEditScope,
+} from '@/lib/recurrence/recurrence.types'
 
-export type PlannerRecurrenceEnd = 'never' | 'on_date' | 'after_occurrences'
-
-/** A local-calendar rule. Dates and times are deliberately not UTC instants. */
-export type PlannerRecurrence = {
-  dayOfMonth?: number
-  ends: PlannerRecurrenceEnd
-  endsOn?: string
-  frequency: PlannerRecurrenceFrequency
-  interval: number
-  month?: number
-  occurrenceCount?: number
-  startsOn: string
-  timezone: string
-  /** Used with weekOfMonth for rules such as the first Sunday. */
-  weekday?: number
-  weekdays?: number[]
-  weekOfMonth?: -1 | 1 | 2 | 3 | 4 | 5
-}
-
-export type RecurringEditScope = 'this' | 'future' | 'series'
+export type PlannerRecurrence = RecurrenceRule
+export type { RecurringEditScope }
 
 export type TimeBlockFromAPI = {
   category?: TimeBlockCategory

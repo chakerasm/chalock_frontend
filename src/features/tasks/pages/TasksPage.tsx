@@ -28,13 +28,13 @@ import type { FormEvent } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog/ConfirmDialog'
-import { TasksPageSkeleton } from '@/features/tasks/components/TasksPageSkeleton'
 import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
 import { FilterPopover } from '@/components/shared/FilterPopover/FilterPopover'
 import { toast } from '@/components/ui/Toaster/Toaster'
 import { useGoals } from '@/features/goals/hooks/use-goals'
 import { TaskFormDialog } from '@/features/tasks/components/TaskFormDialog'
 import { TaskList } from '@/features/tasks/components/TaskList'
+import { TasksPageSkeleton } from '@/features/tasks/components/TasksPageSkeleton'
 import {
   useCreateTask,
   useDeleteTask,
@@ -187,7 +187,8 @@ export function TasksPage() {
     updateTaskMutation.isPending ||
     deleteTaskMutation.isPending
   const focusAvailable =
-    !focusDashboardQuery.data?.activeFocusSession && !startFocusMutation.isPending
+    !focusDashboardQuery.data?.activeFocusSession &&
+    !startFocusMutation.isPending
 
   function openCreateTask() {
     setTaskToEdit(undefined)
@@ -216,10 +217,18 @@ export function TasksPage() {
     )
   }
 
-  function handleFormSubmit(input: TaskFormSubmitInput) {
+  function handleFormSubmit(
+    input: TaskFormSubmitInput,
+    scope?: 'this' | 'future' | 'series',
+  ) {
     if (taskToEdit) {
       updateTaskMutation.mutate(
-        { ...input, taskId: taskToEdit.id },
+        {
+          ...input,
+          occurrenceDate: taskToEdit.occurrenceDate,
+          scope,
+          taskId: taskToEdit.id,
+        },
         {
           onError: () => toast.error({ title: t('tasks.updateError') }),
           onSuccess: () => closeTaskForm(false),
@@ -241,6 +250,8 @@ export function TasksPage() {
     updateTaskMutation.mutate(
       {
         status: task.status === 'completed' ? 'todo' : 'completed',
+        occurrenceDate: task.occurrenceDate,
+        scope: task.seriesId ? 'this' : undefined,
         taskId: task.id,
         title: task.title,
       },
@@ -251,10 +262,17 @@ export function TasksPage() {
   async function handleDeleteTask() {
     if (!taskToDelete) return
 
-    await deleteTaskMutation.mutateAsync(taskToDelete.id, {
-      onError: () => toast.error({ title: t('tasks.deleteError') }),
-      onSuccess: () => setTaskToDelete(undefined),
-    })
+    await deleteTaskMutation.mutateAsync(
+      {
+        occurrenceDate: taskToDelete.occurrenceDate,
+        scope: taskToDelete.seriesId ? 'this' : undefined,
+        taskId: taskToDelete.id,
+      },
+      {
+        onError: () => toast.error({ title: t('tasks.deleteError') }),
+        onSuccess: () => setTaskToDelete(undefined),
+      },
+    )
   }
 
   function handleStartFocus(task: Task) {
@@ -580,7 +598,9 @@ export function TasksPage() {
             </Flex>
 
             <TaskList
-              activeFocusSession={focusDashboardQuery.data?.activeFocusSession ?? null}
+              activeFocusSession={
+                focusDashboardQuery.data?.activeFocusSession ?? null
+              }
               focusAvailable={focusAvailable}
               isMutating={isMutating}
               onDelete={setTaskToDelete}

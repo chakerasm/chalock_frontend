@@ -155,6 +155,18 @@ All errors return `{ "code": "...", "message": "..." }`.
 
 Use `5xx` for unexpected persistence failures. Validation failures should identify the invalid field where safe to do so.
 
+## Recurring Tasks
+
+Recurring Tasks share the Planner local-calendar recurrence contract. Persist a `TaskSeries` (task fields, optional `goalId`, recurrence rule, `startsOn`, end condition, IANA timezone, and audit fields) plus `TaskOccurrenceException` records keyed by `seriesId` and local `occurrenceDate`. Exceptions are `modified` or `cancelled` (skipped); never reopen one database Task for a new due occurrence.
+
+`GET /api/tasks` flattens one-time Tasks and generated occurrences. Generated rows add `seriesId`, `occurrenceDate`, and `recurrence`. Generate only requested due-date ranges or bounded list windows; never eagerly create infinite future Tasks. Deduplicate by `(seriesId, occurrenceDate)`, exclude skipped exceptions, and replace generated values with modified exceptions. October's completion therefore retains its own `completedAt` while November remains pending.
+
+`POST /api/tasks` accepts optional shared `recurrence`: `daily`, `weekly`, `monthly`, or `yearly`; interval; Sunday-zero selected weekdays; month-day clamping; monthly `weekday` plus `weekOfMonth` (1-5 or -1); start date; never/date/count end condition; and IANA timezone. This covers every N units and first-Sunday-of-month schedules.
+
+For a generated occurrence, `PATCH /api/tasks/:taskId` accepts `occurrenceDate` and `scope`: `this` writes a modified exception (completion preserves occurrence `completedAt`; cancellation skips it), `future` ends the old series and creates a successor, and `series` changes the rule without rewriting history. `DELETE /api/tasks/:taskId?occurrenceDate=...&scope=this|future|series` follows the same scopes. Use `INVALID_RECURRENCE`, `INVALID_TIMEZONE`, and `OCCURRENCE_NOT_FOUND` when applicable.
+
+Today, Upcoming, All, and Goal lists consume this flattened, deduplicated projection. Recurring Tasks may belong to Goals, but this MVP excludes recurring occurrences from task-based percentage numerators and denominators because an infinite series has no stable denominator; they remain visible in Goal task history. Recurring Task notifications are ordinary Reminder records linked to the Task series (`entityType: "task"`, `entityId: seriesId`) and reuse Reminder occurrence scheduling rather than creating task-specific reminder recurrence.
+
 ## Feature relationships and persistence rules
 
 - The Today dashboard reads the task projection but does not own task persistence. Invalidate `GET /api/dashboard/today` after task create, update, or delete.

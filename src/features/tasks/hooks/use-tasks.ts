@@ -1,13 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  createTask,
   bulkCreateGoalTasks,
+  createTask,
   deleteTask,
   getTasks,
   updateTask,
 } from '@/features/tasks/services/tasks.service'
-import type { TaskListFilters } from '@/features/tasks/types/tasks.types'
-import type { BulkCreateGoalTasksRequest } from '@/features/tasks/types/tasks.types'
+import type {
+  BulkCreateGoalTasksRequest,
+  DeleteTaskInput,
+  TaskListFilters,
+} from '@/features/tasks/types/tasks.types'
 
 export const taskQueryKeys = {
   all: ['tasks'] as const,
@@ -57,5 +60,5 @@ export function useUpdateTask() {
 }
 
 export function useDeleteTask() {
-  return useTaskMutation(deleteTask)
+  return useTaskMutation<DeleteTaskInput>(deleteTask)
 }

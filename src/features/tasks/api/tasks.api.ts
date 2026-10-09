@@ -1,15 +1,16 @@
 ﻿import {
-  createTaskInputSchema,
   bulkCreateGoalTasksRequestSchema,
   bulkCreateGoalTasksResponseSchema,
+  createTaskInputSchema,
   taskFromAPISchema,
   taskListResponseFromAPISchema,
   updateTaskInputSchema,
 } from '@/features/tasks/schemas/tasks.schemas'
 import type {
-  CreateTaskInput,
   BulkCreateGoalTasksRequest,
   BulkCreateGoalTasksResponseFromAPI,
+  CreateTaskInput,
+  DeleteTaskInput,
   TaskFromAPI,
   TaskListFilters,
   UpdateTaskInput,
@@ -29,9 +30,16 @@ export type BulkTaskValidationError = ApiError & {
 export function isBulkTaskValidationError(
   error: unknown,
 ): error is BulkTaskValidationError {
-  if (!(error instanceof ApiError) || !error.body || typeof error.body !== 'object') return false
+  if (
+    !(error instanceof ApiError) ||
+    !error.body ||
+    typeof error.body !== 'object'
+  )
+    return false
   const body = error.body as Record<string, unknown>
-  return body.code === 'BULK_TASK_VALIDATION_FAILED' && Array.isArray(body.errors)
+  return (
+    body.code === 'BULK_TASK_VALIDATION_FAILED' && Array.isArray(body.errors)
+  )
 }
 
 async function parseResponse<T>(
@@ -111,9 +119,17 @@ export async function updateTaskFromAPI({
   )
 }
 
-export async function deleteTaskFromAPI(taskId: string): Promise<void> {
+export async function deleteTaskFromAPI({
+  occurrenceDate,
+  scope,
+  taskId,
+}: DeleteTaskInput): Promise<void> {
+  const query = new URLSearchParams()
+  if (occurrenceDate) query.set('occurrenceDate', occurrenceDate)
+  if (scope) query.set('scope', scope)
+  const suffix = query.size ? `?${query}` : ''
   const response = await apiFetch(
-    `${tasksEndpoint}/${encodeURIComponent(taskId)}`,
+    `${tasksEndpoint}/${encodeURIComponent(taskId)}${suffix}`,
     {
       method: 'DELETE',
     },
