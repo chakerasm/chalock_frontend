@@ -1,4 +1,5 @@
 import { RouterProvider } from '@tanstack/react-router'
+import { Analytics } from '@vercel/analytics/react'
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { AppProviders } from '@/app/providers'
@@ -47,6 +48,7 @@ function Application() {
 
   return (
     <AppProviders>
+      <Analytics />
       {router ? (
         <AuthProvider>
           <AuthenticatedRouter router={router} />
