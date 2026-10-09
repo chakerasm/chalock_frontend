@@ -9,6 +9,7 @@ import { createTimeBlockInputSchema } from '@/features/planner/schemas/planner.s
 import { sortTimeBlocks } from '@/features/planner/services/planner-calculations'
 import type {
   CreateTimeBlockInput,
+  DeleteTimeBlockInput,
   TimeBlock,
   UpdateTimeBlockInput,
 } from '@/features/planner/types/planner.types'
@@ -27,7 +28,7 @@ export async function getAllTimeBlocks(
 }
 export async function getTimeBlocks(date: string): Promise<TimeBlock[]> {
   return sortTimeBlocks(
-    (await getTimeBlocksFromAPI(`?date=${encodeURIComponent(date)}`)).map(
+    (await getTimeBlocksFromAPI(`?${new URLSearchParams({ date })}`)).map(
       mapTimeBlockFromAPI,
     ),
   )
@@ -42,6 +43,6 @@ export async function createTimeBlock(input: CreateTimeBlockInput) {
 export async function updateTimeBlock(input: UpdateTimeBlockInput) {
   return mapTimeBlockFromAPI(await updateTimeBlockFromAPI(input))
 }
-export function deleteTimeBlock(id: string) {
-  return deleteTimeBlockFromAPI(id)
+export function deleteTimeBlock(input: DeleteTimeBlockInput) {
+  return deleteTimeBlockFromAPI(input)
 }

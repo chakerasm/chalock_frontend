@@ -1,5 +1,8 @@
 # Planner API contract
 
+> The recurrence contract below supersedes the original one-time-only endpoint
+> details in this document.
+
 ## TimeBlock entity
 
 A TimeBlock represents an intentional allocation on one local calendar day. The planner uses 15-minute increments in its UI, but the API validates the portable 24-hour `HH:mm` representation so the granularity can be configured later.
@@ -39,3 +42,65 @@ A TimeBlock represents an intentional allocation on one local calendar day. The 
 The backend should permit overlapping blocks and return an informational `conflicts` array when useful; it must not silently move or overwrite a block. `TIME_BLOCK_CONFLICT` is therefore advisory, not a hard error. When starting focus from a block, create the focus session through the Focus API with its `taskId` and `goalId`, then patch `focusSessionId` and optionally transition the block to `in_progress`.
 
 Errors use `{ "code": "...", "message": "..." }`: `TIME_BLOCK_NOT_FOUND`, `INVALID_TIME_RANGE`, `TASK_NOT_FOUND`, `GOAL_NOT_FOUND`, `INVALID_DATE`, `TIME_BLOCK_CONFLICT`, and `INVALID_STATUS_TRANSITION`.
+
+## Recurring Planner blocks
+
+Planner is a local wall-clock calendar. `date`, `startsOn`, `endsOn`, and
+`occurrenceDate` are ISO local dates (`YYYY-MM-DD`); `startTime` and `endTime`
+are `HH:mm`. They are never converted through UTC. A series stores the user's
+IANA `timezone`, so 19:30 remains 19:30 across daylight-saving transitions.
+Audit fields remain UTC instants.
+
+Use a `PlannerBlockSeries` plus small `PlannerOccurrenceException` records;
+never persist hundreds of future blocks. A series owns normal TimeBlock fields,
+optional `taskId`/`goalId`, recurrence, `startsOn`, end condition, timezone,
+and audit fields. An exception has `seriesId`, `occurrenceDate`, a `cancelled`
+or `modified` type, and only overridden fields.
+
+```json
+{
+  "title": "Gym",
+  "startTime": "19:30",
+  "endTime": "20:30",
+  "recurrence": {
+    "frequency": "weekly",
+    "interval": 1,
+    "weekdays": [1, 3, 5],
+    "startsOn": "2026-10-12",
+    "ends": "never",
+    "timezone": "Africa/Casablanca"
+  }
+}
+```
+
+`frequency` is `daily`, `weekly`, `monthly`, or `yearly`; `interval` is >= 1.
+Weekdays use Sunday=0 through Saturday=6 (`[1,2,3,4,5]` is weekdays). Monthly
+rules use `dayOfMonth` (month ends clamp) or `weekday` plus `weekOfMonth`
+1..5 or -1 (last), supporting a first-Sunday review. `ends` is `never`,
+`on_date` plus inclusive `endsOn`, or `after_occurrences` plus
+`occurrenceCount`.
+
+Day and week queries return one flattened TimeBlock shape for one-time and
+generated blocks. Generated blocks add `seriesId`, `occurrenceDate`, and their
+`recurrence`; cancelled exceptions are excluded and modified exceptions replace
+their generated occurrence. Server generation must use timezone-aware calendar
+operations, not fixed 24-hour millisecond arithmetic or UTC parsing of dates.
+
+`POST /api/time-blocks` accepts optional `recurrence` and creates a series when
+present. For a generated occurrence, `PATCH /api/time-blocks/:id` accepts
+`occurrenceDate` and `scope`:
+
+- `this`: create/update a modified exception only; use it to reschedule or
+  change one duration.
+- `future`: end the old series before the occurrence and create a successor
+  series from it, preserving past history.
+- `series`: update the series rule without silently changing historical data.
+
+`DELETE /api/time-blocks/:id?occurrenceDate=...&scope=this|future|series`
+uses the same scopes. `this` creates a cancelled exception (skip), `future`
+ends the series before the selected day, and `series` deletes or archives the
+series according to retention conventions. The UI must always choose a scope.
+
+Validate recurrence bounds, inclusive end date, occurrence count, month/day
+rules and IANA timezone. Use `INVALID_RECURRENCE`, `INVALID_TIMEZONE`, and
+`OCCURRENCE_NOT_FOUND` in addition to the existing Planner errors.

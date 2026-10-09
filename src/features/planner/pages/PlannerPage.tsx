@@ -48,6 +48,7 @@ import {
 } from '@/features/planner/services/planner-calculations'
 import type {
   CreateTimeBlockInput,
+  RecurringEditScope,
   TimeBlock,
 } from '@/features/planner/types/planner.types'
 import { useTasks } from '@/features/tasks/hooks/use-tasks'
@@ -79,7 +80,12 @@ export function PlannerPage({
 }: PlannerPageProps) {
   const { i18n, t } = useTranslation()
   const [isFormOpen, setIsFormOpen] = useState(false)
-  const blocksQuery = useTimeBlocks(selectedDate)
+  const settingsQuery = useSettings()
+  const timezone =
+    settingsQuery.data?.settings.timezone ??
+    Intl.DateTimeFormat().resolvedOptions().timeZone ??
+    'UTC'
+  const blocksQuery = useTimeBlocks(selectedDate, true, timezone)
   const tasksQuery = useTasks()
   const goalsQuery = useGoals({ status: 'active' }, isFormOpen)
   const remindersQuery = useReminders()
@@ -87,7 +93,6 @@ export function PlannerPage({
   const updateMutation = useUpdateTimeBlock()
   const deleteMutation = useDeleteTimeBlock()
   const focusTimer = useFocusTimer()
-  const settingsQuery = useSettings()
   const planning = settingsQuery.data?.settings.planning ?? {
     dayEndHour: 23,
     dayStartHour: 7,
@@ -99,6 +104,7 @@ export function PlannerPage({
   const [defaultStartTime, setDefaultStartTime] = useState<string>()
   const [blockToEdit, setBlockToEdit] = useState<TimeBlock>()
   const [blockToDelete, setBlockToDelete] = useState<TimeBlock>()
+  const [deleteScope, setDeleteScope] = useState<RecurringEditScope>()
 
   useEffect(() => {
     const interval = window.setInterval(() => setNow(new Date()), 60_000)
@@ -155,10 +161,18 @@ export function PlannerPage({
     }
   }
 
-  function handleSubmit(input: CreateTimeBlockInput) {
+  function handleSubmit(
+    input: CreateTimeBlockInput,
+    scope?: RecurringEditScope,
+  ) {
     if (blockToEdit) {
       updateMutation.mutate(
-        { ...input, timeBlockId: blockToEdit.id },
+        {
+          ...input,
+          occurrenceDate: blockToEdit.occurrenceDate,
+          scope,
+          timeBlockId: blockToEdit.id,
+        },
         {
           onError: () => toast.error({ title: t('planner.saveError') }),
           onSuccess: () => closeForm(false),
@@ -197,10 +211,18 @@ export function PlannerPage({
     })
   }
 
-  function updateStatus(status: TimeBlock['status']) {
+  function updateStatus(
+    status: TimeBlock['status'],
+    scope?: RecurringEditScope,
+  ) {
     if (!blockToEdit) return
     updateMutation.mutate(
-      { status, timeBlockId: blockToEdit.id },
+      {
+        occurrenceDate: blockToEdit.occurrenceDate,
+        scope,
+        status,
+        timeBlockId: blockToEdit.id,
+      },
       {
         onError: () => toast.error({ title: t('planner.saveError') }),
         onSuccess: () => closeForm(false),
@@ -210,10 +232,17 @@ export function PlannerPage({
 
   async function handleDelete() {
     if (!blockToDelete) return
-    await deleteMutation.mutateAsync(blockToDelete.id, {
-      onError: () => toast.error({ title: t('planner.deleteError') }),
-      onSuccess: () => setBlockToDelete(undefined),
-    })
+    await deleteMutation.mutateAsync(
+      {
+        occurrenceDate: blockToDelete.occurrenceDate,
+        scope: deleteScope,
+        timeBlockId: blockToDelete.id,
+      },
+      {
+        onError: () => toast.error({ title: t('planner.deleteError') }),
+        onSuccess: () => setBlockToDelete(undefined),
+      },
+    )
   }
 
   if (blocksQuery.isPending) return <PlannerPageSkeleton />
@@ -378,7 +407,12 @@ export function PlannerPage({
                 }}
                 onStartFocus={handleStartFocus}
                 onUpdateStatus={(block, status) =>
-                  updateMutation.mutate({ status, timeBlockId: block.id })
+                  updateMutation.mutate({
+                    occurrenceDate: block.occurrenceDate,
+                    scope: block.seriesId ? 'this' : undefined,
+                    status,
+                    timeBlockId: block.id,
+                  })
                 }
                 selectedDate={selectedDate}
                 locale={i18n.language}
@@ -487,9 +521,12 @@ export function PlannerPage({
         defaultStartTime={defaultStartTime}
         goals={goalsQuery.data ?? []}
         isSubmitting={isMutating}
-        onCancelBlock={() => updateStatus('cancelled')}
-        onDelete={() => {
-          if (blockToEdit) setBlockToDelete(blockToEdit)
+        onCancelBlock={(scope) => updateStatus('cancelled', scope)}
+        onDelete={(scope) => {
+          if (blockToEdit) {
+            setBlockToDelete(blockToEdit)
+            setDeleteScope(scope)
+          }
           closeForm(false)
         }}
         onMarkComplete={() => updateStatus('completed')}
@@ -499,6 +536,7 @@ export function PlannerPage({
         planning={planning}
         tasks={tasksQuery.data ?? []}
         timeBlock={blockToEdit}
+        timezone={timezone}
       />
       <ConfirmDialog
         confirmLabel={t('planner.deleteBlock')}
@@ -509,7 +547,10 @@ export function PlannerPage({
         isDestructive
         onConfirm={handleDelete}
         onOpenChange={(open) => {
-          if (!open) setBlockToDelete(undefined)
+          if (!open) {
+            setBlockToDelete(undefined)
+            setDeleteScope(undefined)
+          }
         }}
         open={Boolean(blockToDelete)}
         title={t('planner.deleteTitle')}

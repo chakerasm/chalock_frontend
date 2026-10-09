@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { timeBlockFromAPISchema } from '@/features/planner/schemas/planner.schemas'
 import type {
   CreateTimeBlockInput,
+  DeleteTimeBlockInput,
   TimeBlockFromAPI,
   UpdateTimeBlockInput,
 } from '@/features/planner/types/planner.types'
@@ -17,8 +18,12 @@ const request = (method: 'POST' | 'PATCH', body: unknown) => ({
 })
 const listSchema = z.union([
   z.array(timeBlockFromAPISchema),
-  z.object({ data: z.array(timeBlockFromAPISchema) }).transform(({ data }) => data),
-  z.object({ items: z.array(timeBlockFromAPISchema) }).transform(({ items }) => items),
+  z
+    .object({ data: z.array(timeBlockFromAPISchema) })
+    .transform(({ data }) => data),
+  z
+    .object({ items: z.array(timeBlockFromAPISchema) })
+    .transform(({ items }) => items),
 ])
 export function getTimeBlocksFromAPI(query = ''): Promise<TimeBlockFromAPI[]> {
   return json(apiFetch(`${endpoint}${query}`), listSchema)
@@ -41,6 +46,16 @@ export function updateTimeBlockFromAPI({
     timeBlockFromAPISchema,
   )
 }
-export async function deleteTimeBlockFromAPI(id: string) {
-  await apiFetch(`${endpoint}/${encodeURIComponent(id)}`, { method: 'DELETE' })
+export async function deleteTimeBlockFromAPI({
+  occurrenceDate,
+  scope,
+  timeBlockId,
+}: DeleteTimeBlockInput) {
+  const query = new URLSearchParams()
+  if (occurrenceDate) query.set('occurrenceDate', occurrenceDate)
+  if (scope) query.set('scope', scope)
+  const suffix = query.size ? `?${query}` : ''
+  await apiFetch(`${endpoint}/${encodeURIComponent(timeBlockId)}${suffix}`, {
+    method: 'DELETE',
+  })
 }

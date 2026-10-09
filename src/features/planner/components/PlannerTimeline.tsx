@@ -1,5 +1,5 @@
 import { Badge, Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react'
-import { Check, Pencil, Play, X } from 'lucide-react'
+import { Check, Pencil, Play, Repeat2, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import {
@@ -236,6 +236,12 @@ export function PlannerTimeline({
                             fontWeight="semibold"
                             lineClamp="1"
                           >
+                            {block.seriesId ? (
+                              <Repeat2
+                                aria-label={t('planner.recurring')}
+                                size={14}
+                              />
+                            ) : null}
                             <PrivateText>{block.title}</PrivateText>
                           </Text>
                           {passed ? (
@@ -330,9 +336,14 @@ export function PlannerTimeline({
                   {' \u00b7 '}
                   {formatDuration(getTimeBlockDurationMinutes(block))}
                 </Text>
-                <Text fontWeight="semibold">
-                  <PrivateText>{block.title}</PrivateText>
-                </Text>
+                <HStack gap="1">
+                  {block.seriesId ? (
+                    <Repeat2 aria-label={t('planner.recurring')} size={14} />
+                  ) : null}
+                  <Text fontWeight="semibold">
+                    <PrivateText>{block.title}</PrivateText>
+                  </Text>
+                </HStack>
                 {isTimeBlockPassed(block, now) ? (
                   <Badge alignSelf="start" colorPalette="gray" size="sm">
                     {t('planner.passed')}
