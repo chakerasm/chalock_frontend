@@ -37,6 +37,10 @@ const en = {
     habitsTitle: 'Habits for today',
     noteCreateError: 'Could not save the note.',
     noteSaved: 'Note saved',
+    nextUp: 'Next up',
+    nextUpEmpty: 'Your day is clear. Choose the next thing that matters.',
+    plannerBlocks: 'planner blocks',
+    scheduledToday: 'Scheduled {{time}}',
     openSession: 'Open session',
     overview:
       '{{tasks}} tasks and {{habits}} habits still need your attention.',
@@ -113,6 +117,11 @@ const fr: typeof en = {
     habitsTitle: 'Habitudes du jour',
     noteCreateError: 'Impossible d enregistrer la note.',
     noteSaved: 'Note enregistree',
+    nextUp: 'Prochaine etape',
+    nextUpEmpty:
+      'Votre journee est libre. Choisissez la prochaine chose importante.',
+    plannerBlocks: 'blocs planifies',
+    scheduledToday: 'Prevu a {{time}}',
     openSession: 'Ouvrir la session',
     overview:
       'Il reste {{tasks}} taches et {{habits}} habitudes a votre attention.',

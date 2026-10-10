@@ -25,6 +25,12 @@ import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
 import { toast } from '@/components/ui/Toaster/Toaster'
 import { useCreateNote } from '@/features/notes/hooks/use-notes'
 import { useAllTimeBlocks } from '@/features/planner/hooks/use-planner'
+import {
+  getLocalDate,
+  getTimeBlockDurationMinutes,
+  isTimeBlockCurrent,
+  sortTimeBlocks,
+} from '@/features/planner/services/planner-calculations'
 import { CarryOverReviewCard } from '@/features/tasks/components/CarryOverReviewCard'
 import { useTasks, useUpdateTask } from '@/features/tasks/hooks/use-tasks'
 import { getPreviousLocalDate } from '@/features/tasks/services/task-reschedule.service'
@@ -139,6 +145,8 @@ export function TodayDashboardPage() {
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false)
   const [isFocusDialogOpen, setIsFocusDialogOpen] = useState(false)
   const dashboard = dashboardQuery.data
+  const todayDate = dashboard?.date ?? getLocalDate()
+  const todayPlannerBlocks = useAllTimeBlocks(todayDate, todayDate)
   const yesterday = getPreviousLocalDate()
   const yesterdayPlannerBlocks = useAllTimeBlocks(yesterday, yesterday)
   const [isCarryOverDismissed, setIsCarryOverDismissed] = useState(() => {
@@ -236,6 +244,19 @@ export function TodayDashboardPage() {
   ).length
   const completedHabits = dashboard.scheduledHabits.length - remainingHabits
   const focusMinutes = dashboard.focusSummary.completedMinutes
+  const plannerBlocks = sortTimeBlocks(todayPlannerBlocks.data ?? []).filter(
+    (block) => block.status !== 'cancelled',
+  )
+  const plannedMinutes = plannerBlocks.reduce(
+    (total, block) => total + getTimeBlockDurationMinutes(block),
+    0,
+  )
+  const nextBlock =
+    plannerBlocks.find((block) => isTimeBlockCurrent(block)) ??
+    plannerBlocks.find(
+      (block) => block.startTime > new Date().toTimeString().slice(0, 5),
+    )
+  const nextTask = dashboard.tasks.find((task) => task.status !== 'completed')
   const quickActions = (
     <HStack gap="2" wrap="wrap">
       <Button
@@ -308,28 +329,91 @@ export function TodayDashboardPage() {
             label={t('today.tasksTitle')}
             value={remainingTasks}
           />
-          <DashboardMetric
-            detail={t('today.habitsSummary', {
-              completed: completedHabits,
-              total: dashboard.scheduledHabits.length,
-            })}
-            icon={CheckCircle2}
-            label={t('today.habitsTitle')}
-            value={`${completedHabits}/${dashboard.scheduledHabits.length}`}
-          />
-          <DashboardMetric
-            detail={t('today.focusToday')}
-            icon={Clock3}
-            label={t('today.focusTitle')}
-            value={t('today.focusMinutes', { minutes: focusMinutes })}
-          />
-          <DashboardMetric
-            detail={formatTodayDate(dashboard.date, i18n.language)}
-            icon={CalendarDays}
-            label={t('today.eventsToday')}
-            value="0"
-          />
+          {dashboard.scheduledHabits.length ? (
+            <DashboardMetric
+              detail={t('today.habitsSummary', {
+                completed: completedHabits,
+                total: dashboard.scheduledHabits.length,
+              })}
+              icon={CheckCircle2}
+              label={t('today.habitsTitle')}
+              value={`${completedHabits}/${dashboard.scheduledHabits.length}`}
+            />
+          ) : null}
+          {focusMinutes ? (
+            <DashboardMetric
+              detail={t('today.focusToday')}
+              icon={Clock3}
+              label={t('today.focusTitle')}
+              value={t('today.focusMinutes', { minutes: focusMinutes })}
+            />
+          ) : null}
+          {plannerBlocks.length ? (
+            <DashboardMetric
+              detail={t('today.plannerBlocks')}
+              icon={CalendarDays}
+              label={t('today.eventsToday')}
+              value={t('today.duration', { minutes: plannedMinutes })}
+            />
+          ) : null}
         </SimpleGrid>
+        <Box
+          bg="bg.panel"
+          borderWidth="1px"
+          p={{ base: '4', md: '5' }}
+          rounded="l3"
+          shadow="xs"
+        >
+          <HStack gap="2" mb="2">
+            <CalendarDays aria-hidden="true" color="brand.fg" size={18} />
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('today.nextUp')}
+            </Text>
+          </HStack>
+          {nextBlock ? (
+            <Stack gap="1">
+              <Text fontWeight="semibold">{nextBlock.title}</Text>
+              <Text color="fg.muted" fontSize="sm">
+                {t('today.scheduledToday', {
+                  time: `${nextBlock.startTime}–${nextBlock.endTime}`,
+                })}
+              </Text>
+              <Button
+                asChild
+                alignSelf="start"
+                mt="2"
+                size="sm"
+                variant="outline"
+              >
+                <a href="/planner">{t('planner.title')}</a>
+              </Button>
+            </Stack>
+          ) : nextTask ? (
+            <Stack gap="1">
+              <Text fontWeight="semibold">{nextTask.title}</Text>
+              <Text color="fg.muted" fontSize="sm">
+                {nextTask.estimatedMinutes
+                  ? t('today.duration', { minutes: nextTask.estimatedMinutes })
+                  : ''}
+              </Text>
+              <Button
+                disabled={Boolean(dashboard.activeFocusSession)}
+                onClick={handleStartFocus}
+                alignSelf="start"
+                mt="2"
+                size="sm"
+                variant="outline"
+              >
+                <Play aria-hidden="true" size={15} />
+                {t('today.startFocus')}
+              </Button>
+            </Stack>
+          ) : (
+            <Text color="fg.muted" fontSize="sm">
+              {t('today.nextUpEmpty')}
+            </Text>
+          )}
+        </Box>
         {!isCarryOverDismissed && carryOverTasks.length > 0 ? (
           <CarryOverReviewCard
             isUpdating={updateCarriedTask.isPending}
