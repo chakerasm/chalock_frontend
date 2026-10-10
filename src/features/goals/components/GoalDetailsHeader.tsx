@@ -7,7 +7,7 @@ import {
   Image,
   Text,
 } from '@chakra-ui/react'
-import { Archive, Check, Pencil, Trophy } from 'lucide-react'
+import { Archive, CalendarDays, Check, Pencil, Trophy } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import type { Goal, GoalStatus } from '@/features/goals/types/goals.types'
@@ -17,6 +17,7 @@ type GoalDetailsHeaderProps = {
   isArchiving: boolean
   isUpdating: boolean
   onAddTask: () => void
+  onPlanGoal: () => void
   onArchive: () => void
   onEdit: () => void
   onSetStatus: (status: GoalStatus) => void
@@ -27,6 +28,7 @@ export const GoalDetailsHeader = ({
   isArchiving,
   isUpdating,
   onAddTask,
+  onPlanGoal,
   onArchive,
   onEdit,
   onSetStatus,
@@ -114,6 +116,12 @@ export const GoalDetailsHeader = ({
             <Button colorPalette="brand" onClick={onAddTask} size="sm">
               <Check aria-hidden="true" size={16} />
               {t('goals.addTask')}
+            </Button>
+          ) : null}
+          {!isArchived ? (
+            <Button onClick={onPlanGoal} size="sm" variant="outline">
+              <CalendarDays aria-hidden="true" size={16} />
+              {t('goals.planning.trigger')}
             </Button>
           ) : null}
           {!isCompleted && !isArchived ? (

@@ -21,68 +21,74 @@ import {
   Check,
   ChevronRight,
   Clock3,
-  FileUp,
   FileText,
+  FileUp,
   Flag,
   Lightbulb,
   ListChecks,
-  Pencil,
   Pause,
+  Pencil,
   Play,
   Plus,
-  Target,
-  Trophy,
   Square,
+  Target,
   Timer,
+  Trophy,
   Unlink,
   Waves,
 } from 'lucide-react'
 import type { FormEvent } from 'react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog/ConfirmDialog'
 import { ErrorState } from '@/components/shared/ErrorState/ErrorState'
+import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import { toast } from '@/components/ui/Toaster/Toaster'
 import { getFocusTimerSnapshot } from '@/features/focus/services/focus-timer.service'
-import { GoalDetailSkeleton } from '@/features/goals/components/GoalDetailSkeleton'
 import { GoalDetailMetric } from '@/features/goals/components/GoalDetailMetric'
+import { GoalDetailSkeleton } from '@/features/goals/components/GoalDetailSkeleton'
 import { GoalDetailsHeader } from '@/features/goals/components/GoalDetailsHeader'
-import { GoalTasksDialog } from '@/features/goals/components/GoalTasksDialog/GoalTasksDialog'
 import { GoalFormDialog } from '@/features/goals/components/GoalFormDialog'
 import {
-  getGoalRecentActivity,
+  type GoalPlanEntry,
+  GoalPlanningDialog,
+} from '@/features/goals/components/GoalPlanningDialog'
+import {
   GoalRecentActivityDrawer,
+  getGoalRecentActivity,
 } from '@/features/goals/components/GoalRecentActivityDrawer'
+import { GoalTasksDialog } from '@/features/goals/components/GoalTasksDialog/GoalTasksDialog'
 import { MilestonesDrawer } from '@/features/goals/components/MilestonesDrawer'
 import { TaskImportDialog } from '@/features/goals/components/TaskImportDialog'
-import { TaskFormDialog } from '@/features/tasks/components/TaskFormDialog'
-import { TaskListItem } from '@/features/tasks/components/TaskListItem'
-import {
-  useStartFocusSession,
-  useStopFocusSession,
-  useTodayDashboard,
-  useUpdateFocusSession,
-} from '@/features/today/hooks/use-today-dashboard'
 import {
   useArchiveGoal,
   useGoal,
   useUpdateGoal,
 } from '@/features/goals/hooks/use-goals'
 import {
+  getEndTime,
+  getPlanningWeekDates,
+} from '@/features/goals/services/goal-planning.service'
+import {
   getGoalFocusSummary,
   getGoalProgressSummary,
 } from '@/features/goals/services/goal-progress.service'
+import type {
+  CreateGoalInput,
+  GoalStatus,
+} from '@/features/goals/types/goals.types'
 import {
   formatGoalElapsedTime,
   formatGoalFocusTime,
   formatGoalTargetDate,
   getGoalFocusElapsedSeconds,
 } from '@/features/goals/utils/goals.utils'
-import type {
-  CreateGoalInput,
-  GoalStatus,
-} from '@/features/goals/types/goals.types'
+import {
+  useAllTimeBlocks,
+  useCreateTimeBlock,
+} from '@/features/planner/hooks/use-planner'
+import { TaskFormDialog } from '@/features/tasks/components/TaskFormDialog'
+import { TaskListItem } from '@/features/tasks/components/TaskListItem'
 import {
   useCreateTask,
   useTasks,
@@ -92,6 +98,12 @@ import type {
   Task,
   TaskFormSubmitInput,
 } from '@/features/tasks/types/tasks.types'
+import {
+  useStartFocusSession,
+  useStopFocusSession,
+  useTodayDashboard,
+  useUpdateFocusSession,
+} from '@/features/today/hooks/use-today-dashboard'
 
 type GoalDetailPageProps = { goalId: string }
 
@@ -104,6 +116,7 @@ export const GoalDetailPage = ({ goalId }: GoalDetailPageProps) => {
   const archiveGoalMutation = useArchiveGoal()
   const createTaskMutation = useCreateTask()
   const updateTaskMutation = useUpdateTask()
+  const createTimeBlockMutation = useCreateTimeBlock()
   const startFocusMutation = useStartFocusSession()
   const updateFocusMutation = useUpdateFocusSession()
   const stopFocusMutation = useStopFocusSession()
@@ -112,6 +125,7 @@ export const GoalDetailPage = ({ goalId }: GoalDetailPageProps) => {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false)
   const [isGoalTasksDialogOpen, setIsGoalTasksDialogOpen] = useState(false)
+  const [isPlanningOpen, setIsPlanningOpen] = useState(false)
   const [taskToEdit, setTaskToEdit] = useState<Task>()
   const [taskToUnlink, setTaskToUnlink] = useState<Task>()
   const [taskToLink, setTaskToLink] = useState('')
@@ -122,6 +136,11 @@ export const GoalDetailPage = ({ goalId }: GoalDetailPageProps) => {
     useState(false)
   const [focusNow, setFocusNow] = useState(Date.now())
   const goal = goalQuery.data
+  const planningWeek = getPlanningWeekDates()
+  const plannerBlocksQuery = useAllTimeBlocks(
+    planningWeek[0],
+    planningWeek[planningWeek.length - 1],
+  )
 
   useEffect(() => {
     if (goal?.progressStrategy.mode === 'manual') {
@@ -159,6 +178,9 @@ export const GoalDetailPage = ({ goalId }: GoalDetailPageProps) => {
     !startFocusMutation.isPending
   const activeFocusSession =
     focusDashboardQuery.data?.activeFocusSession ?? null
+  const scheduledGoalBlocks = (plannerBlocksQuery.data ?? []).filter(
+    (block) => block.goalId === goalId && block.taskId,
+  )
   const isCompleted = goal.status === 'completed'
   const completedTasks = linkedTasks.filter(
     (task) => task.status === 'completed',
@@ -257,6 +279,46 @@ export const GoalDetailPage = ({ goalId }: GoalDetailPageProps) => {
     setIsTaskFormOpen(true)
   }
 
+  const confirmGoalPlan = async (entries: GoalPlanEntry[]) => {
+    const freshTasksResult = await linkedTasksQuery.refetch()
+    const freshTasks = freshTasksResult.data ?? []
+    const tasksById = new Map(freshTasks.map((task) => [task.id, task]))
+    const unavailableTasks = entries.filter(
+      (entry) => !tasksById.has(entry.taskId),
+    )
+
+    if (unavailableTasks.length) {
+      toast.error({
+        title: t('goals.planning.tasksUnavailable', {
+          count: unavailableTasks.length,
+        }),
+      })
+      return false
+    }
+
+    for (const entry of entries) {
+      const task = tasksById.get(entry.taskId)
+      if (!task) continue
+
+      try {
+        await createTimeBlockMutation.mutateAsync({
+          date: entry.date,
+          endTime: getEndTime(entry.startTime, entry.durationMinutes),
+          goalId,
+          startTime: entry.startTime,
+          taskId: task.id,
+          title: task.title,
+        })
+      } catch {
+        toast.error({ title: t('goals.planning.saveError') })
+        return false
+      }
+    }
+    setIsPlanningOpen(false)
+    toast.success({ title: t('goals.planning.saved') })
+    return true
+  }
+
   const startFocus = (task: Task) => {
     startFocusMutation.mutate(
       { taskId: task.id },
@@ -298,6 +360,7 @@ export const GoalDetailPage = ({ goalId }: GoalDetailPageProps) => {
           isArchiving={archiveGoalMutation.isPending}
           isUpdating={updateGoalMutation.isPending}
           onAddTask={openCreateTask}
+          onPlanGoal={() => setIsPlanningOpen(true)}
           onArchive={() =>
             archiveGoalMutation.mutate(goalId, {
               onError: () => toast.error({ title: t('goals.archiveError') }),
@@ -390,6 +453,17 @@ export const GoalDetailPage = ({ goalId }: GoalDetailPageProps) => {
                   {t('goals.addTask')}
                 </Button>
               ) : null}
+              {goal.status !== 'archived' ? (
+                <Button
+                  onClick={() => setIsPlanningOpen(true)}
+                  size="sm"
+                  variant="outline"
+                >
+                  <CalendarDays aria-hidden="true" size={16} />
+                  {t('goals.planning.trigger')}
+                </Button>
+              ) : null}
+
               {!isCompleted && goal.status !== 'archived' ? (
                 <Button
                   disabled={updateGoalMutation.isPending}
@@ -593,6 +667,13 @@ export const GoalDetailPage = ({ goalId }: GoalDetailPageProps) => {
                       total: linkedTasks.length,
                     })}
                   </Text>
+                  {scheduledGoalBlocks.length ? (
+                    <Text color="brand.fg" fontSize="xs">
+                      {t('goals.planning.scheduled', {
+                        count: scheduledGoalBlocks.length,
+                      })}
+                    </Text>
+                  ) : null}
                 </Box>
                 <HStack gap="2">
                   {linkedTasks.length > 5 ? (
@@ -1252,6 +1333,15 @@ export const GoalDetailPage = ({ goalId }: GoalDetailPageProps) => {
         }
         onUnlinkTask={setTaskToUnlink}
         open={isGoalTasksDialogOpen}
+        tasks={linkedTasks}
+      />
+      <GoalPlanningDialog
+        goalId={goalId}
+        isSaving={createTimeBlockMutation.isPending}
+        onConfirm={confirmGoalPlan}
+        onOpenChange={setIsPlanningOpen}
+        open={isPlanningOpen}
+        plannerBlocks={plannerBlocksQuery.data ?? []}
         tasks={linkedTasks}
       />
       <MilestonesDrawer
