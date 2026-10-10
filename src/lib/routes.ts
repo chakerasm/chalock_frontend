@@ -14,6 +14,7 @@ export const APP_ROUTES = {
   pomodoro: '/focus/pomodoro',
   statistics: '/statistics',
   review: '/review',
+  weeklyPlanning: '/weekly-planning',
   subscriptions: '/subscriptions',
   finance: '/finance',
   financeAccount: '/finance/account',

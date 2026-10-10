@@ -124,6 +124,7 @@ export function getFocusTimerInputForTimeBlock(
   return {
     goalId: block.goalId,
     plannedDurationSeconds: minutes * 60,
+    plannerBlockId: block.id,
     taskId: block.taskId,
     type: 'timer',
   }

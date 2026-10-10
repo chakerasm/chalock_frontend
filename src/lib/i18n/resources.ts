@@ -15,6 +15,7 @@ import { subscriptionsResources } from '@/features/subscriptions/i18n/resources'
 import { tasksResources } from '@/features/tasks/i18n/resources'
 import { todayResources } from '@/features/today/i18n/resources'
 import { weeklyReviewResources } from '@/features/weekly-review/i18n/resources'
+import { weeklyPlanningResources } from '@/features/weekly-planning/i18n/resources'
 
 export const fallbackLanguage = 'en'
 
@@ -70,6 +71,7 @@ const en = {
   },
   common: {
     close: 'Close',
+    cancel: 'Cancel',
     notAvailable: 'Not available',
   },
   confirmDialog: {
@@ -170,6 +172,7 @@ const fr: typeof en = {
   },
   common: {
     close: 'Fermer',
+    cancel: 'Annuler',
     notAvailable: 'Non disponible',
   },
   confirmDialog: {
@@ -249,6 +252,7 @@ export const resources = {
       ...statisticsResources.en.translation,
       ...todayResources.en.translation,
       ...weeklyReviewResources.en.translation,
+      ...weeklyPlanningResources.en.translation,
       ...subscriptionsResources.en.translation,
     },
   },
@@ -271,6 +275,7 @@ export const resources = {
       ...statisticsResources.fr.translation,
       ...todayResources.fr.translation,
       ...weeklyReviewResources.fr.translation,
+      ...weeklyPlanningResources.fr.translation,
       ...subscriptionsResources.fr.translation,
     },
   },

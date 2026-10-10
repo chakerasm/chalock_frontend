@@ -8,6 +8,14 @@ The Today dashboard consumes a small active-session projection and focus summary
 
 ## FocusSession entity
 
+`plannerBlockId` is an optional reference to the Planner block from which work
+started. A FocusSession remains the sole owner of its actual duration and
+timestamps; Tasks and Planner blocks only reference it for aggregation.
+Starting from a linked Planner block must pass its `taskId`, `goalId`, and
+`plannerBlockId` to `POST /api/focus-sessions`. Completing a session never
+completes its Task. The server persists the observed duration and exposes it to
+Task, Goal, Planner, Today, and Statistics projections.
+
 ```json
 {
   "id": "focus-1",

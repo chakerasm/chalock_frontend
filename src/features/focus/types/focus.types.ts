@@ -10,6 +10,7 @@ export type FocusSessionFromAPI = {
   goalId?: string
   id: string
   plannedDurationSeconds?: number
+  plannerBlockId?: string
   startedAt?: string
   status: FocusSessionStatus
   taskId?: string
@@ -78,6 +79,7 @@ export type FocusTimerSnapshot = {
 export type StartFocusTimerInput = {
   goalId?: string
   plannedDurationSeconds?: number
+  plannerBlockId?: string
   taskId?: string
   type: 'stopwatch' | 'timer'
 }

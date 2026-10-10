@@ -20,7 +20,16 @@ export function useFocusTimer() {
     queryFn: getFocusSnapshot,
     refetchInterval: 15_000,
   })
-  const invalidate = () => client.invalidateQueries({ queryKey: focusQueryKey })
+  const invalidate = async () => {
+    await Promise.all([
+      client.invalidateQueries({ queryKey: focusQueryKey }),
+      client.invalidateQueries({ queryKey: ['tasks'] }),
+      client.invalidateQueries({ queryKey: ['goals'] }),
+      client.invalidateQueries({ queryKey: ['planner'] }),
+      client.invalidateQueries({ queryKey: ['today-dashboard'] }),
+      client.invalidateQueries({ queryKey: ['statistics'] }),
+    ])
+  }
   const startMutation = useMutation({
     mutationFn: startFocusTimer,
     onSuccess: invalidate,

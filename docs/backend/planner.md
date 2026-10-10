@@ -41,6 +41,11 @@ A TimeBlock represents an intentional allocation on one local calendar day. The 
 
 The backend should permit overlapping blocks and return an informational `conflicts` array when useful; it must not silently move or overwrite a block. `TIME_BLOCK_CONFLICT` is therefore advisory, not a hard error. When starting focus from a block, create the focus session through the Focus API with its `taskId` and `goalId`, then patch `focusSessionId` and optionally transition the block to `in_progress`.
 
+Also pass `plannerBlockId` when starting Focus. Linked block projections may
+show derived planned-versus-focused duration after the block ends. Moving a
+block does not change its Task due date; completing a Task must not silently
+delete future blocks (explicit cancellation is required).
+
 Errors use `{ "code": "...", "message": "..." }`: `TIME_BLOCK_NOT_FOUND`, `INVALID_TIME_RANGE`, `TASK_NOT_FOUND`, `GOAL_NOT_FOUND`, `INVALID_DATE`, `TIME_BLOCK_CONFLICT`, and `INVALID_STATUS_TRANSITION`.
 
 ## Recurring Planner blocks

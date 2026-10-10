@@ -45,6 +45,8 @@ type GoalPlanningDialogProps = {
   onConfirm: (entries: GoalPlanEntry[]) => Promise<boolean>
   onOpenChange: (open: boolean) => void
   open: boolean
+  /** The Monday of the week being planned, when planning outside this week. */
+  planningWeekStart?: string
   plannerBlocks: TimeBlock[]
   tasks: Task[]
 }
@@ -63,11 +65,20 @@ export function GoalPlanningDialog({
   onConfirm,
   onOpenChange,
   open,
+  planningWeekStart,
   plannerBlocks,
   tasks,
 }: GoalPlanningDialogProps) {
   const { i18n, t } = useTranslation()
-  const weekDates = useMemo(() => getPlanningWeekDates(), [])
+  const weekDates = useMemo(
+    () =>
+      getPlanningWeekDates(
+        planningWeekStart
+          ? new Date(`${planningWeekStart}T12:00:00`)
+          : undefined,
+      ),
+    [planningWeekStart],
+  )
   const [selectedTaskId, setSelectedTaskId] = useState<string>()
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
   const [date, setDate] = useState(weekDates[0])

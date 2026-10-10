@@ -33,6 +33,7 @@ export const focusSessionFromAPISchema = z.object({
   goalId: optionalIdentifierSchema,
   id: z.string().trim().min(1),
   plannedDurationSeconds: optionalPositiveIntegerSchema,
+  plannerBlockId: optionalIdentifierSchema,
   startedAt: optionalDateTimeSchema,
   status: focusSessionStatusSchema,
   taskId: optionalIdentifierSchema,
@@ -98,6 +99,7 @@ export const startFocusTimerInputSchema = z
   .object({
     goalId: optionalIdentifierSchema,
     plannedDurationSeconds: z.number().int().positive().max(86_400).optional(),
+    plannerBlockId: optionalIdentifierSchema,
     taskId: optionalIdentifierSchema,
     type: z.enum(['stopwatch', 'timer']),
   })

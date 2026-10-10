@@ -73,7 +73,7 @@ describe('planner time calculations', () => {
     )
   })
 
-  it('forwards linked task and goal IDs to the focus timer', () => {
+  it('forwards linked task, goal, and planner block IDs to the focus timer', () => {
     expect(
       getFocusTimerInputForTimeBlock(
         block({ goalId: 'goal-1', taskId: 'task-1' }),
@@ -82,6 +82,7 @@ describe('planner time calculations', () => {
     ).toEqual({
       goalId: 'goal-1',
       plannedDurationSeconds: 5_400,
+      plannerBlockId: 'deep-work',
       taskId: 'task-1',
       type: 'timer',
     })

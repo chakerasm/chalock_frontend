@@ -42,6 +42,11 @@ const navigationItems: NavigationItem[] = [
   { icon: CheckCheck, label: 'habits.title', to: APP_ROUTES.habits },
   { icon: Goal, label: 'goals.title', to: APP_ROUTES.goals },
   { icon: CalendarCheck, label: 'planner.title', to: APP_ROUTES.planner },
+  {
+    icon: CalendarDays,
+    label: 'weeklyPlanning.title',
+    to: APP_ROUTES.weeklyPlanning,
+  },
   { icon: Clock3, label: 'focus.title', to: APP_ROUTES.focus },
   { icon: Bell, label: 'reminders.title', to: APP_ROUTES.reminders },
   { icon: NotebookPen, label: 'notes.title', to: APP_ROUTES.notes },

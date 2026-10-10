@@ -60,6 +60,10 @@ Tasks have an optional `goalId`. A task belongs to at most one Goal; a Goal may 
 
 ## Focus relationship
 
+Focus investment is derived by summing completed FocusSession durations linked
+directly by `goalId` or indirectly through a Task belonging to the Goal. It is
+never stored as a competing Goal timestamp or counter.
+
 Focus timer sessions, completed focus sessions, and Pomodoro focus history may carry an optional `goalId`. This is an association only and does not cascade when a Goal changes status or is archived. Accumulated focus time is the sum of completed session durations for that Goal, counting completed timer sessions and completed focus-phase Pomodoro history once each. Exclude skipped/cancelled focus phases and active or paused work from the completed-time total. The frontend currently reads this optional relationship from local Focus history; a future Focus API should expose the same stable `goalId` and duration semantics.
 
 ## Endpoints

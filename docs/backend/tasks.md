@@ -172,4 +172,8 @@ Today, Upcoming, All, and Goal lists consume this flattened, deduplicated projec
 - The Today dashboard reads the task projection but does not own task persistence. Invalidate `GET /api/dashboard/today` after task create, update, or delete.
 - `goalId` is an optional relationship to one Goal. Goal status changes and archiving do not change task status or delete tasks. Task completion or association changes update task-based Goal progress for the old and new Goal.
 - A focus session may reference a task title for the active session display. Focus duration remains owned by Focus, not Task.
+- Task projections may expose derived `focusedSeconds`, the next upcoming linked
+  Planner block, and total planned minutes. These are read-only aggregations of
+  FocusSession and TimeBlock records; changing a Task due date never moves a
+  Planner block.
 - Evaluate Today and overdue membership in the user’s configured IANA time zone, not UTC midnight.
