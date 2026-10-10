@@ -1,5 +1,5 @@
 import { Box, Grid, HStack, IconButton, Stack, Text } from '@chakra-ui/react'
-import { Archive, Check, Pencil } from 'lucide-react'
+import { Archive, Check, CirclePause, Pencil, Play } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import {
@@ -11,11 +11,13 @@ import type { Habit, HabitLog } from '@/features/habits/types/habits.types'
 type HabitWeeklyViewProps = {
   dates: string[]
   isArchived: boolean
+  isPaused: boolean
   isUpdating: boolean
   habits: Habit[]
   logs: HabitLog[]
   onArchive: (habit: Habit) => void
   onEdit: (habit: Habit) => void
+  onSetState: (habit: Habit, state: 'active' | 'paused') => void
 }
 
 function formatDay(date: string, locale: string) {
@@ -31,10 +33,12 @@ export function HabitWeeklyView({
   dates,
   habits,
   isArchived,
+  isPaused,
   isUpdating,
   logs,
   onArchive,
   onEdit,
+  onSetState,
 }: HabitWeeklyViewProps) {
   const { i18n, t } = useTranslation()
   const columns = 'minmax(10rem, 1.6fr) repeat(7, minmax(3.25rem, 1fr))'
@@ -117,6 +121,35 @@ export function HabitWeeklyView({
                       variant="ghost"
                     >
                       <Pencil aria-hidden="true" size={14} />
+                    </IconButton>
+                    <IconButton
+                      aria-label={t(
+                        habit.state === 'paused'
+                          ? 'habits.resumeHabit'
+                          : 'habits.pauseHabit',
+                        { habit: habit.name },
+                      )}
+                      disabled={isUpdating}
+                      onClick={() =>
+                        onSetState(
+                          habit,
+                          habit.state === 'paused' ? 'active' : 'paused',
+                        )
+                      }
+                      size="xs"
+                      title={t(
+                        habit.state === 'paused'
+                          ? 'habits.resumeHabit'
+                          : 'habits.pauseHabit',
+                        { habit: habit.name },
+                      )}
+                      variant="ghost"
+                    >
+                      {habit.state === 'paused' ? (
+                        <Play aria-hidden="true" size={14} />
+                      ) : (
+                        <CirclePause aria-hidden="true" size={14} />
+                      )}
                     </IconButton>
                     <IconButton
                       aria-label={t('habits.archiveHabit', {

@@ -11,29 +11,32 @@ import {
   Stack,
   Text,
   Textarea,
-} from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { createHabitInputSchema } from "@/features/habits/schemas/habits.schemas";
+} from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { createHabitInputSchema } from '@/features/habits/schemas/habits.schemas'
 import type {
   CreateHabitInput,
   Habit,
+  HabitBehavior,
+  HabitMetric,
+  HabitPeriod,
   HabitWeekday,
-} from "@/features/habits/types/habits.types";
+} from '@/features/habits/types/habits.types'
 
 type HabitFormDialogProps = {
-  habit?: Habit;
-  isSubmitting: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (input: CreateHabitInput) => void;
-  open: boolean;
-};
+  habit?: Habit
+  isSubmitting: boolean
+  onOpenChange: (open: boolean) => void
+  onSubmit: (input: CreateHabitInput) => void
+  open: boolean
+}
 
-const weekdays: HabitWeekday[] = [1, 2, 3, 4, 5, 6, 7];
+const weekdays: HabitWeekday[] = [1, 2, 3, 4, 5, 6, 7]
 
 function localWeekdayLabel(weekday: HabitWeekday, locale: string) {
-  const date = new Date(2026, 0, 4 + weekday, 12);
-  return new Intl.DateTimeFormat(locale, { weekday: "short" }).format(date);
+  const date = new Date(2026, 0, 4 + weekday, 12)
+  return new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(date)
 }
 
 export function HabitFormDialog({
@@ -43,49 +46,77 @@ export function HabitFormDialog({
   onSubmit,
   open,
 }: HabitFormDialogProps) {
-  const { i18n, t } = useTranslation();
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const { i18n, t } = useTranslation()
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
   const [frequency, setFrequency] = useState<
-    "daily" | "weekdays" | "weekly-target"
-  >("daily");
-  const [selectedWeekdays, setSelectedWeekdays] = useState<HabitWeekday[]>([]);
-  const [targetCount, setTargetCount] = useState("");
-  const [unit, setUnit] = useState("");
-  const [formError, setFormError] = useState(false);
+    'daily' | 'weekdays' | 'weekly-target'
+  >('daily')
+  const [selectedWeekdays, setSelectedWeekdays] = useState<HabitWeekday[]>([])
+  const [targetCount, setTargetCount] = useState('')
+  const [unit, setUnit] = useState('')
+  const [behavior, setBehavior] = useState<HabitBehavior>('build')
+  const [metric, setMetric] = useState<HabitMetric>('completion')
+  const [period, setPeriod] = useState<HabitPeriod>('day')
+  const [preferredTime, setPreferredTime] = useState('')
+  const [warningThreshold, setWarningThreshold] = useState('')
+  const [formError, setFormError] = useState(false)
 
   useEffect(() => {
-    if (!open) return;
-    setName(habit?.name ?? "");
-    setDescription(habit?.description ?? "");
-    setFrequency(habit?.schedule.type ?? "daily");
+    if (!open) return
+    setName(habit?.name ?? '')
+    setDescription(habit?.description ?? '')
+    setFrequency(habit?.schedule.type ?? 'daily')
     setSelectedWeekdays(
-      habit?.schedule.type === "weekdays" ? habit.schedule.weekdays : [],
-    );
-    setTargetCount(habit?.targetCount ? String(habit.targetCount) : "");
-    setUnit(habit?.unit ?? "");
-    setFormError(false);
-  }, [habit, open]);
+      habit?.schedule.type === 'weekdays' ? habit.schedule.weekdays : [],
+    )
+    setTargetCount(habit?.targetCount ? String(habit.targetCount) : '')
+    setUnit(habit?.unit ?? '')
+    setBehavior(habit?.behavior ?? 'build')
+    setMetric(habit?.metric ?? 'completion')
+    setPeriod(
+      habit?.period ??
+        (habit?.schedule.type === 'weekly-target' ? 'week' : 'day'),
+    )
+    setPreferredTime(habit?.preferredTime ?? '')
+    setWarningThreshold(
+      habit?.warningThreshold ? String(habit.warningThreshold) : '',
+    )
+    setFormError(false)
+  }, [habit, open])
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+    event.preventDefault()
     const input = {
       description: description.trim() || undefined,
       name,
+      behavior,
+      metric: behavior === 'quit' ? 'count' : metric,
+      period,
+      preferredTime: preferredTime || undefined,
       schedule:
-        frequency === "weekdays"
-          ? { type: "weekdays" as const, weekdays: selectedWeekdays }
+        frequency === 'weekdays'
+          ? { type: 'weekdays' as const, weekdays: selectedWeekdays }
           : { type: frequency },
-      targetCount: targetCount ? Number(targetCount) : undefined,
+      targetCount:
+        behavior === 'quit'
+          ? undefined
+          : targetCount
+            ? Number(targetCount)
+            : undefined,
       unit: unit.trim() || undefined,
-    };
-    const result = createHabitInputSchema.safeParse(input);
-    if (!result.success) {
-      setFormError(true);
-      return;
+      warningThreshold:
+        behavior === 'limit' && warningThreshold
+          ? Number(warningThreshold)
+          : undefined,
     }
-    setFormError(false);
-    onSubmit(result.data);
+    const result = createHabitInputSchema.safeParse(input)
+    if (!result.success) {
+      setFormError(true)
+      return
+    }
+    setFormError(false)
+    onSubmit(result.data)
   }
 
   function toggleWeekday(weekday: HabitWeekday, checked: boolean) {
@@ -93,7 +124,7 @@ export function HabitFormDialog({
       checked
         ? [...current, weekday].sort((left, right) => left - right)
         : current.filter((value) => value !== weekday),
-    );
+    )
   }
 
   return (
@@ -108,16 +139,16 @@ export function HabitFormDialog({
             <form onSubmit={handleSubmit}>
               <Dialog.Header>
                 <Dialog.Title>
-                  {habit ? t("habits.editTitle") : t("habits.createTitle")}
+                  {habit ? t('habits.editTitle') : t('habits.createTitle')}
                 </Dialog.Title>
                 <Dialog.CloseTrigger asChild>
-                  <CloseButton aria-label={t("common.close")} size="sm" />
+                  <CloseButton aria-label={t('common.close')} size="sm" />
                 </Dialog.CloseTrigger>
               </Dialog.Header>
               <Dialog.Body>
                 <Stack gap="4">
                   <Field.Root required>
-                    <Field.Label>{t("habits.name")}</Field.Label>
+                    <Field.Label>{t('habits.name')}</Field.Label>
                     <Input
                       autoFocus
                       maxLength={100}
@@ -126,7 +157,7 @@ export function HabitFormDialog({
                     />
                   </Field.Root>
                   <Field.Root>
-                    <Field.Label>{t("habits.descriptionLabel")}</Field.Label>
+                    <Field.Label>{t('habits.descriptionLabel')}</Field.Label>
                     <Textarea
                       maxLength={2_000}
                       onChange={(event) => setDescription(event.target.value)}
@@ -134,8 +165,96 @@ export function HabitFormDialog({
                       value={description}
                     />
                   </Field.Root>
+                  <Stack direction={{ base: 'column', sm: 'row' }} gap="3">
+                    <Field.Root>
+                      <Field.Label>{t('habits.behavior')}</Field.Label>
+                      <NativeSelect.Root>
+                        <NativeSelect.Field
+                          onChange={(event) => {
+                            const nextBehavior = event.target
+                              .value as HabitBehavior
+                            setBehavior(nextBehavior)
+                            if (
+                              nextBehavior === 'quit' &&
+                              frequency === 'weekly-target'
+                            ) {
+                              setFrequency('daily')
+                            }
+                          }}
+                          value={behavior}
+                        >
+                          <option value="build">
+                            {t('habits.behaviorOptions.build')}
+                          </option>
+                          <option value="limit">
+                            {t('habits.behaviorOptions.limit')}
+                          </option>
+                          <option value="quit">
+                            {t('habits.behaviorOptions.quit')}
+                          </option>
+                        </NativeSelect.Field>
+                        <NativeSelect.Indicator />
+                      </NativeSelect.Root>
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>{t('habits.period')}</Field.Label>
+                      <NativeSelect.Root>
+                        <NativeSelect.Field
+                          onChange={(event) =>
+                            setPeriod(event.target.value as HabitPeriod)
+                          }
+                          value={period}
+                        >
+                          <option value="day">
+                            {t('habits.periodOptions.day')}
+                          </option>
+                          <option value="week">
+                            {t('habits.periodOptions.week')}
+                          </option>
+                          <option value="month">
+                            {t('habits.periodOptions.month')}
+                          </option>
+                        </NativeSelect.Field>
+                        <NativeSelect.Indicator />
+                      </NativeSelect.Root>
+                    </Field.Root>
+                  </Stack>
+                  <Stack direction={{ base: 'column', sm: 'row' }} gap="3">
+                    <Field.Root>
+                      <Field.Label>{t('habits.metric')}</Field.Label>
+                      <NativeSelect.Root>
+                        <NativeSelect.Field
+                          onChange={(event) =>
+                            setMetric(event.target.value as HabitMetric)
+                          }
+                          value={behavior === 'quit' ? 'count' : metric}
+                        >
+                          <option value="completion">
+                            {t('habits.metricOptions.completion')}
+                          </option>
+                          <option value="count">
+                            {t('habits.metricOptions.count')}
+                          </option>
+                          <option value="minutes">
+                            {t('habits.metricOptions.minutes')}
+                          </option>
+                        </NativeSelect.Field>
+                        <NativeSelect.Indicator />
+                      </NativeSelect.Root>
+                    </Field.Root>
+                    <Field.Root>
+                      <Field.Label>{t('habits.preferredTime')}</Field.Label>
+                      <Input
+                        onChange={(event) =>
+                          setPreferredTime(event.target.value)
+                        }
+                        type="time"
+                        value={preferredTime}
+                      />
+                    </Field.Root>
+                  </Stack>
                   <Field.Root>
-                    <Field.Label>{t("habits.schedule")}</Field.Label>
+                    <Field.Label>{t('habits.schedule')}</Field.Label>
                     <NativeSelect.Root>
                       <NativeSelect.Field
                         onChange={(event) =>
@@ -143,18 +262,20 @@ export function HabitFormDialog({
                         }
                         value={frequency}
                       >
-                        <option value="daily">{t("habits.daily")}</option>
+                        <option value="daily">{t('habits.daily')}</option>
                         <option value="weekdays">
-                          {t("habits.specificDays")}
+                          {t('habits.specificDays')}
                         </option>
-                        <option value="weekly-target">
-                          {t("habits.weeklyTarget")}
-                        </option>
+                        {behavior !== 'quit' ? (
+                          <option value="weekly-target">
+                            {t('habits.weeklyTarget')}
+                          </option>
+                        ) : null}
                       </NativeSelect.Field>
                       <NativeSelect.Indicator />
                     </NativeSelect.Root>
                   </Field.Root>
-                  {frequency === "weekdays" ? (
+                  {frequency === 'weekdays' ? (
                     <Box as="fieldset">
                       <Text
                         as="legend"
@@ -162,7 +283,7 @@ export function HabitFormDialog({
                         fontWeight="medium"
                         mb="2"
                       >
-                        {t("habits.daysOfWeek")}
+                        {t('habits.daysOfWeek')}
                       </Text>
                       <Stack direction="row" gap="3" wrap="wrap">
                         {weekdays.map((weekday) => (
@@ -183,29 +304,61 @@ export function HabitFormDialog({
                       </Stack>
                     </Box>
                   ) : null}
-                  <Stack direction={{ base: "column", sm: "row" }} gap="3">
-                    <Field.Root required={frequency === "weekly-target"}>
-                      <Field.Label>{t("habits.targetCount")}</Field.Label>
-                      <Input
-                        min={1}
-                        onChange={(event) => setTargetCount(event.target.value)}
-                        type="number"
-                        value={targetCount}
-                      />
-                    </Field.Root>
-                    <Field.Root>
-                      <Field.Label>{t("habits.unit")}</Field.Label>
-                      <Input
-                        maxLength={40}
-                        onChange={(event) => setUnit(event.target.value)}
-                        placeholder={t("habits.unitPlaceholder")}
-                        value={unit}
-                      />
-                    </Field.Root>
+                  <Stack direction={{ base: 'column', sm: 'row' }} gap="3">
+                    {behavior !== 'quit' ? (
+                      <Field.Root
+                        required={
+                          behavior === 'limit' ||
+                          frequency === 'weekly-target' ||
+                          metric !== 'completion'
+                        }
+                      >
+                        <Field.Label>
+                          {behavior === 'limit'
+                            ? t('habits.targetCountForLimit')
+                            : t('habits.targetCount')}
+                        </Field.Label>
+                        <Input
+                          min={1}
+                          onChange={(event) =>
+                            setTargetCount(event.target.value)
+                          }
+                          type="number"
+                          value={targetCount}
+                        />
+                      </Field.Root>
+                    ) : null}
+                    {behavior !== 'quit' ? (
+                      <Field.Root>
+                        <Field.Label>{t('habits.unit')}</Field.Label>
+                        <Input
+                          maxLength={40}
+                          onChange={(event) => setUnit(event.target.value)}
+                          placeholder={t('habits.unitPlaceholder')}
+                          value={unit}
+                        />
+                      </Field.Root>
+                    ) : null}
+                    {behavior === 'limit' ? (
+                      <Field.Root>
+                        <Field.Label>
+                          {t('habits.warningThreshold')}
+                        </Field.Label>
+                        <Input
+                          max={100}
+                          min={1}
+                          onChange={(event) =>
+                            setWarningThreshold(event.target.value)
+                          }
+                          type="number"
+                          value={warningThreshold}
+                        />
+                      </Field.Root>
+                    ) : null}
                   </Stack>
                   {formError ? (
                     <Text color="danger.fg" fontSize="sm" role="alert">
-                      {t("habits.formError")}
+                      {t('habits.formError')}
                     </Text>
                   ) : null}
                 </Stack>
@@ -216,14 +369,14 @@ export function HabitFormDialog({
                   type="button"
                   variant="ghost"
                 >
-                  {t("form.cancel")}
+                  {t('form.cancel')}
                 </Button>
                 <Button
                   colorPalette="brand"
                   loading={isSubmitting}
                   type="submit"
                 >
-                  {habit ? t("habits.saveChanges") : t("habits.createTitle")}
+                  {habit ? t('habits.saveChanges') : t('habits.createTitle')}
                 </Button>
               </Dialog.Footer>
             </form>
@@ -231,5 +384,5 @@ export function HabitFormDialog({
         </Dialog.Positioner>
       </Portal>
     </Dialog.Root>
-  );
+  )
 }

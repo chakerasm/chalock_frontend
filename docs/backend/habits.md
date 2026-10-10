@@ -19,6 +19,10 @@ Habits are durable user-owned definitions. Habit logs are separate, append-by-da
   },
   "targetCount": 1,
   "unit": "session",
+  "behavior": "build",
+  "metric": "completion",
+  "period": "day",
+  "preferredTime": "07:00",
   "state": "active",
   "createdAt": "2026-09-22T09:00:00.000Z",
   "updatedAt": "2026-09-25T16:30:00.000Z"
@@ -27,7 +31,9 @@ Habits are durable user-owned definitions. Habit logs are separate, append-by-da
 
 Required fields are `id`, `name`, `schedule`, `state`, `createdAt`, and `updatedAt`. `description`, `targetCount`, and `unit` are omitted when absent. Names are trimmed and limited to 100 characters; descriptions are limited to 2,000 characters. A target is a positive integer. A unit is optional display text.
 
-`state` is `active` or `archived`. Archiving changes only the definition state and `updatedAt`; it never deletes or rewrites logs. Archived habits remain readable, including their history, but do not appear in Today and reject new log writes.
+`behavior` is `build`, `limit`, or `quit`; `metric` is `completion`, `count`, or `minutes`; and `period` is `day`, `week`, or `month`. `preferredTime` is an optional local `HH:mm` planning hint. Limit habits may include a `warningThreshold` from 1 through 100.
+
+`state` is `active`, `paused`, or `archived`. Pausing preserves the definition and every log but removes the habit from Today and rejects new log writes until it is resumed. Archiving has the same history-preserving behavior and is terminal in the standard UI flow.
 
 ### `HabitSchedule`
 
@@ -77,7 +83,7 @@ The unique key is `(userId, habitId, date)`. `date` is the user's local calendar
 
 ### `GET /api/habits`
 
-Lists the authenticated user's habits. Optional `state=active|archived` filters by state. Return definitions sorted by state, then stable creation time and ID.
+Lists the authenticated user's habits. Optional `state=active|paused|archived` filters by state. Return definitions sorted by state, then stable creation time and ID.
 
 ```json
 [
@@ -109,7 +115,7 @@ Return `201 Created` and the full `Habit`.
 
 ### `PATCH /api/habits/:habitId`
 
-Updates a non-empty subset of `name`, `description`, `schedule`, `targetCount`, and `unit`. Validate the merged definition, including the weekly-target requirement, and set `updatedAt` to the current UTC instant. Return the full updated `Habit`.
+Updates a non-empty subset of `name`, `description`, `schedule`, `targetCount`, `unit`, `behavior`, `metric`, `period`, `preferredTime`, `warningThreshold`, and `state`. Sending `state: "paused"` pauses a habit; sending `state: "active"` resumes it. Validate the merged definition, including the weekly-target requirement, and set `updatedAt` to the current UTC instant. Return the full updated `Habit`.
 
 ### `POST /api/habits/:habitId/archive`
 
@@ -152,6 +158,7 @@ Errors use `{ "code": "...", "message": "..." }`.
 | `401`  | `UNAUTHENTICATED`    | No valid session.                                                                       |
 | `404`  | `HABIT_NOT_FOUND`    | Missing or inaccessible habit.                                                          |
 | `409`  | `HABIT_ARCHIVED`     | Attempt to write a new log to an archived habit.                                        |
+| `409`  | `HABIT_PAUSED`       | Attempt to write a new log to a paused habit.                                           |
 | `422`  | `INVALID_HABIT`      | Invalid name, schedule, target, unit, or update.                                        |
 | `422`  | `INVALID_HABIT_LOG`  | Invalid date, timezone, or progress value.                                              |
 

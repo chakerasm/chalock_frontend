@@ -8,7 +8,15 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { Archive, Check, Minus, Pencil, Plus } from 'lucide-react'
+import {
+  Archive,
+  Check,
+  CirclePause,
+  Minus,
+  Pencil,
+  Play,
+  Plus,
+} from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
 import { EmptyState } from '@/components/shared/EmptyState/EmptyState'
@@ -18,10 +26,12 @@ type HabitTodayListProps = {
   date: string
   habits: Habit[]
   isArchived: boolean
+  isPaused: boolean
   isUpdating: boolean
   logs: HabitLog[]
   onArchive: (habit: Habit) => void
   onEdit: (habit: Habit) => void
+  onSetState: (habit: Habit, state: 'active' | 'paused') => void
   onWriteProgress: (habit: Habit, date: string, progress: number) => void
 }
 
@@ -51,10 +61,12 @@ export function HabitTodayList({
   date,
   habits,
   isArchived,
+  isPaused,
   isUpdating,
   logs,
   onArchive,
   onEdit,
+  onSetState,
   onWriteProgress,
 }: HabitTodayListProps) {
   const { t } = useTranslation()
@@ -66,10 +78,16 @@ export function HabitTodayList({
         description={t(
           isArchived
             ? 'habits.archivedEmptyDescription'
-            : 'habits.todayEmptyDescription',
+            : isPaused
+              ? 'habits.pausedEmptyDescription'
+              : 'habits.todayEmptyDescription',
         )}
         title={t(
-          isArchived ? 'habits.archivedEmptyTitle' : 'habits.todayEmptyTitle',
+          isArchived
+            ? 'habits.archivedEmptyTitle'
+            : isPaused
+              ? 'habits.pausedEmptyTitle'
+              : 'habits.todayEmptyTitle',
         )}
       />
     )
@@ -92,6 +110,7 @@ export function HabitTodayList({
             ? currentProgress >= targetCount
             : Boolean(todayLog?.completed)
         const hasTarget = habit.targetCount !== undefined
+        const isReadOnly = habit.state !== 'active' || isUpdating
 
         return (
           <Flex
@@ -138,7 +157,7 @@ export function HabitTodayList({
               ) : (
                 <Checkbox.Root
                   checked={isComplete}
-                  disabled={isArchived || isUpdating}
+                  disabled={isReadOnly}
                   onCheckedChange={(details) =>
                     onWriteProgress(habit, date, details.checked ? 1 : 0)
                   }
@@ -158,7 +177,7 @@ export function HabitTodayList({
                     aria-label={t('habits.completeTarget', {
                       habit: habit.name,
                     })}
-                    disabled={isArchived || isUpdating}
+                    disabled={isReadOnly}
                     onClick={() => {
                       const remaining = Math.max(
                         0,
@@ -181,9 +200,7 @@ export function HabitTodayList({
                   aria-label={t('habits.decreaseProgress', {
                     habit: habit.name,
                   })}
-                  disabled={
-                    isArchived || isUpdating || currentDayProgress === 0
-                  }
+                  disabled={isReadOnly || currentDayProgress === 0}
                   onClick={() =>
                     onWriteProgress(
                       habit,
@@ -201,8 +218,7 @@ export function HabitTodayList({
                     habit: habit.name,
                   })}
                   disabled={
-                    isArchived ||
-                    isUpdating ||
+                    isReadOnly ||
                     (habit.schedule.type === 'weekly-target'
                       ? currentProgress >= targetCount
                       : currentDayProgress >= targetCount)
@@ -228,6 +244,35 @@ export function HabitTodayList({
                   variant="ghost"
                 >
                   <Pencil aria-hidden="true" size={15} />
+                </IconButton>
+                <IconButton
+                  aria-label={t(
+                    habit.state === 'paused'
+                      ? 'habits.resumeHabit'
+                      : 'habits.pauseHabit',
+                    { habit: habit.name },
+                  )}
+                  disabled={isUpdating}
+                  onClick={() =>
+                    onSetState(
+                      habit,
+                      habit.state === 'paused' ? 'active' : 'paused',
+                    )
+                  }
+                  size="sm"
+                  title={t(
+                    habit.state === 'paused'
+                      ? 'habits.resumeHabit'
+                      : 'habits.pauseHabit',
+                    { habit: habit.name },
+                  )}
+                  variant="ghost"
+                >
+                  {habit.state === 'paused' ? (
+                    <Play aria-hidden="true" size={15} />
+                  ) : (
+                    <CirclePause aria-hidden="true" size={15} />
+                  )}
                 </IconButton>
                 <IconButton
                   aria-label={t('habits.archiveHabit', { habit: habit.name })}
