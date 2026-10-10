@@ -12,6 +12,7 @@ type TaskListProps = {
   onDelete: (task: Task) => void
   onEdit: (task: Task) => void
   onStartFocus: (task: Task) => void
+  onReschedule: (task: Task, dueDate: string | null) => void
   onToggleCompletion: (task: Task) => void
   tasks: Task[]
 }
@@ -23,6 +24,7 @@ export function TaskList({
   onDelete,
   onEdit,
   onStartFocus,
+  onReschedule,
   onToggleCompletion,
   tasks,
 }: TaskListProps) {
@@ -49,6 +51,7 @@ export function TaskList({
           onDelete={() => onDelete(task)}
           onEdit={() => onEdit(task)}
           onStartFocus={() => onStartFocus(task)}
+          onReschedule={(dueDate) => onReschedule(task, dueDate)}
           onToggleCompletion={() => onToggleCompletion(task)}
           task={task}
         />

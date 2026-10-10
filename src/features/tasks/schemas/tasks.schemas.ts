@@ -74,6 +74,7 @@ export const bulkCreateGoalTasksResponseSchema = z
   .passthrough()
 
 export const updateTaskInputSchema = createTaskInputSchema.partial().extend({
+  dueDate: optionalDateSchema.nullable(),
   goalId: z.string().min(1).nullable().optional(),
   status: taskStatusSchema.optional(),
   occurrenceDate: z.string().date().optional(),

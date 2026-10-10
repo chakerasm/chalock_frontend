@@ -259,6 +259,19 @@ export function TasksPage() {
     )
   }
 
+  function handleReschedule(task: Task, dueDate: string | null) {
+    updateTaskMutation.mutate(
+      {
+        dueDate,
+        occurrenceDate: task.occurrenceDate,
+        scope: task.seriesId ? 'this' : undefined,
+        taskId: task.id,
+        title: task.title,
+      },
+      { onError: () => toast.error({ title: t('tasks.updateError') }) },
+    )
+  }
+
   async function handleDeleteTask() {
     if (!taskToDelete) return
 
@@ -609,6 +622,7 @@ export function TasksPage() {
                 setIsTaskFormOpen(true)
               }}
               onStartFocus={handleStartFocus}
+              onReschedule={handleReschedule}
               onToggleCompletion={handleToggleCompletion}
               tasks={visibleTasks}
             />

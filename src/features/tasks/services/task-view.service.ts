@@ -56,7 +56,7 @@ export function getTasksForView(tasks: Task[], view: TaskView) {
       return (
         task.status !== 'completed' &&
         task.status !== 'cancelled' &&
-        (task.dueDate === today || isTaskOverdue(task, today))
+        task.dueDate === today
       )
     }
     if (view === 'upcoming') {

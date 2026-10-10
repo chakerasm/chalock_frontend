@@ -63,7 +63,8 @@ export type TaskFormSubmitInput = Omit<CreateTaskInput, 'goalId'> & {
 
 export type UpdateTaskInput = {
   description?: string
-  dueDate?: string
+  /** Use null to explicitly remove an existing due date. */
+  dueDate?: string | null
   dueTime?: string
   estimatedMinutes?: number
   goalId?: string | null

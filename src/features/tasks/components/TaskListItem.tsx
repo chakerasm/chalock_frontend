@@ -25,6 +25,7 @@ import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PrivateText } from '@/components/ui/PrivateText/PrivateText'
+import { TaskDateActions } from '@/features/tasks/components/TaskDateActions'
 import { isTaskOverdue } from '@/features/tasks/services/task-view.service'
 import type {
   Task,
@@ -44,6 +45,7 @@ type TaskListItemProps = {
   onDelete: () => void
   onEdit: () => void
   onStartFocus: () => void
+  onReschedule?: (dueDate: string | null) => void
   onToggleCompletion: () => void
   onSecondaryAction?: () => void
   secondaryActionIcon?: ReactNode
@@ -92,6 +94,7 @@ export function TaskListItem({
   onDelete,
   onEdit,
   onStartFocus,
+  onReschedule,
   onToggleCompletion,
   onSecondaryAction,
   secondaryActionIcon,
@@ -308,6 +311,9 @@ export function TaskListItem({
                 <Play aria-hidden="true" fill="currentColor" size={16} />
                 {t('tasks.startFocus')}
               </Button>
+            ) : null}
+            {onReschedule && !isCompleted && task.status !== 'cancelled' ? (
+              <TaskDateActions disabled={isMutating} onSelect={onReschedule} />
             ) : null}
             <IconButton
               aria-label={t('tasks.editTask')}

@@ -57,4 +57,19 @@ describe('Task occurrence views', () => {
     )
     expect(tasks).toHaveLength(1)
   })
+
+  it('does not fill Today with historical overdue work', () => {
+    const today = new Date().toLocaleDateString('en-CA')
+    const yesterday = new Date(Date.now() - 86_400_000).toLocaleDateString(
+      'en-CA',
+    )
+    const tasks = getTasksForView(
+      [
+        task({ dueDate: yesterday, id: 'overdue' }),
+        task({ dueDate: today, id: 'today' }),
+      ],
+      'today',
+    )
+    expect(tasks.map((item) => item.id)).toEqual(['today'])
+  })
 })
